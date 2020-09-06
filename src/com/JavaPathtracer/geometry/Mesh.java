@@ -112,7 +112,7 @@ public class Mesh implements Shape {
 		if(t > Raytracer.EPSILON) {
 			
 			// Make sure normal faces ray direction
-			Vector normal = edge1.cross(edge2);
+			Vector normal = edge1.cross(edge2).normalized();
 			if(normal.dot(ray.direction) < 0) {
 				normal.invert();
 			}
