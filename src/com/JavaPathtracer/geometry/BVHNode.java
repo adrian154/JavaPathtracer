@@ -15,7 +15,7 @@ public class BVHNode extends BoundingBox implements Shape {
 	public static final int NUM_BINS = 32;
 	public static final double COST_TRAVERSE = 1; // greater intersect cost = more splits
 	public static final double COST_INTERSECT = 8;
-	public static final int MAX_DEPTH = 5;
+	public static final int MAX_DEPTH = 3;
 	
 	private static final double minOf3(double a, double b, double c) {
 		return Math.min(a, Math.min(b, c));
@@ -128,23 +128,23 @@ public class BVHNode extends BoundingBox implements Shape {
 		
 		for(int axis = 0; axis < 3; axis++) {
 			
-			// Bin primitives along axis
-			List<List<PrimAssociatedBBox>> bins = new ArrayList<List<PrimAssociatedBBox>>(NUM_BINS);
-
-			for(int i = 0; i < NUM_BINS; i++) bins.add(i, new ArrayList<PrimAssociatedBBox>());
-			
-			for(PrimAssociatedBBox box: this.children) {
-				// Place into bin according to centroid
-				bins.get((int)Math.floor(((box.min.get(axis) + box.max.get(axis)) / 2 - this.min.get(axis)) * (this.max.get(axis) - this.min.get(axis)) / NUM_BINS)).add(box);
-			}
-			
-			for(int split = 0; split < NUM_BINS - 1; split++) {
+			for(int split = 1; split < NUM_BINS; split++) {
+				
+				double splitPos = this.min.get(axis) + (split / NUM_BINS) * this.max.get(axis) - this.min.get(axis);
 				
 				List<PrimAssociatedBBox> left = new ArrayList<PrimAssociatedBBox>();
 				List<PrimAssociatedBBox> right = new ArrayList<PrimAssociatedBBox>();
 				
-				for(int bin = 0; bin < split; bin++) left.addAll(bins.get(bin));
-				for(int bin = split; bin < NUM_BINS; bin++) right.addAll(bins.get(bin));
+				for(PrimAssociatedBBox box: this.children) {
+					
+					double centroid = (box.max.get(axis) + box.min.get(axis)) / 2;
+					if(centroid < splitPos) {
+						left.add(box);
+					} else {
+						right.add(box);
+					}
+					
+				}
 				
 				BoundingBox leftBox = getBoundingBoxOfBoxes(left);
 				BoundingBox rightBox = getBoundingBoxOfBoxes(right);
@@ -162,6 +162,10 @@ public class BVHNode extends BoundingBox implements Shape {
 				}
 				
 			}
+			
+			// Nullify children
+			// This for some reason doesn't work...
+			//this.children = null;
 			
 			if(minSplitCost < Double.POSITIVE_INFINITY && minSplitCost < noSplitCost) {
 
@@ -190,11 +194,15 @@ public class BVHNode extends BoundingBox implements Shape {
 			// Nowhere to go
 			// Loop through prims :(
 			
-			//return mesh.intersect(ray, this.primIndexes);
+			if(this.primIndexes != null) {
+				return mesh.intersect(ray, this.primIndexes);
+			} else {
+				return Hit.MISS;
+			}
 			
 			// actually...
 			// return some bogus for testing
-			return new Hit(new Vector(0.0, 0.0, 0.0), new Vector(1.0, 0.0, 0.0), 0, new Vector(0.0, 1.0, 0.0));
+			//return new Hit(new Vector(0.0, 0.0, 0.0), new Vector(1.0, 0.0, 0.0), 0, new Vector(0.0, 1.0, 0.0));
 			
 		} else {
 			

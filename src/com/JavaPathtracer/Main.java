@@ -18,7 +18,7 @@ public class Main {
 		BufferedImage outputImage = new BufferedImage(256, 256, BufferedImage.TYPE_INT_RGB);
 		Texture output = new Texture(outputImage);
 		
-		Camera camera = new Camera(new Vector(0.0, 5.0, -10.0));
+		Camera camera = new Camera(new Vector(0.0, 2.0, -6.0));
 		Scene scene = new Scene();
 		
 		//scene.setSkyEmission(new HDRMap(new File("assets/sky_cloudy/HDR_029_Sky_Cloudy_Ref.hdr")));
