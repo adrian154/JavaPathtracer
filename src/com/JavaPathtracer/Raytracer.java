@@ -1,0 +1,61 @@
+package com.JavaPathtracer;
+
+import com.JavaPathtracer.geometry.Ray;
+import com.JavaPathtracer.geometry.Vector;
+import com.JavaPathtracer.material.Texture;
+import com.JavaPathtracer.tonemapping.LinearTonemapper;
+import com.JavaPathtracer.tonemapping.ToneMapper;
+
+public abstract class Raytracer {
+
+	public static final double EPSILON = 0.000001;
+	
+	// Camera and scene
+	protected Camera camera;
+	protected Scene scene;
+	protected ToneMapper toneMapper;
+	
+	public Raytracer(Camera camera, Scene scene) {
+		this(camera, scene, new LinearTonemapper());
+	}
+	
+	public Raytracer(Camera camera, Scene scene, ToneMapper toneMapper) {
+		this.camera = camera;
+		this.scene = scene;
+		this.toneMapper = toneMapper;
+	}
+	
+	public Camera getCamera() {
+		return camera;
+	}
+	
+	// shade a normal for debugging
+	public static Vector shadeNormal(Vector normal) {
+		return new Vector(normal.x / 2 + 0.5, normal.y / 2 + 0.5, normal.z / 2 + 0.5);
+	}
+
+	public abstract Vector traceRay(Ray ray);
+
+	public void pathtraceTile(Texture output, int startX, int startY, int endX, int endY) {
+		
+		for(int x = startX; x < endX; x++) {
+			for(int y = startY; y < endY; y++) {
+				
+				// set pixel to green while working on it
+				output.set(x, y, new Vector(0, 1, 0));
+				
+				// convert to image plane coordinates
+				double imageX = ((double)x / output.getWidth()) * 2 - 1;
+				double imageY = ((double)y / output.getHeight()) * 2 - 1;
+				
+				Ray ray = camera.getCameraRay(imageX, imageY);
+
+				Vector color = toneMapper.map(traceRay(ray));
+				output.set(x, y, color);
+				
+			}
+		}
+		
+	}
+	
+}
