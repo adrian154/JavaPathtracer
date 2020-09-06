@@ -14,7 +14,8 @@ public class DebugTracer extends Raytracer {
 		
 		Hit hit = scene.traceRay(ray);
 		if(hit.hit) {
-			return Raytracer.shadeNormal(hit.normal);
+			double amt = new Vector(0.0, 0.0, 0.0).minus(ray.direction).dot(hit.normal);
+			return Raytracer.shadeNormal(hit.normal).times(amt);
 		} else {
 			return scene.getSkyEmission(ray.direction);
 		}

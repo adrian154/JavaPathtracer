@@ -30,7 +30,7 @@ public class BVHNode extends BoundingBox implements Shape {
 	}
 	
 	private static final double maxOf3(double a, double b, double c) {
-		return Math.min(a, Math.min(b, c));
+		return Math.max(a, Math.max(b, c));
 	}
 	
 	public BVHNode(Mesh mesh) {
@@ -72,13 +72,10 @@ public class BVHNode extends BoundingBox implements Shape {
 		Vector max = new Vector(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY);
 		
 		for(BoundingBox box: boxes) {
-			
-			if(box == null) continue;
-			
 			min.x = Math.min(min.x, box.min.x);
 			min.y = Math.min(min.y, box.min.y);
 			min.z = Math.min(min.z, box.min.z);
-		
+			
 			max.x = Math.max(max.x, box.max.x);
 			max.y = Math.max(max.y, box.max.y);
 			max.z = Math.max(max.z, box.max.z);
@@ -113,8 +110,6 @@ public class BVHNode extends BoundingBox implements Shape {
 			return;
 		}
 		
-		double noSplitCost = children.size() *  COST_INTERSECT;
-		
 		// Find optimal split
 		double minSplitCost = Double.POSITIVE_INFINITY;
 		BoundingBox minSplitLeftBox = null;
@@ -122,18 +117,20 @@ public class BVHNode extends BoundingBox implements Shape {
 		List<PrimAssociatedBBox> minSplitLeftChildren = null;
 		List<PrimAssociatedBBox> minSplitRightChildren = null;
 		
+		double noSplitCost = children.size() * COST_INTERSECT;
+		
 		for(int axis = 0; axis < 3; axis++) {
 			
-			for(int split = 1; split < NUM_BINS; split++) {
+			for(int split = 1; split < NUM_BINS - 1; split++) {
 				
-				double splitPos = this.min.get(axis) + ((double)split / NUM_BINS) * this.max.get(axis) - this.min.get(axis);
+				double splitPos = this.min.get(axis) + ((double)split / NUM_BINS) * (this.max.get(axis) - this.min.get(axis));
 				
 				List<PrimAssociatedBBox> left = new ArrayList<PrimAssociatedBBox>();
 				List<PrimAssociatedBBox> right = new ArrayList<PrimAssociatedBBox>();
 				
 				for(PrimAssociatedBBox box: this.children) {
 					
-					double centroid = (box.max.get(axis) + box.min.get(axis)) / 2;
+					double centroid = (box.min.get(axis) + box.max.get(axis)) / 2;
 					if(centroid < splitPos) {
 						left.add(box);
 					} else {
@@ -141,16 +138,13 @@ public class BVHNode extends BoundingBox implements Shape {
 					}
 					
 				}
-				
+
 				BoundingBox leftBox = getBoundingBoxOfBoxes(left);
 				BoundingBox rightBox = getBoundingBoxOfBoxes(right);
 				
 				double splitCost = COST_TRAVERSE +
-					leftBox.area() / this.area() * left.size() * COST_INTERSECT +
-					rightBox.area() / this.area() * right.size() * COST_INTERSECT;
-				
-				System.out.println(left.size() + ", " + right.size());
-				System.out.println("Split cost = " + splitCost + ", alternative = " + noSplitCost);
+					(leftBox.area() / this.area() * left.size() * COST_INTERSECT) +
+					(rightBox.area() / this.area() * right.size() * COST_INTERSECT);
 				
 				if(splitCost < minSplitCost) {
 					minSplitCost = splitCost;
@@ -164,17 +158,19 @@ public class BVHNode extends BoundingBox implements Shape {
 			
 		}
 		
-		if(minSplitCost < Double.POSITIVE_INFINITY && minSplitCost < noSplitCost) {
+		if(minSplitCost < noSplitCost) {
 
 			// Split!
 			this.left = new BVHNode(this.mesh, minSplitLeftBox, minSplitLeftChildren);
 			this.right = new BVHNode(this.mesh, minSplitRightBox, minSplitRightChildren);
-			
+
 			System.out.println(Main.repeat("\t", depth) + "LEFT: " + left + ", " + left.children.size());
-			System.out.println(Main.repeat("\t", depth) + "RIGHT: " + right + ", " + right.children.size());
 			
 			// Recurse
 			this.left.split(depth + 1);
+			
+			System.out.println(Main.repeat("\t", depth) + "RIGHT: " + right + ", " + right.children.size());
+			
 			this.right.split(depth + 1);
 			
 		} else {
@@ -184,7 +180,7 @@ public class BVHNode extends BoundingBox implements Shape {
 			
 		}
 		
-		// Children array is no longer needed
+		// In any case, children array is no longer needed
 		children = null;
 		
 	}
@@ -196,20 +192,14 @@ public class BVHNode extends BoundingBox implements Shape {
 		if(!self.hit) return self;
 		
 		if(left == null && right == null) {
-			
-			// Nowhere to go
-			// Loop through prims :(
-			
 			if(this.primIndexes != null) {
-				//return mesh.intersect(ray, this.primIndexes);
-				return super.intersectSlow(ray);
+				return mesh.intersect(ray, this.primIndexes);
+				//return super.intersectSlow(ray);
 			} else {
 				return Hit.MISS;
 			}
-			
 		} else {
 			
-			// these variable names are awful, and it'd take me less time to fix them than to write this comment except i'm stupid
 			Hit hl, hr;
 			hl = this.left.intersect(ray);
 			hr = this.right.intersect(ray);
