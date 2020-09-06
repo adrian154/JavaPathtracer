@@ -19,6 +19,7 @@ public class Main {
 		Texture output = new Texture(outputImage);
 		
 		Camera camera = new Camera(new Vector(0.0, 2.0, -6.0));
+		camera.setFOV(60);
 		Scene scene = new Scene();
 		
 		//scene.setSkyEmission(new HDRMap(new File("assets/sky_cloudy/HDR_029_Sky_Cloudy_Ref.hdr")));
@@ -27,10 +28,12 @@ public class Main {
 		Material mat = new Material(new Vector(1.0, 1.0, 1.0), new Vector(1.0, 1.0, 1.0).times(0.0));
 		scene.add(new WorldObject(new BVHMesh(new File("assets/UtahTeapot.obj")), mat));
 
-		//Raytracer rt = new Pathtracer(5, 100, camera, scene);
-		Raytracer rt = new DebugTracer(camera, scene);
+		long start = System.currentTimeMillis();
+		Raytracer rt = new Pathtracer(5, 30, camera, scene);
 		Renderer renderer = new LivePreviewRenderer(rt, 4, 2);
 		renderer.render(output);
+		long end = System.currentTimeMillis();
+		System.out.println("Took " + (end - start));
 
 		output.saveToFile(new File("output.png"));
 		System.out.println("Done.");

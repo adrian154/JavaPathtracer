@@ -15,7 +15,7 @@ public class BVHNode extends BoundingBox implements Shape {
 	public static final int NUM_BINS = 32;
 	public static final double COST_TRAVERSE = 1; // greater intersect cost = more splits
 	public static final double COST_INTERSECT = 8;
-	public static final int MAX_DEPTH = 5;
+	public static final int MAX_DEPTH = 8;
 	
 	private static final double minOf3(double a, double b, double c) {
 		return Math.min(a, Math.min(b, c));
@@ -192,10 +192,6 @@ public class BVHNode extends BoundingBox implements Shape {
 			} else {
 				return Hit.MISS;
 			}
-			
-			// actually...
-			// return some bogus for testing
-			//return new Hit(new Vector(0.0, 0.0, 0.0), new Vector(1.0, 0.0, 0.0), 0, new Vector(0.0, 1.0, 0.0));
 			
 		} else {
 			
