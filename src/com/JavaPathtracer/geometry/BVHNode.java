@@ -2,6 +2,7 @@ package com.JavaPathtracer.geometry;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class BVHNode extends BoundingBox {
 
@@ -14,6 +15,7 @@ public class BVHNode extends BoundingBox {
 	public static final int NUM_BINS = 10;
 	public static final double COST_TRAVERSE = 1; // greater intersect cost = more splits
 	public static final double COST_INTERSECT = 8;
+	public static final int MAX_DEPTH = 3;
 	
 	private static final double minOf3(double a, double b, double c) {
 		return Math.min(a, Math.min(b, c));
@@ -64,7 +66,7 @@ public class BVHNode extends BoundingBox {
 		this.max = totMax;
 		
 		// Ready to build, finally!
-		split();
+		split(0);
 		
 	}
 	
@@ -92,9 +94,22 @@ public class BVHNode extends BoundingBox {
 		
 	}
 	
-	public void split() {
+	public void split(int depth) {
 	
-		if(children.size() == 0) return;
+		if(children.size() == 0 || depth == MAX_DEPTH) {
+			
+			if(depth == MAX_DEPTH) {
+				
+				// Attach children as static array (which is a few nanoseconds faster to access!)
+				// I hate Java
+				primIndexes = children.stream().map(child -> child.faceIndex).collect(Collectors.toList()).stream().mapToInt(Integer::valueOf).toArray();
+				
+			}
+			
+			// NULL children since it's no longer needed, the GC can take it out
+			children = null;
+			
+		}
 		
 		double noSplitCost = children.size() *  COST_INTERSECT;
 		
@@ -142,15 +157,15 @@ public class BVHNode extends BoundingBox {
 				
 			}
 			
-			if(minSplitCost < Double.POSITIVE_INFINITY) {
+			if(minSplitCost < Double.POSITIVE_INFINITY && minSplitCost < noSplitCost) {
 				
 				// Split!
 				this.left = new BVHNode(minSplitLeftBox, minSplitLeftChildren);
 				this.right = new BVHNode(minSplitRightBox, minSplitRightChildren);
 				
 				// Recurse
-				this.left.split();
-				this.right.split();
+				this.left.split(depth + 1);
+				this.right.split(depth + 1);
 				
 			}
 			
