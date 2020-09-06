@@ -1,8 +1,7 @@
 package com.JavaPathtracer.geometry;
 
 // container class for geometry
-// does not implement Shape since its intersect() method doesn't return a full Hit; only the .hit member is set
-public class BoundingBox {
+public class BoundingBox implements Shape {
 
 	public Vector min;
 	public Vector max;
@@ -22,8 +21,7 @@ public class BoundingBox {
 	public double volume() {
 		return (max.x - min.x) * (max.y - min.y) * (max.z - min.z);
 	}
-	
-	// see note at top of class
+
 	public Hit intersect(Ray ray) {
 		
 		// Yet another micro-optimization!
@@ -33,8 +31,10 @@ public class BoundingBox {
 		
 		double t1 = (min.x - ray.origin.x) * invX;
 		double t2 = (max.x - ray.origin.x) * invX;
+		
 		double t3 = (min.y - ray.origin.y) * invY;
 		double t4 = (max.y - ray.origin.y) * invY;
+		
 		double t5 = (min.z - ray.origin.z) * invZ;
 		double t6 = (max.z - ray.origin.z) * invZ;
 		
@@ -52,5 +52,6 @@ public class BoundingBox {
 		return new Hit(true, null, null, 0, null);
 		
 	}
+
 	
 }

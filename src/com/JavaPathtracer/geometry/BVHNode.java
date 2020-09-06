@@ -2,7 +2,6 @@ package com.JavaPathtracer.geometry;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class BVHNode extends BoundingBox implements Shape {
 
@@ -16,7 +15,7 @@ public class BVHNode extends BoundingBox implements Shape {
 	public static final int NUM_BINS = 10;
 	public static final double COST_TRAVERSE = 1; // greater intersect cost = more splits
 	public static final double COST_INTERSECT = 8;
-	public static final int MAX_DEPTH = 3;
+	public static final int MAX_DEPTH = 0;
 	
 	private static final double minOf3(double a, double b, double c) {
 		return Math.min(a, Math.min(b, c));
@@ -38,7 +37,7 @@ public class BVHNode extends BoundingBox implements Shape {
 		Vector totMin = new Vector(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
 		Vector totMax = new Vector(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY);
 		
-		for(int face: mesh.faces) {
+		for(int face = 0; face < mesh.faces.length / 3; face++) {
 			
 			Vector v0 = mesh.vertexes[mesh.faces[face * 3]];
 			Vector v1 = mesh.vertexes[mesh.faces[face * 3 + 1]];
@@ -101,9 +100,9 @@ public class BVHNode extends BoundingBox implements Shape {
 	
 	public void split(int depth) {
 	
-		if(children.size() == 0 || depth == MAX_DEPTH) {
+		if(children.size() == 0 || depth >= MAX_DEPTH) {
 			
-			if(depth == MAX_DEPTH) {
+			if(depth >= MAX_DEPTH) {
 				
 				// Attach children as static array (which is a few nanoseconds faster to access!)
 				// I hate Java
@@ -114,6 +113,9 @@ public class BVHNode extends BoundingBox implements Shape {
 			// NULL children since it's no longer needed, the GC can take it out
 			children = null;
 			
+			// We're done here :sunglasses:
+			return;
+			
 		}
 		
 		double noSplitCost = children.size() *  COST_INTERSECT;
@@ -122,8 +124,8 @@ public class BVHNode extends BoundingBox implements Shape {
 			
 			// Bin primitives along axis
 			List<List<PrimAssociatedBBox>> bins = new ArrayList<List<PrimAssociatedBBox>>(NUM_BINS);
-			
-			for(int i = 0; i < NUM_BINS; i++) bins.set(i, new ArrayList<PrimAssociatedBBox>());
+
+			for(int i = 0; i < NUM_BINS; i++) bins.add(i, new ArrayList<PrimAssociatedBBox>());
 			
 			for(PrimAssociatedBBox box: this.children) {
 				// Place into bin according to centroid
@@ -181,14 +183,19 @@ public class BVHNode extends BoundingBox implements Shape {
 	public Hit intersect(Ray ray) {
 		
 		// intersect self, first
-		Hit self = this.intersect(ray);
+		Hit self = super.intersect(ray);
 		if(!self.hit) return self;
 		
 		if(left == null || right == null) {
 			
 			// Nowhere to go
 			// Loop through prims :(
-			return mesh.intersect(ray, this.primIndexes);
+			
+			//return mesh.intersect(ray, this.primIndexes);
+			
+			// actually...
+			// return some bogus for testing
+			return new Hit(new Vector(0.0, 0.0, 0.0), new Vector(1.0, 0.0, 0.0), 0, new Vector(0.0, 1.0, 0.0));
 			
 		} else {
 			
