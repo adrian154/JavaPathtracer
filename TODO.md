@@ -9,3 +9,4 @@
 * BVH for meshes
 * Texture mapping for meshes
   * Should be easy now that I actually understand barycentric coordinates...
+* Transform system w/ matrices
