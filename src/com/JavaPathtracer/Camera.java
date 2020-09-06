@@ -1,7 +1,6 @@
 package com.JavaPathtracer;
 
 import com.JavaPathtracer.geometry.Ray;
-import com.JavaPathtracer.geometry.Transforms;
 import com.JavaPathtracer.geometry.Vector;
 
 public class Camera {
@@ -32,7 +31,7 @@ public class Camera {
 	public Ray getCameraRay(double imagePlaneX, double imagePlaneY) {
 		Vector direction = new Vector(imagePlaneX, imagePlaneY, 1.0).normalized();
 		Vector basis = up.cross(lookingAt);
-		direction = Transforms.localToWorldCoords(direction, basis, up, lookingAt);
+		direction = Vector.localToWorldCoords(direction, basis, up, lookingAt);
 		Ray result = new Ray(this.position, direction);
 		return result;
 	}

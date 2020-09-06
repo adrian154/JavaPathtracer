@@ -31,7 +31,7 @@ public abstract class Raytracer {
 	
 	// shade a normal for debugging
 	public static Vector shadeNormal(Vector normal) {
-		return new Vector(normal.x / 2 + 0.5, normal.y / 2 + 0.5, normal.z / 2 + 0.5);
+		return normal.times(0.5).plus(new Vector(0.5, 0.5, 0.5));
 	}
 
 	public abstract Vector traceRay(Ray ray);

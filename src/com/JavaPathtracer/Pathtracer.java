@@ -2,10 +2,8 @@ package com.JavaPathtracer;
 
 import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.Ray;
-import com.JavaPathtracer.geometry.Transforms;
 import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.material.Material;
-import com.JavaPathtracer.material.Texture;
 
 public class Pathtracer extends Raytracer {
 
@@ -33,7 +31,7 @@ public class Pathtracer extends Raytracer {
 		Vector bvx = normal.getOrthagonal();
 		Vector bvy = normal;
 		Vector bvz = bvy.cross(bvx);
-		return Transforms.localToWorldCoords(random, bvx, bvy, bvz);
+		return Vector.localToWorldCoords(random, bvx, bvy, bvz);
 	}
 	
 	// trace a ray
