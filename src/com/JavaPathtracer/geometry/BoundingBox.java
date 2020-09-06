@@ -53,5 +53,9 @@ public class BoundingBox implements Shape {
 		
 	}
 
+	// For debugging purposes
+	public String toString() {
+		return "(min=" + this.min + ", max=" + this.max + ")";
+	}
 	
 }

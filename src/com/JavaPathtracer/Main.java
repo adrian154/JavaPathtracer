@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.IOException;
 
 import com.JavaPathtracer.geometry.BVHMesh;
-import com.JavaPathtracer.geometry.BoundingBox;
 import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.material.Material;
 import com.JavaPathtracer.material.Texture;

@@ -15,7 +15,7 @@ public class BVHNode extends BoundingBox implements Shape {
 	public static final int NUM_BINS = 10;
 	public static final double COST_TRAVERSE = 1; // greater intersect cost = more splits
 	public static final double COST_INTERSECT = 8;
-	public static final int MAX_DEPTH = 0;
+	public static final int MAX_DEPTH = 2;
 	
 	private static final double minOf3(double a, double b, double c) {
 		return Math.min(a, Math.min(b, c));
@@ -129,7 +129,7 @@ public class BVHNode extends BoundingBox implements Shape {
 			
 			for(PrimAssociatedBBox box: this.children) {
 				// Place into bin according to centroid
-				bins.get((int)Math.floor(((box.min.get(axis) + box.max.get(axis)) / 2 - this.min.get(axis)) / NUM_BINS)).add(box);
+				bins.get((int)Math.floor(((box.min.get(axis) + box.max.get(axis)) / 2 - this.min.get(axis)) * (this.max.get(axis) - this.min.get(axis)) / NUM_BINS)).add(box);
 			}
 
 			// Evaluate each split
@@ -165,7 +165,7 @@ public class BVHNode extends BoundingBox implements Shape {
 			}
 			
 			if(minSplitCost < Double.POSITIVE_INFINITY && minSplitCost < noSplitCost) {
-				
+
 				// Split!
 				this.left = new BVHNode(this.mesh, minSplitLeftBox, minSplitLeftChildren);
 				this.right = new BVHNode(this.mesh, minSplitRightBox, minSplitRightChildren);
