@@ -99,27 +99,16 @@ public class BVHNode extends BoundingBox implements Shape {
 	}
 	
 	public void split(int depth) {
-	
-		if(children.size() == 0 || depth >= MAX_DEPTH) {
-			
-			if(depth >= MAX_DEPTH) {
-				
-				// Attach children as static array (which is a few nanoseconds faster to access!)
-				// I hate Java
-				primIndexes = children.stream().mapToInt(child -> Integer.valueOf(child.faceIndex)).toArray();
-				
-			}
-			
-			// NULL children since it's no longer needed, the GC can take it out
+
+		if(depth >= MAX_DEPTH) {
+			primIndexes = children.stream().mapToInt(child -> Integer.valueOf(child.faceIndex)).toArray();
 			children = null;
-			
-			// We're done here :sunglasses:
 			return;
-			
 		}
 		
 		double noSplitCost = children.size() *  COST_INTERSECT;
 		
+		// Find optimal split
 		double minSplitCost = Double.POSITIVE_INFINITY;
 		BoundingBox minSplitLeftBox = null;
 		BoundingBox minSplitRightBox = null;
@@ -163,23 +152,27 @@ public class BVHNode extends BoundingBox implements Shape {
 				
 			}
 			
-			// Nullify children
-			// This for some reason doesn't work...
-			//this.children = null;
-			
-			if(minSplitCost < Double.POSITIVE_INFINITY && minSplitCost < noSplitCost) {
+		}
+		
+		if(minSplitCost < Double.POSITIVE_INFINITY && minSplitCost < noSplitCost) {
 
-				// Split!
-				this.left = new BVHNode(this.mesh, minSplitLeftBox, minSplitLeftChildren);
-				this.right = new BVHNode(this.mesh, minSplitRightBox, minSplitRightChildren);
-				
-				// Recurse
-				this.left.split(depth + 1);
-				this.right.split(depth + 1);
-				
-			}
+			// Split!
+			this.left = new BVHNode(this.mesh, minSplitLeftBox, minSplitLeftChildren);
+			this.right = new BVHNode(this.mesh, minSplitRightBox, minSplitRightChildren);
+			
+			// Recurse
+			this.left.split(depth + 1);
+			this.right.split(depth + 1);
+			
+		} else {
+			
+			// Attach children
+			primIndexes = children.stream().mapToInt(child -> Integer.valueOf(child.faceIndex)).toArray();
 			
 		}
+		
+		// Children array is no longer needed
+		children = null;
 		
 	}
 	
