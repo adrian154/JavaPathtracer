@@ -51,22 +51,22 @@ public class Mesh implements Shape {
 				// This could be extended into a loop for arbitrary-length polygons
 				// In practice, few meshes will ever have anything but tris and quads
 				if(parts.length == 4) {
-					faces.add(Integer.parseInt(parts[1]) - 1);
-					faces.add(Integer.parseInt(parts[2]) - 1);
-					faces.add(Integer.parseInt(parts[3]) - 1);
+					faces.add(Integer.parseInt(parts[1].split("/")[0]) - 1);
+					faces.add(Integer.parseInt(parts[2].split("/")[0]) - 1);
+					faces.add(Integer.parseInt(parts[3].split("/")[0]) - 1);
 				} else if(parts.length == 5) {
 					
 					// Useless micro-optimization since I really can't help myself
-					int first = Integer.parseInt(parts[1]) - 1;
-					int third = Integer.parseInt(parts[3]) - 1;
+					int first = Integer.parseInt(parts[1].split("/")[0]) - 1;
+					int third = Integer.parseInt(parts[3].split("/")[0]) - 1;
 					
 					faces.add(first);
-					faces.add(Integer.parseInt(parts[2]) - 1);
+					faces.add(Integer.parseInt(parts[2].split("/")[0]) - 1);
 					faces.add(third);
 					
 					faces.add(first);
 					faces.add(third);
-					faces.add(Integer.parseInt(parts[4]) - 1);
+					faces.add(Integer.parseInt(parts[4].split("/")[0]) - 1);
 				
 				}
 				

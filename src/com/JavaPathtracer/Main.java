@@ -20,7 +20,7 @@ public class Main {
 		BufferedImage outputImage = new BufferedImage(256, 256, BufferedImage.TYPE_INT_RGB);
 		Texture output = new Texture(outputImage);
 		
-		Camera camera = new Camera();
+		Camera camera = new Camera(new Vector(0.0, 0.0, -5.0));
 		Scene scene = new Scene();
 		
 		//scene.setSkyEmission(new HDRMap(new File("assets/sky_cloudy/HDR_029_Sky_Cloudy_Ref.hdr")));
@@ -31,7 +31,7 @@ public class Main {
 		scene.add(new WorldObject(new Sphere(new Vector(-1.5, -1.0, 7.0), 2.0), earthmat));
 		scene.add(new WorldObject(new Sphere(new Vector(1.0, 0.5, 4.0), 0.5), mat));
 		scene.add(new WorldObject(new Plane(new Vector(0.0, -1.0, 0.0), new Vector(0.0, 1.0, 0.0)), mat));
-		scene.add(new WorldObject(new Mesh(new File("assets/UtahTeapot.obj")), mat));
+		scene.add(new WorldObject(new Mesh(new File("assets/Cube.obj")), mat));
 		
 		//Raytracer rt = new Pathtracer(5, 100, camera, scene);
 		Raytracer rt = new DebugTracer(camera, scene);
