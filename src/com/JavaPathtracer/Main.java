@@ -4,7 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-import com.JavaPathtracer.geometry.Mesh;
+import com.JavaPathtracer.geometry.BVHMesh;
 import com.JavaPathtracer.geometry.Plane;
 import com.JavaPathtracer.geometry.Sphere;
 import com.JavaPathtracer.geometry.Vector;
@@ -31,7 +31,7 @@ public class Main {
 		scene.add(new WorldObject(new Sphere(new Vector(-1.5, 1.0, 7.0), 2.0), earthmat));
 		scene.add(new WorldObject(new Sphere(new Vector(1.0, 0.5, 4.0), 0.5), mat));
 		scene.add(new WorldObject(new Plane(new Vector(0.0, 1.0, 0.0), new Vector(0.0, -1.0, 0.0)), mat));
-		scene.add(new WorldObject(new Mesh(new File("assets/UtahTeapot.obj")), mat));
+		scene.add(new WorldObject(new BVHMesh(new File("assets/UtahTeapot.obj")), mat));
 		
 		//Raytracer rt = new Pathtracer(5, 100, camera, scene);
 		Raytracer rt = new DebugTracer(camera, scene);

@@ -124,6 +124,18 @@ public class Mesh {
 		}
 		
 	}
+	
+	public Hit intersect(Ray ray, int[] prims) {
+
+		Hit nearest = Hit.MISS;
+		for(int i: prims) {
+			Hit cur = Mesh.intsersectTri(ray, vertexes[faces[i * 3]], vertexes[faces[i * 3 + 1]], vertexes[faces[i * 3 + 2]]);
+			if(cur.distance < nearest.distance) nearest = cur;
+		}
+		
+		return nearest;
+	
+	}
 
 	/*
 	public Hit intersect(Ray ray) {

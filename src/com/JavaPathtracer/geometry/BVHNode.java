@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class BVHNode extends BoundingBox {
+public class BVHNode extends BoundingBox implements Shape {
 
+	public Mesh mesh;
 	public BVHNode left;
 	public BVHNode right;
 	public int[] primIndexes;
@@ -29,6 +30,9 @@ public class BVHNode extends BoundingBox {
 		
 		// Appease the compiler...
 		super(null, null);
+		
+		this.mesh = mesh;
+		this.children = new ArrayList<PrimAssociatedBBox>();
 		
 		// Find total bounding box as well as triangle bounding boxes in one pass
 		Vector totMin = new Vector(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
@@ -70,8 +74,9 @@ public class BVHNode extends BoundingBox {
 		
 	}
 	
-	public BVHNode(BoundingBox box, List<PrimAssociatedBBox> boxes) {
+	public BVHNode(Mesh mesh, BoundingBox box, List<PrimAssociatedBBox> boxes) {
 		super(box.min, box.max);
+		this.mesh = mesh;
 		this.children = boxes;
 	}
 	
@@ -102,7 +107,7 @@ public class BVHNode extends BoundingBox {
 				
 				// Attach children as static array (which is a few nanoseconds faster to access!)
 				// I hate Java
-				primIndexes = children.stream().map(child -> child.faceIndex).collect(Collectors.toList()).stream().mapToInt(Integer::valueOf).toArray();
+				primIndexes = children.stream().mapToInt(child -> Integer.valueOf(child.faceIndex)).toArray();
 				
 			}
 			
@@ -160,14 +165,38 @@ public class BVHNode extends BoundingBox {
 			if(minSplitCost < Double.POSITIVE_INFINITY && minSplitCost < noSplitCost) {
 				
 				// Split!
-				this.left = new BVHNode(minSplitLeftBox, minSplitLeftChildren);
-				this.right = new BVHNode(minSplitRightBox, minSplitRightChildren);
+				this.left = new BVHNode(this.mesh, minSplitLeftBox, minSplitLeftChildren);
+				this.right = new BVHNode(this.mesh, minSplitRightBox, minSplitRightChildren);
 				
 				// Recurse
 				this.left.split(depth + 1);
 				this.right.split(depth + 1);
 				
 			}
+			
+		}
+		
+	}
+	
+	public Hit intersect(Ray ray) {
+		
+		// intersect self, first
+		Hit self = this.intersect(ray);
+		if(!self.hit) return self;
+		
+		if(left == null || right == null) {
+			
+			// Nowhere to go
+			// Loop through prims :(
+			return mesh.intersect(ray, this.primIndexes);
+			
+		} else {
+			
+			// these variable names are awful, and it'd take me less time to fix them than to write this comment except i'm stupid
+			Hit hl, hr;
+			hl = this.left.intersect(ray);
+			hr = this.right.intersect(ray);
+			return hl.distance < hr.distance ? hl : hr;
 			
 		}
 		

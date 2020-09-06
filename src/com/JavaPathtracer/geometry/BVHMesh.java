@@ -14,7 +14,8 @@ public class BVHMesh extends Mesh implements Shape {
 	
 	public Hit intersect(Ray ray) {
 		
-		// Traverse BVH
+		// Delicious recursion!
+		return BVHRoot.intersect(ray);
 		
 	}
 	
