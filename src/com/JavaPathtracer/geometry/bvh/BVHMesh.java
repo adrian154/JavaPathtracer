@@ -1,9 +1,13 @@
-package com.JavaPathtracer.geometry;
+package com.JavaPathtracer.geometry.bvh;
 
 import java.io.File;
 import java.io.IOException;
 
-public class BVHMesh extends Mesh implements Shape {
+import com.JavaPathtracer.geometry.Hit;
+import com.JavaPathtracer.geometry.Mesh;
+import com.JavaPathtracer.geometry.Ray;
+
+public class BVHMesh extends Mesh {
 
 	private BVHNode BVHRoot;
 	

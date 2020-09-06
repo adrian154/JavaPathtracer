@@ -10,7 +10,7 @@ import java.util.List;
 import com.JavaPathtracer.Raytracer;
 
 // Don't use naked meshes, use BVHMesh!
-public class Mesh {
+public class Mesh implements Shape {
 
 	public int[] faces;
 	public Vector[] vertexes;
@@ -114,7 +114,7 @@ public class Mesh {
 			
 			// Make sure normal faces ray direction
 			Vector normal = edge1.cross(edge2).normalized();
-			if(normal.dot(ray.direction) < 0) {
+			if(normal.dot(ray.direction) > 0) {
 				normal.invert();
 			}
 			
@@ -137,6 +137,7 @@ public class Mesh {
 	
 	}
 
+	// For debugging uses
 	public Hit intersect(Ray ray) {
 		
 		Hit nearest = Hit.MISS;
@@ -148,20 +149,5 @@ public class Mesh {
 		return nearest;
 		
 	}
-	
-	/*
-	public Hit intersect(Ray ray) {
-		
-		// Loop through all tris (INCREDIBLY SLOW)
-		Hit nearest = Hit.MISS;
-		for(int i = 0; i < faces.length / 3; i++) {
-			Hit cur = Mesh.intsersectTri(ray, vertexes[faces[i * 3]], vertexes[faces[i * 3 + 1]], vertexes[faces[i * 3 + 2]]);
-			if(cur.distance < nearest.distance) nearest = cur;
-		}
-		
-		return nearest;
-	
-	}
-	*/
 	
 }

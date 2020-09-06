@@ -117,6 +117,18 @@ public class Vector implements Sampleable {
 		);
 	}
 	
+	public static Vector fromSpherical(Vector in) {
+		return Vector.fromSpherical(in.x, in.y);
+	}
+	
+	public Vector toSpherical() {
+		return new Vector(
+			Math.atan2(this.z, this.x),
+			Math.acos(this.y / Math.sqrt(this.x * this.x + this.z * this.z)),
+			0.0
+		);
+	}
+	
 	// Generate uniformly distributed vector in unit sphere
 	public static Vector uniformInSphere() {
 		double azimuth = 2 * Math.PI * Math.random();

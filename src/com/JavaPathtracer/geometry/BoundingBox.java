@@ -1,5 +1,7 @@
 package com.JavaPathtracer.geometry;
 
+import com.JavaPathtracer.Raytracer;
+
 // container class for geometry
 public class BoundingBox implements Shape {
 
@@ -18,8 +20,24 @@ public class BoundingBox implements Shape {
 		return 2 * (width * height + width * depth + height * depth);
 	}
 	
+	public double width() {
+		return max.x - min.x;
+	}
+	
+	public double height() {
+		return max.y - min.y;
+	}
+	
+	public double depth() {
+		return max.z - min.z;
+	}
+	
 	public double volume() {
 		return (max.x - min.x) * (max.y - min.y) * (max.z - min.z);
+	}
+	
+	public Vector centroid() {
+		return min.plus(max).divBy(2);
 	}
 
 	public Hit intersect(Ray ray) {
@@ -53,6 +71,69 @@ public class BoundingBox implements Shape {
 		
 	}
 
+	public Hit intersectSlow(Ray ray) {
+		
+		/* Intersections with all 6 AABB planes */
+		double xmin = (min.x - ray.origin.x) / ray.direction.x;
+		double xmax = (max.x - ray.origin.x) / ray.direction.x;
+		
+		double ymin = (min.y - ray.origin.y) / ray.direction.y;
+		double ymax = (max.y - ray.origin.y) / ray.direction.y;
+		
+		double zmin = (min.z - ray.origin.z) / ray.direction.z;
+		double zmax = (max.z - ray.origin.z) / ray.direction.z;
+
+		/* Minimum and maximum intersection distances. */
+		double tmin = Math.max(Math.max(Math.min(xmin, xmax), Math.min(ymin, ymax)), Math.min(zmin, zmax));
+		double tmax = Math.min(Math.min(Math.max(xmin, xmax), Math.max(ymin, ymax)), Math.max(zmin, zmax));
+	
+		/* Negative: AABB is behind the ray. */
+		if(tmax < 0) {
+			return Hit.MISS;
+		}
+		
+		/* Minimum distance greater than maximum: No intersection. */
+		if(tmin > tmax) {
+			return Hit.MISS;
+		}
+		
+		/* Ray intersects with the box. */
+		double t = tmin;
+		Vector point = ray.getPoint(t);
+		
+		Vector middle = min.plus(max.minus(min).divBy(2.0));
+		double deltaX = point.x - middle.x;
+		double deltaY = point.y - middle.y;
+		double deltaZ = point.z - middle.z;
+		
+		Vector normal;
+		if(Math.abs(Math.abs(deltaX) - this.width() / 2) < Raytracer.EPSILON) {
+			normal = new Vector(Math.signum(deltaX), 0.0, 0.0);
+		} else if(Math.abs(Math.abs(deltaY) - this.height() / 2) < Raytracer.EPSILON) {
+			normal = new Vector(0.0, Math.signum(deltaY), 0.0);
+		} else {
+			normal = new Vector(0.0, 0.0, Math.signum(deltaZ));
+		}
+		
+		return new Hit(point, normal, 0, new Vector(0.0, 0.0, 0.0));
+		
+	}
+	
+	public boolean containsBox(BoundingBox other) {
+		return other.min.x > this.min.x && other.min.y > this.min.y && other.min.z > this.min.z && other.max.x < this.max.x && other.max.y < this.max.y && other.max.z < this.max.z;
+	}
+	
+	public boolean containsPoint(Vector point) {
+		return point.x > this.min.x && point.y > this.min.y && point.z > this.min.z && point.x < this.max.x && point.y < this.max.y && point.z < this.max.z;
+	}
+	
+	public boolean overlapsWith(BoundingBox other) {
+		return (this.min.x <= other.min.x && other.min.x <= this.max.x) ||
+			   (this.min.x <= other.max.x && other.max.x <= this.max.x) ||
+			   (other.min.x <= this.min.x && this.min.x <= other.max.x) ||
+			   (other.min.x <= this.max.x && this.max.x <= other.max.x);
+	}
+	
 	// For debugging purposes
 	public String toString() {
 		return "(min=" + this.min + ", max=" + this.max + ")";

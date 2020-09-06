@@ -12,6 +12,7 @@ public class Hit {
 	public WorldObject hitObject;				// Hit object (used in tragically un-OOP ways!!)
 	
 	public static final Hit MISS = new Hit(false, null, null, Double.POSITIVE_INFINITY, null);
+	public static final Hit BOGUS = new Hit(true, new Vector(1.0, 0.0, 0.0), new Vector(1.0, 0.0, 0.0), 0.0, new Vector(1.0, 0.0, 0.0));
 	
 	// If you supply arguments it is assumed that there was an intersection
 	public Hit(boolean hit, Vector point, Vector normal, double distance, Vector textureCoordinates) {
