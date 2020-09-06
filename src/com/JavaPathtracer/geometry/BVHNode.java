@@ -12,10 +12,10 @@ public class BVHNode extends BoundingBox implements Shape {
 	public List<PrimAssociatedBBox> children; // USED DURING CONSTRUCTION. NULL AFTER BVH DONE BUILDING SO IT CAN BE GC'D!
 
 	// More bins = higher quality BVH at the cost of slower construction (O(N))
-	public static final int NUM_BINS = 10;
+	public static final int NUM_BINS = 32;
 	public static final double COST_TRAVERSE = 1; // greater intersect cost = more splits
 	public static final double COST_INTERSECT = 8;
-	public static final int MAX_DEPTH = 2;
+	public static final int MAX_DEPTH = 5;
 	
 	private static final double minOf3(double a, double b, double c) {
 		return Math.min(a, Math.min(b, c));
@@ -120,6 +120,12 @@ public class BVHNode extends BoundingBox implements Shape {
 		
 		double noSplitCost = children.size() *  COST_INTERSECT;
 		
+		double minSplitCost = Double.POSITIVE_INFINITY;
+		BoundingBox minSplitLeftBox = null;
+		BoundingBox minSplitRightBox = null;
+		List<PrimAssociatedBBox> minSplitLeftChildren = null;
+		List<PrimAssociatedBBox> minSplitRightChildren = null;
+		
 		for(int axis = 0; axis < 3; axis++) {
 			
 			// Bin primitives along axis
@@ -131,13 +137,6 @@ public class BVHNode extends BoundingBox implements Shape {
 				// Place into bin according to centroid
 				bins.get((int)Math.floor(((box.min.get(axis) + box.max.get(axis)) / 2 - this.min.get(axis)) * (this.max.get(axis) - this.min.get(axis)) / NUM_BINS)).add(box);
 			}
-
-			// Evaluate each split
-			double minSplitCost = Double.POSITIVE_INFINITY;
-			BoundingBox minSplitLeftBox = null;
-			BoundingBox minSplitRightBox = null;
-			List<PrimAssociatedBBox> minSplitLeftChildren = null;
-			List<PrimAssociatedBBox> minSplitRightChildren = null;
 			
 			for(int split = 0; split < NUM_BINS - 1; split++) {
 				
@@ -186,7 +185,7 @@ public class BVHNode extends BoundingBox implements Shape {
 		Hit self = super.intersect(ray);
 		if(!self.hit) return self;
 		
-		if(left == null || right == null) {
+		if(left == null && right == null) {
 			
 			// Nowhere to go
 			// Loop through prims :(
