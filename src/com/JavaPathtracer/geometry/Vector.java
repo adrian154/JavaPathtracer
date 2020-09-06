@@ -19,6 +19,11 @@ public class Vector implements Sampleable {
 		this.z = z;
 	}
 	
+	// This could be useful, I guess
+	public double get(int component) {
+		return component == 0 ? x : (component == 1 ? y : z);
+	}
+	
 	// MUTABLE ADD
 	// Use for accumulating color only
 	public void add(Vector other) {

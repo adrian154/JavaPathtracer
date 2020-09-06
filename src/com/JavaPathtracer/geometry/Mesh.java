@@ -9,6 +9,7 @@ import java.util.List;
 
 import com.JavaPathtracer.Raytracer;
 
+// Don't use naked meshes, use BVHMesh!
 public class Mesh implements Shape {
 
 	public int[] faces;
