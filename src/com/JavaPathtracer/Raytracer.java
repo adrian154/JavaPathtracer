@@ -42,7 +42,7 @@ public abstract class Raytracer {
 			for(int y = startY; y < endY; y++) {
 				
 				// set pixel to green while working on it
-				output.set(x, y, new Vector(0, 1, 0));
+				output.set(x, output.getHeight() - y - 1, new Vector(0, 1, 0));
 				
 				// convert to image plane coordinates
 				double imageX = ((double)x / output.getWidth()) * 2 - 1;
@@ -51,7 +51,8 @@ public abstract class Raytracer {
 				Ray ray = camera.getCameraRay(imageX, imageY);
 
 				Vector color = toneMapper.map(traceRay(ray));
-				output.set(x, y, color);
+				output.set(x, output.getHeight() - y - 1, color);
+
 				
 			}
 		}
