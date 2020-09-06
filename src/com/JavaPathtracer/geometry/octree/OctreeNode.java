@@ -69,7 +69,7 @@ public class OctreeNode extends BoundingBox implements Shape {
 			
 			node.prims = new ArrayList<PrimAssociatedBBox>();
 			for(PrimAssociatedBBox box: this.prims) {
-				if(node.overlapsWith(box)) node.prims.add(box);
+				if(BoundingBox.overlap(node, box)) node.prims.add(box);
 			}
 			
 			// Recurse

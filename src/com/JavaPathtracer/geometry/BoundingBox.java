@@ -127,11 +127,11 @@ public class BoundingBox implements Shape {
 		return point.x > this.min.x && point.y > this.min.y && point.z > this.min.z && point.x < this.max.x && point.y < this.max.y && point.z < this.max.z;
 	}
 	
-	public boolean overlapsWith(BoundingBox other) {
-		return (this.min.x <= other.min.x && other.min.x <= this.max.x) ||
-			   (this.min.x <= other.max.x && other.max.x <= this.max.x) ||
-			   (other.min.x <= this.min.x && this.min.x <= other.max.x) ||
-			   (other.min.x <= this.max.x && this.max.x <= other.max.x);
+	public static final boolean overlap(BoundingBox a, BoundingBox b) {
+		return (a.min.x <= b.min.x && b.min.x <= a.max.x) ||
+				   (a.min.x <= b.max.x && b.max.x <= a.max.x) ||
+				   (b.min.x <= a.min.x && a.min.x <= b.max.x) ||
+				   (b.min.x <= a.max.x && a.max.x <= b.max.x);
 	}
 	
 	// For debugging purposes

@@ -3,6 +3,7 @@ package com.JavaPathtracer.geometry.bvh;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.JavaPathtracer.Main;
 import com.JavaPathtracer.geometry.BoundingBox;
 import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.Mesh;
@@ -22,7 +23,7 @@ public class BVHNode extends BoundingBox implements Shape {
 	public static final int NUM_BINS = 32;
 	public static final double COST_TRAVERSE = 1; // greater intersect cost = more splits
 	public static final double COST_INTERSECT = 8;
-	public static final int MAX_DEPTH = 3;
+	public static final int MAX_DEPTH = 5;
 	
 	private static final double minOf3(double a, double b, double c) {
 		return Math.min(a, Math.min(b, c));
@@ -125,7 +126,7 @@ public class BVHNode extends BoundingBox implements Shape {
 			
 			for(int split = 1; split < NUM_BINS; split++) {
 				
-				double splitPos = this.min.get(axis) + (split / NUM_BINS) * this.max.get(axis) - this.min.get(axis);
+				double splitPos = this.min.get(axis) + ((double)split / NUM_BINS) * this.max.get(axis) - this.min.get(axis);
 				
 				List<PrimAssociatedBBox> left = new ArrayList<PrimAssociatedBBox>();
 				List<PrimAssociatedBBox> right = new ArrayList<PrimAssociatedBBox>();
@@ -148,6 +149,9 @@ public class BVHNode extends BoundingBox implements Shape {
 					leftBox.area() / this.area() * left.size() * COST_INTERSECT +
 					rightBox.area() / this.area() * right.size() * COST_INTERSECT;
 				
+				System.out.println(left.size() + ", " + right.size());
+				System.out.println("Split cost = " + splitCost + ", alternative = " + noSplitCost);
+				
 				if(splitCost < minSplitCost) {
 					minSplitCost = splitCost;
 					minSplitLeftBox = leftBox;
@@ -165,6 +169,9 @@ public class BVHNode extends BoundingBox implements Shape {
 			// Split!
 			this.left = new BVHNode(this.mesh, minSplitLeftBox, minSplitLeftChildren);
 			this.right = new BVHNode(this.mesh, minSplitRightBox, minSplitRightChildren);
+			
+			System.out.println(Main.repeat("\t", depth) + "LEFT: " + left + ", " + left.children.size());
+			System.out.println(Main.repeat("\t", depth) + "RIGHT: " + right + ", " + right.children.size());
 			
 			// Recurse
 			this.left.split(depth + 1);
@@ -194,7 +201,8 @@ public class BVHNode extends BoundingBox implements Shape {
 			// Loop through prims :(
 			
 			if(this.primIndexes != null) {
-				return mesh.intersect(ray, this.primIndexes);
+				//return mesh.intersect(ray, this.primIndexes);
+				return super.intersectSlow(ray);
 			} else {
 				return Hit.MISS;
 			}
