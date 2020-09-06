@@ -1,7 +1,0 @@
-BUG: Sphere normals will be wrong if you are inside the sphere since they are not corrected based on camera position, unlike planes.
-
-GENIMP: More configurable texture mapping, such as:
-	- azimuth/inclination offset for spheres
-	- texture rotation for planes (currently uses getOrthagonal)
-	
-FEATURE: HDR lightmap
