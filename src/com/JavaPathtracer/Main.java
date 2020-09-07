@@ -8,6 +8,7 @@ import com.JavaPathtracer.geometry.Plane;
 import com.JavaPathtracer.geometry.Sphere;
 import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.geometry.bvh.BVHMesh;
+import com.JavaPathtracer.material.Checkerboard;
 import com.JavaPathtracer.material.Material;
 import com.JavaPathtracer.material.Texture;
 import com.JavaPathtracer.renderers.LivePreviewRenderer;
@@ -28,18 +29,19 @@ public class Main {
 		scene.setSkyEmission(new Vector(1.0, 0.0, 0.0));
 		
 		Material mat = new Material(new Vector(1.0, 1.0, 1.0), new Vector(1.0, 1.0, 1.0).times(0.0));
+		Material floor = new Material(new Checkerboard(), new Vector(0.0, 0.0, 0.0));
 		Material light = new Material(new Vector(1.0, 1.0, 1.0), new Vector(1.0, 0.0, 0.0).times(3.0));
 		scene.add(new BVHMesh(new File("assets/UtahTeapot.obj")), mat);
 		scene.add(new Sphere(new Vector(0.0, 7.0, 0.0), 1.0), light);
-		scene.add(new Plane(new Vector(0.0, 1.0, 0.0), new Vector(0.0, 0.0, 0.0)), mat);
+		scene.add(new Plane(new Vector(0.0, 1.0, 0.0), new Vector(0.0, 0.0, 0.0)), floor);
 		scene.add(new Plane(new Vector(0.0, 0.0, -1.0), new Vector(0.0, 0.0, 7.0)), mat);
 		scene.add(new Plane(new Vector(1.0, 0.0, 0.0), new Vector(-3.0, 0.0, 0.0)), mat);
 		scene.add(new Plane(new Vector(-1.0, 0.0, 0.0), new Vector(3.0, 0.0, 0.0)), mat);
 		
 		long start = System.currentTimeMillis();
 		
-		//Raytracer rt = new DebugTracer(camera, scene);
-		Raytracer rt = new Pathtracer(5, 100, camera, scene);
+		Raytracer rt = new DebugTracer(camera, scene);
+		//Raytracer rt = new Pathtracer(5, 100, camera, scene);
 		
 		Renderer renderer = new LivePreviewRenderer(rt, 4, 2);
 		renderer.render(output);
