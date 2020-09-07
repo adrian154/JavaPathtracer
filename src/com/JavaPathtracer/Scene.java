@@ -4,7 +4,9 @@ import java.util.ArrayList;
 
 import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.Ray;
+import com.JavaPathtracer.geometry.Shape;
 import com.JavaPathtracer.geometry.Vector;
+import com.JavaPathtracer.material.Material;
 import com.JavaPathtracer.material.Sampleable;
 
 public class Scene {
@@ -35,6 +37,10 @@ public class Scene {
 	
 	public void add(WorldObject object) {
 		objects.add(object);
+	}
+	
+	public void add(Shape shape, Material material) {
+		objects.add(new WorldObject(shape, material));
 	}
 	
 	// do geometry + material trace into scene

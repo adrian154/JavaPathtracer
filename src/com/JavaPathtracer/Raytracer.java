@@ -48,6 +48,7 @@ public abstract class Raytracer {
 				double imageX = ((double)x / output.getWidth()) * 2 - 1;
 				double imageY = ((double)y / output.getHeight()) * 2 - 1;
 				
+				// apply jitter
 				Ray ray = camera.getCameraRay(imageX, imageY);
 
 				Vector color = toneMapper.map(traceRay(ray));

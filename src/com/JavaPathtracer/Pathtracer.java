@@ -4,6 +4,7 @@ import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.material.Material;
+import com.JavaPathtracer.material.Texture;
 
 public class Pathtracer extends Raytracer {
 
@@ -69,6 +70,40 @@ public class Pathtracer extends Raytracer {
 			result.add(this.pathtraceRay(ray, 0));
 		
 		return result.divBy(samplesPerPixel);
+		
+	}
+	
+	@Override
+	public void pathtraceTile(Texture output, int startX, int startY, int endX, int endY) {
+		
+		double pixelWidth = 2 / output.getWidth();
+		double pixelHeight = 2 / output.getHeight();
+		
+		for(int x = startX; x < endX; x++) {
+			for(int y = startY; y < endY; y++) {
+				
+				// set pixel to green while working on it
+				output.set(x, output.getHeight() - y - 1, new Vector(0, 1, 0));
+				
+				// convert to image plane coordinates
+				double imageX = ((double)x / output.getWidth()) * 2 - 1;
+				double imageY = ((double)y / output.getHeight()) * 2 - 1;
+				
+				// apply jitter
+				Vector result = new Vector();
+				for(int i = 0; i < samplesPerPixel; i++) {
+					Ray ray = camera.getCameraRay(imageX + pixelWidth * Math.random(), imageY + pixelHeight * Math.random());
+					result.add(this.pathtraceRay(ray, 0));
+				}
+				
+				result = result.divBy(samplesPerPixel);
+
+				Vector color = toneMapper.map(result);
+				output.set(x, output.getHeight() - y - 1, color);
+
+				
+			}
+		}
 		
 	}
 	
