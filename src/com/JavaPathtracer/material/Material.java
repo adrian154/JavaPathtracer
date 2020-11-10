@@ -4,10 +4,10 @@ import com.JavaPathtracer.geometry.Vector;
 
 public abstract class Material implements IMaterial {
 
-	private Sampleable color;
-	private Sampleable emission;
+	private ISampleable color;
+	private ISampleable emission;
 	
-	public Material(Sampleable color, Sampleable emission) {
+	public Material(ISampleable color, ISampleable emission) {
 		this.color = color;
 		this.emission = emission;
 	}

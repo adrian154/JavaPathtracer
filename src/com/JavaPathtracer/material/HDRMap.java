@@ -7,7 +7,7 @@ import com.JavaHDR.HDREncoder;
 import com.JavaHDR.HDRImageRGB;
 import com.JavaPathtracer.geometry.Vector;
 
-public class HDRMap implements Sampleable {
+public class HDRMap implements ISampleable {
 
 	private HDRImageRGB image;
 

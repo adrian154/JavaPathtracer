@@ -1,16 +1,22 @@
 package com.JavaPathtracer.geometry;
 
-import com.JavaPathtracer.material.Sampleable;
+import com.JavaPathtracer.material.ISampleable;
 
 // 3D vector class
 // Implements Sampleable so you can use Vectors as colors, kind of janky but oh well
-public class Vector implements Sampleable {
+public class Vector implements ISampleable {
 	
 	// Components
 	public double x, y, z;
 	
 	public Vector() {
 		
+	}
+	
+	public Vector(double x) {
+		this.x = x;
+		this.y = x;
+		this.z = x;
 	}
 	
 	public Vector(double x, double y, double z) {

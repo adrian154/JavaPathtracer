@@ -8,12 +8,12 @@ import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Shape;
 import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.material.Material;
-import com.JavaPathtracer.material.Sampleable;
+import com.JavaPathtracer.material.ISampleable;
 
 public class Scene {
 
 	private List<WorldObject> objects;
-	private Sampleable skyEmission;
+	private ISampleable skyEmission;
 	
 	public Scene() {
 		objects = new ArrayList<WorldObject>();
@@ -22,7 +22,7 @@ public class Scene {
 		skyEmission = new Vector(0.0, 0.0, 0.0);
 	}
 	
-	public void setSkyEmission(Sampleable newSky) {
+	public void setSkyEmission(ISampleable newSky) {
 		this.skyEmission = newSky;
 	}
 	

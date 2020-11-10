@@ -10,6 +10,7 @@ import com.JavaPathtracer.geometry.Sphere;
 import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.material.DiffuseMaterial;
 import com.JavaPathtracer.material.Material;
+import com.JavaPathtracer.material.MirrorMaterial;
 import com.JavaPathtracer.material.Texture;
 import com.JavaPathtracer.renderers.LivePreviewRenderer;
 import com.JavaPathtracer.renderers.Renderer;
@@ -30,11 +31,11 @@ public class Main {
 		Scene scene = new Scene();
 		
 		// set up sky
-		scene.setSkyEmission(new Vector(1.0, 1.0, 1.0).times(0.2));
+		scene.setSkyEmission(new Vector(1.0, 1.0, 1.0).times(0.8));
 		
 		// materials
 		Material orange = new DiffuseMaterial(new Vector(1.0, (double)0x73/0xff, 0.0), new Vector(0.0, 0.0, 0.0));	
-		Material akarsh = new DiffuseMaterial(new Texture(new File("assets/AkarshSleeping.png")), new Vector(0.0, 0.0, 0.0));
+		Material akarsh = new MirrorMaterial(new Vector(1.0), new Vector(0.0, 0.0, 0.0));
 		Material light = new DiffuseMaterial(new Vector(0.0, 0.0, 0.0), new Vector(1.0, 0.95, 0.9).times(30));
 		
 		// objects
@@ -48,7 +49,7 @@ public class Main {
 	
 	public static void main(String[] args) throws IOException {
 		
-		BufferedImage outputImage = new BufferedImage(512, 512, BufferedImage.TYPE_INT_RGB);
+		BufferedImage outputImage = new BufferedImage(256, 256, BufferedImage.TYPE_INT_RGB);
 		Texture output = new Texture(outputImage);
 		
 		Camera camera = createCamera();
@@ -59,7 +60,7 @@ public class Main {
 		//Raytracer rt = new DebugTracer(camera, scene);
 		Raytracer rt = new Pathtracer(5, 100, camera, scene);
 		
-		Renderer renderer = new LivePreviewRenderer(rt, 4, 1);
+		Renderer renderer = new LivePreviewRenderer(rt, 4, 22);
 		renderer.render(output);
 		
 		long end = System.currentTimeMillis();

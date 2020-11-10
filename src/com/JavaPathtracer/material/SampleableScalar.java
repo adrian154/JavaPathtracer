@@ -8,7 +8,7 @@ public class SampleableScalar implements ISampleableScalar {
 		this.value = value;
 	}
 	
-	public double sample(double u, double v) {
+	public double sampleScalar(double u, double v) {
 		return value;
 	}
 	

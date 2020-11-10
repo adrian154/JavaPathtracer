@@ -2,10 +2,13 @@ package com.JavaPathtracer.material;
 
 import com.JavaPathtracer.geometry.Vector;
 
-public class MirrorMaterial extends Material {
+public class RoughMaterial extends Material {
 
-	public MirrorMaterial(ISampleable color, ISampleable emission) {
+	private SampleableScalar roughness;
+	
+	public RoughMaterial(ISampleable color, ISampleable emission, SampleableScalar roughness) {
 		super(color, emission);
+		this.roughness = roughness;
 	}
 	
 	public Vector scatter(double u, double v, Vector incident, Vector normal) {

@@ -8,7 +8,7 @@ import javax.imageio.ImageIO;
 
 import com.JavaPathtracer.geometry.Vector;
 
-public class Texture implements Sampleable {
+public class Texture implements ISampleable, ISampleableScalar {
 
 	private BufferedImage texture;
 	
@@ -51,6 +51,26 @@ public class Texture implements Sampleable {
 		int b = rgb & 0xFF;
 		
 		return new Vector(r / 255.0, g / 255.0, b / 255.0);
+		
+	}
+	
+	// When sampled as a scalar texture, only an arbitrary channel is sampled.
+	// In an actual grayscale texture, it doesn't matter which channel
+	// However, if you try to sample a colored texture as grayscale, weird behavior results! 
+	public double sampleScalar(double u, double v) {
+		
+		// TODO: Configurable interpolation
+		int x = (int)Math.round(u * texture.getWidth());
+		int y = (int)Math.round(v * texture.getHeight());
+				
+		// Clamp
+		x = Math.max(Math.min(x, texture.getWidth() - 1), 0);
+		y = Math.max(Math.min(y, texture.getHeight() - 1), 0);
+				
+		int rgb = texture.getRGB(x, y);
+		int r = (rgb >> 16) & 0xFF;
+		
+		return r / 255.0;
 		
 	}
 	

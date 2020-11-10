@@ -1,5 +1,5 @@
 package com.JavaPathtracer.material;
 
 public interface ISampleableScalar {
-	public double sample(double u, double v);
+	public double sampleScalar(double u, double v);
 }

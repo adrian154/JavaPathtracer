@@ -4,7 +4,7 @@ import com.JavaPathtracer.geometry.Vector;
 
 public class DiffuseMaterial extends Material {
 	
-	public DiffuseMaterial(Sampleable color, Sampleable material) {
+	public DiffuseMaterial(ISampleable color, ISampleable material) {
 		super(color, material);
 	}
 	
