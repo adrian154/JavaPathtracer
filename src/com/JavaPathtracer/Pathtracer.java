@@ -3,7 +3,7 @@ package com.JavaPathtracer;
 import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Vector;
-import com.JavaPathtracer.material.Material;
+import com.JavaPathtracer.material.IMaterial;
 import com.JavaPathtracer.material.Texture;
 
 public class Pathtracer extends Raytracer {
@@ -36,18 +36,20 @@ public class Pathtracer extends Raytracer {
 		Hit hit = scene.traceRay(ray);
 		if(hit.hit) {
 			
-			Material mat = hit.hitObject.getMaterial();
+			IMaterial mat = hit.hitObject.getMaterial();
 			Vector texCoords = hit.textureCoordinates;
 			
 			// Recursively trace
 			//Vector nextDir = scatterDiffuse(hit.normal);
-			Vector nextDir = mat.scatter(ray.direction, hit.normal);
+			Vector nextDir = mat.scatter(texCoords.x, texCoords.y, ray.direction, hit.normal);
 			Ray nextRay = new Ray(hit.point, nextDir);
 			
-			double factor = hit.normal.dot(nextDir);
-			Vector recursive = pathtraceRay(nextRay, bounces + 1).times(factor).times(mat.getColor(texCoords.x, texCoords.y));
+			Vector recursive = pathtraceRay(nextRay, bounces + 1).times(mat.getColor(texCoords.x, texCoords.y));
+			if(mat.doDotProduct(texCoords.x, texCoords.y)) {
+				recursive.imul(hit.normal.dot(nextDir));
+			}
 			
-			return mat.getEmission(texCoords.x, texCoords.y).plus(recursive.times(factor));
+			return mat.getEmission(texCoords.x, texCoords.y).plus(recursive);
 			
 		} else {
 			return scene.getSkyEmission(ray.direction);
@@ -92,16 +94,10 @@ public class Pathtracer extends Raytracer {
 
 				Vector color = toneMapper.map(result);
 				output.set(x, output.getHeight() - y - 1, color);
-
 				
 			}
 		}
 		
 	}
-	
-	// tonemapping
-	public double map(double val) {
-		return val;
-	}
-	
+
 }

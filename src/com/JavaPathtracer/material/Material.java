@@ -2,7 +2,7 @@ package com.JavaPathtracer.material;
 
 import com.JavaPathtracer.geometry.Vector;
 
-public abstract class Material {
+public abstract class Material implements IMaterial {
 
 	private Sampleable color;
 	private Sampleable emission;
@@ -20,7 +20,4 @@ public abstract class Material {
 		return emission.sample(u, v);
 	}
 	
-	public abstract Vector scatter(Vector incident, Vector normal);
-	public abstract boolean doDotProduct();
-
 }
