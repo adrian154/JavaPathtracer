@@ -39,7 +39,7 @@ public class Main {
 		IMaterial mat = new CombineMaterial(
 			new DiffuseMaterial(new Vector(0x72/255.0), new Vector(0.0)),
 			new RoughMaterial(new Vector(0x92/255.0, 0xf5/255.0, 0xf4/255.0), new Vector(0.0), new SampleableScalar(0.2)),
-			new Texture(new File("assets/map3.png"))
+			new Texture(new File("assets/map4.png"))
 		);
 		
 		scene.add(new Plane(new Vector(0.0, 1.0, 0.0), new Vector(0.0, -1.0, 0.0)), mat);
@@ -51,7 +51,7 @@ public class Main {
 	
 	public static void main(String[] args) throws IOException {
 		
-		BufferedImage outputImage = new BufferedImage(256, 256, BufferedImage.TYPE_INT_RGB);
+		BufferedImage outputImage = new BufferedImage(512, 512, BufferedImage.TYPE_INT_RGB);
 		Texture output = new Texture(outputImage);
 		
 		Camera camera = createCamera();
@@ -62,7 +62,7 @@ public class Main {
 		//Raytracer rt = new DebugTracer(camera, scene);
 		Raytracer rt = new Pathtracer(5, 500, camera, scene, new InverseTonemapper());
 		
-		Renderer renderer = new LivePreviewRenderer(rt, 4, 2);
+		Renderer renderer = new LivePreviewRenderer(rt, 4, 1);
 		renderer.render(output);
 		
 		long end = System.currentTimeMillis();
