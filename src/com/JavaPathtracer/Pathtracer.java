@@ -5,6 +5,7 @@ import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.material.IMaterial;
 import com.JavaPathtracer.material.Texture;
+import com.JavaPathtracer.tonemapping.IToneMapper;
 
 public class Pathtracer extends Raytracer {
 
@@ -16,6 +17,11 @@ public class Pathtracer extends Raytracer {
 		super(camera, scene);
 		this.maxLightBounces = maxLightBounces;
 		this.samplesPerPixel = samplesPerPixel;
+	}
+	
+	public Pathtracer(int maxLightBounces, int samplesPerPixel, Camera camera, Scene scene, IToneMapper toneMapper) {
+		this(maxLightBounces, samplesPerPixel, camera, scene);
+		this.toneMapper = toneMapper;
 	}
 	
 	public int getSamplesPerPixel() {
@@ -61,17 +67,17 @@ public class Pathtracer extends Raytracer {
 		
 		Vector result = new Vector();
 		for(int i = 0; i < samplesPerPixel; i++)
-			result.add(this.pathtraceRay(ray, 0));
+			result.iadd(this.pathtraceRay(ray, 0));
 		
-		return result.divBy(samplesPerPixel);
+		return result.idiv(samplesPerPixel);
 		
 	}
 	
 	@Override
 	public void pathtraceTile(Texture output, int startX, int startY, int endX, int endY) {
 		
-		double pixelWidth = 2 / output.getWidth();
-		double pixelHeight = 2 / output.getHeight();
+		double pixelWidth = 2.0 / output.getWidth();
+		double pixelHeight = 2.0 / output.getHeight();
 		
 		for(int x = startX; x < endX; x++) {
 			for(int y = startY; y < endY; y++) {
@@ -87,10 +93,10 @@ public class Pathtracer extends Raytracer {
 				Vector result = new Vector();
 				for(int i = 0; i < samplesPerPixel; i++) {
 					Ray ray = camera.getCameraRay(imageX + pixelWidth * Math.random() - pixelWidth / 2, imageY + pixelHeight * Math.random() - pixelHeight / 2);
-					result.add(this.pathtraceRay(ray, 0));
+					result.iadd(this.pathtraceRay(ray, 0));
 				}
 				
-				result = result.divBy(samplesPerPixel);
+				result.idiv(samplesPerPixel);
 
 				Vector color = toneMapper.map(result);
 				output.set(x, output.getHeight() - y - 1, color);

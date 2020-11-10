@@ -4,7 +4,7 @@ import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.material.Texture;
 import com.JavaPathtracer.tonemapping.LinearTonemapper;
-import com.JavaPathtracer.tonemapping.ToneMapper;
+import com.JavaPathtracer.tonemapping.IToneMapper;
 
 public abstract class Raytracer {
 
@@ -13,13 +13,13 @@ public abstract class Raytracer {
 	// Camera and scene
 	protected Camera camera;
 	protected Scene scene;
-	protected ToneMapper toneMapper;
+	protected IToneMapper toneMapper;
 	
 	public Raytracer(Camera camera, Scene scene) {
 		this(camera, scene, new LinearTonemapper());
 	}
 	
-	public Raytracer(Camera camera, Scene scene, ToneMapper toneMapper) {
+	public Raytracer(Camera camera, Scene scene, IToneMapper toneMapper) {
 		this.camera = camera;
 		this.scene = scene;
 		this.toneMapper = toneMapper;

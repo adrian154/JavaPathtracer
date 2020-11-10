@@ -7,7 +7,7 @@ import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Shape;
 import com.JavaPathtracer.geometry.Vector;
-import com.JavaPathtracer.material.Material;
+import com.JavaPathtracer.material.IMaterial;
 import com.JavaPathtracer.material.ISampleable;
 
 public class Scene {
@@ -40,7 +40,7 @@ public class Scene {
 		objects.add(object);
 	}
 	
-	public void add(Shape shape, Material material) {
+	public void add(Shape shape, IMaterial material) {
 		this.add(new WorldObject(shape, material));
 	}
 	

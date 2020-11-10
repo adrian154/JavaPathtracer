@@ -30,14 +30,6 @@ public class Vector implements ISampleable {
 		return component == 0 ? x : (component == 1 ? y : z);
 	}
 	
-	// MUTABLE ADD
-	// Use for accumulating color only
-	public void add(Vector other) {
-		this.x += other.x;
-		this.y += other.y;
-		this.z += other.z;
-	}
-	
 	// MUTABLE INVERT
 	// In case, you know...
 	public void invert() {
@@ -119,11 +111,12 @@ public class Vector implements ISampleable {
 		return this.times(1 / this.length());
 	}
 	
-	public void normalize() {
+	public Vector normalize() {
 		double length = this.length();
 		this.x /= length;
 		this.y /= length;
 		this.z /= length;
+		return this;
 	}
 	
 	// Cross product

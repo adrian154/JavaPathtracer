@@ -140,8 +140,8 @@ public class BoundingBox implements Shape {
 	}
 	
 	public void pad(double amount) {
-		this.min.add(new Vector(-amount, -amount, -amount));
-		this.max.add(new Vector(amount, amount, amount));
+		this.min.iadd(new Vector(-amount, -amount, -amount));
+		this.max.iadd(new Vector(amount, amount, amount));
 	}
 	
 	// For debugging purposes
