@@ -1,6 +1,7 @@
 package com.JavaPathtracer;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.Ray;
@@ -11,7 +12,7 @@ import com.JavaPathtracer.material.Sampleable;
 
 public class Scene {
 
-	private ArrayList<WorldObject> objects;
+	private List<WorldObject> objects;
 	private Sampleable skyEmission;
 	
 	public Scene() {
@@ -28,7 +29,7 @@ public class Scene {
 	public Vector getSkyEmission(Vector direction) {
 		Vector invDir = new Vector(0.0, 0.0, 0.0).minus(direction);
 		double azimuth = (Math.atan2(invDir.z, invDir.x) + 0.5) % (2 * Math.PI);
-		double inclination = Math.asin(invDir.y);
+		double inclination = -Math.asin(invDir.y);
 		double u = 0.5 + azimuth / (2 * Math.PI);
 		double v = 0.5 - inclination / Math.PI;
 		
@@ -40,7 +41,7 @@ public class Scene {
 	}
 	
 	public void add(Shape shape, Material material) {
-		objects.add(new WorldObject(shape, material));
+		this.add(new WorldObject(shape, material));
 	}
 	
 	// do geometry + material trace into scene
@@ -51,7 +52,7 @@ public class Scene {
 		for(WorldObject object: objects) {
 			
 			Hit hit = object.traceRay(ray);
-			if(hit.hit && hit.distance < nearest.distance) {
+			if(hit.hit && hit.distance < nearest.distance && hit.distance > Raytracer.EPSILON) {
 				nearest = hit;
 			}
 			

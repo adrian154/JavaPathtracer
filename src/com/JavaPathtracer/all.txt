@@ -1,0 +1,1859 @@
+package com.JavaPathtracer.geometry;
+
+import com.JavaPathtracer.Raytracer;
+
+// container class for geometry
+public class BoundingBox implements Shape {
+
+	public Vector min;
+	public Vector max;
+	
+	public BoundingBox(Vector min, Vector max) {
+		this.min = min;
+		this.max = max;
+	}
+
+	public double area() {
+		double width = max.x - min.x;
+		double height = max.y - min.y;
+		double depth = max.z - min.z;
+		return 2 * (width * height + width * depth + height * depth);
+	}
+	
+	public double width() {
+		return max.x - min.x;
+	}
+	
+	public double height() {
+		return max.y - min.y;
+	}
+	
+	public double depth() {
+		return max.z - min.z;
+	}
+	
+	public double volume() {
+		return (max.x - min.x) * (max.y - min.y) * (max.z - min.z);
+	}
+	
+	public Vector centroid() {
+		return min.plus(max).divBy(2);
+	}
+
+	public Hit intersect(Ray ray) {
+		
+		// Yet another micro-optimization!
+		double invX = 1 / ray.direction.x;
+		double invY = 1 / ray.direction.y;
+		double invZ = 1 / ray.direction.z;
+		
+		double t1 = (min.x - ray.origin.x) * invX;
+		double t2 = (max.x - ray.origin.x) * invX;
+		
+		double t3 = (min.y - ray.origin.y) * invY;
+		double t4 = (max.y - ray.origin.y) * invY;
+		
+		double t5 = (min.z - ray.origin.z) * invZ;
+		double t6 = (max.z - ray.origin.z) * invZ;
+		
+		double tmin = Math.max(Math.max(Math.min(t1, t2), Math.min(t3, t4)), Math.min(t5, t6));
+		double tmax = Math.min(Math.min(Math.max(t1, t2), Math.max(t3, t4)), Math.max(t5, t6));
+		
+		if(tmax < Raytracer.EPSILON)
+			return Hit.MISS;
+		
+		if(tmin > tmax)
+			return Hit.MISS;
+		
+		// Everything on this Hit besides whether it hit is bogus
+		// Beware!
+		return new Hit(true, null, null, 0, null);
+		
+	}
+
+	public Hit intersectSlow(Ray ray) {
+		
+		/* Intersections with all 6 AABB planes */
+		double xmin = (min.x - ray.origin.x) / ray.direction.x;
+		double xmax = (max.x - ray.origin.x) / ray.direction.x;
+		
+		double ymin = (min.y - ray.origin.y) / ray.direction.y;
+		double ymax = (max.y - ray.origin.y) / ray.direction.y;
+		
+		double zmin = (min.z - ray.origin.z) / ray.direction.z;
+		double zmax = (max.z - ray.origin.z) / ray.direction.z;
+
+		/* Minimum and maximum intersection distances. */
+		double tmin = Math.max(Math.max(Math.min(xmin, xmax), Math.min(ymin, ymax)), Math.min(zmin, zmax));
+		double tmax = Math.min(Math.min(Math.max(xmin, xmax), Math.max(ymin, ymax)), Math.max(zmin, zmax));
+	
+		/* Negative: AABB is behind the ray. */
+		if(tmax < Raytracer.EPSILON) {
+			return Hit.MISS;
+		}
+		
+		/* Minimum distance greater than maximum: No intersection. */
+		if(tmin > tmax) {
+			return Hit.MISS;
+		}
+		
+		/* Ray intersects with the box. */
+		double t = tmin;
+		Vector point = ray.getPoint(t);
+		
+		Vector middle = min.plus(max.minus(min).divBy(2.0));
+		double deltaX = point.x - middle.x;
+		double deltaY = point.y - middle.y;
+		double deltaZ = point.z - middle.z;
+		
+		Vector normal;
+		if(Math.abs(Math.abs(deltaX) - this.width() / 2) < Raytracer.EPSILON) {
+			normal = new Vector(Math.signum(deltaX), 0.0, 0.0);
+		} else if(Math.abs(Math.abs(deltaY) - this.height() / 2) < Raytracer.EPSILON) {
+			normal = new Vector(0.0, Math.signum(deltaY), 0.0);
+		} else {
+			normal = new Vector(0.0, 0.0, Math.signum(deltaZ));
+		}
+		
+		return new Hit(point, normal, 0, new Vector(0.0, 0.0, 0.0));
+		
+	}
+	
+	public boolean containsBox(BoundingBox other) {
+		return other.min.x > this.min.x && other.min.y > this.min.y && other.min.z > this.min.z && other.max.x < this.max.x && other.max.y < this.max.y && other.max.z < this.max.z;
+	}
+	
+	public boolean containsPoint(Vector point) {
+		return point.x > this.min.x && point.y > this.min.y && point.z > this.min.z && point.x < this.max.x && point.y < this.max.y && point.z < this.max.z;
+	}
+	
+	public Sphere toSphere() {
+		Vector center = this.centroid();
+		return new Sphere(center, this.max.minus(center).length());
+	}
+	
+	public static final boolean overlap(BoundingBox a, BoundingBox b) {
+		return (a.min.x <= b.min.x && b.min.x <= a.max.x) ||
+				   (a.min.x <= b.max.x && b.max.x <= a.max.x) ||
+				   (b.min.x <= a.min.x && a.min.x <= b.max.x) ||
+				   (b.min.x <= a.max.x && a.max.x <= b.max.x);
+	}
+	
+	public void pad(double amount) {
+		this.min.add(new Vector(-amount, -amount, -amount));
+		this.max.add(new Vector(amount, amount, amount));
+	}
+	
+	// For debugging purposes
+	public String toString() {
+		return "(min=" + this.min + ", max=" + this.max + ")";
+	}
+	
+}package com.JavaPathtracer.geometry;
+
+import java.io.File;
+import java.io.IOException;
+
+import com.JavaPathtracer.geometry.bvh.BVHNode;
+
+public class BVHMesh extends Mesh implements DirectSampleableShape {
+
+	private BVHNode BVHRoot;
+	
+	public BVHMesh(File file) throws IOException {
+		this(file, new Matrix());
+	}
+	
+	public BVHMesh(File file, Matrix matrix) throws IOException {
+		super(file, matrix);
+		BVHRoot = new BVHNode(this);
+	}
+
+	public Hit intersect(Ray ray) {
+		
+		Hit hit = BVHRoot.intersect(ray);
+		
+		if(hit.hit)
+			hit.normal.normalize(); // Normalize at the last minute instead of at every intersection
+		
+		return hit;
+		
+	}
+	
+	public Sphere getBoundingSphere() {
+		return this.BVHRoot.toSphere();
+	}
+	
+}package com.JavaPathtracer.geometry;
+
+public class Circle extends Plane implements DirectSampleableShape {
+
+	public double radius;
+	
+	public Circle(Vector normal, Vector point, double radius) {
+		super(normal, point);
+		this.radius = radius;
+	}
+	
+	public Hit intersect(Ray ray) {
+		
+		Hit hit = super.intersect(ray);
+		if(hit.hit && hit.point.minus(this.point).lengthSquared() < this.radius * this.radius) {
+			return hit;
+		} else {
+			return Hit.MISS;
+		}
+		
+	}
+	
+	public Sphere getBoundingSphere() {
+		return new Sphere(this.point, this.radius);
+	}
+	
+}
+package com.JavaPathtracer.geometry;
+
+public interface DirectSampleableShape extends Shape {
+
+	public Sphere getBoundingSphere();
+	
+}
+package com.JavaPathtracer.geometry;
+
+import com.JavaPathtracer.WorldObject;
+
+public class Hit {
+
+	public final boolean hit;					// Was there an intersection?
+	public final Vector point;					// Point of intersection
+	public final Vector normal;					// Point of normal
+	public final double distance;				// Distance from hitpoint to ray origin
+	public final Vector textureCoordinates;		// UV of the hit
+	public WorldObject hitObject;				// Hit object (used in tragically un-OOP ways!!)
+	
+	public static final Hit MISS = new Hit(false, null, null, Double.POSITIVE_INFINITY, null);
+	public static final Hit BOGUS = new Hit(true, new Vector(1.0, 0.0, 0.0), new Vector(1.0, 0.0, 0.0), 0.0, new Vector(1.0, 0.0, 0.0));
+	
+	// If you supply arguments it is assumed that there was an intersection
+	public Hit(boolean hit, Vector point, Vector normal, double distance, Vector textureCoordinates) {
+		this.hit = hit;
+		this.point = point;
+		this.normal = normal;
+		this.distance = distance;
+		this.textureCoordinates = textureCoordinates;
+	}
+	
+	public Hit(Vector point, Vector normal, double distance, Vector textureCoordinates) {
+		this(true, point, normal, distance, textureCoordinates);
+	}
+	
+}
+package com.JavaPathtracer.geometry;
+
+// 3D rotation matrix
+// Fixed 4x4 size
+public class Matrix {
+
+	public double factors[];
+	
+	// No args constructor initializes the matrix as an identity matrix
+	public Matrix() {
+		factors = new double[16];
+		for(int r = 0; r < 4; r++) {
+			for(int c = 0; c < 4; c++) {
+				factors[r * 4 + c] = r == c ? 1 : 0;
+			}
+		}
+	}
+	
+	public Matrix(double[] factors) {
+		if(factors.length != 16) throw new IllegalArgumentException("Matrix must have 16 factors.");
+		this.factors = factors;
+	}
+	
+	public static Matrix Translate(double x, double y, double z) {
+		Matrix result = new Matrix();
+		result.factors[12] = x;
+		result.factors[13] = y;
+		result.factors[14] = z;
+		return result;
+	}
+	
+	public static Matrix Translate(Vector translate) {
+		return Matrix.Translate(translate.x, translate.y, translate.z);
+	}
+	
+	public static Matrix Scale(double x, double y, double z) {
+		Matrix result = new Matrix();
+		result.factors[0] = x;
+		result.factors[5] = y;
+		result.factors[10] = z;
+		return result;
+	}
+	
+	public static Matrix Scale(Vector scale) {
+		return Matrix.Scale(scale.x, scale.y, scale.z);
+	}
+	
+	public static Matrix RotateX(double angle) {
+		Matrix result = new Matrix();
+		double cos = Math.cos(angle);
+		double sin = Math.sin(angle);
+		result.factors[4] = cos;
+		result.factors[5] = sin;
+		result.factors[8] = -sin;
+		result.factors[9] = cos;
+		return result;
+	}
+	
+	public static Matrix RotateY(double angle) {
+		Matrix result = new Matrix();
+		double cos = Math.cos(angle);
+		double sin = Math.sin(angle);
+		result.factors[1] = cos;
+		result.factors[9] = sin;
+		result.factors[0] = -sin;
+		result.factors[8] = cos;
+		return result;
+	}
+	
+	public static Matrix RotateZ(double angle) {
+		Matrix result = new Matrix();
+		double cos = Math.cos(angle);
+		double sin = Math.sin(angle);
+		result.factors[5] = cos;
+		result.factors[1] = sin;
+		result.factors[4] = -sin;
+		result.factors[0] = cos;
+		return result;
+	}
+	
+	public Vector transform(Vector vector) {
+		return new Vector(
+			vector.x * factors[0] + vector.y * factors[1] + vector.z * factors[2] + factors[3],
+			vector.x * factors[4] + vector.y * factors[5] + vector.z * factors[6] + factors[7],
+			vector.x * factors[8] + vector.y * factors[9] + vector.z * factors[10] + factors[11]
+		);
+	}
+	
+	// this code will make you cry
+	public Matrix multiply(Matrix other) {
+		return new Matrix(new double[] {
+			factors[0] * other.factors[0] + factors[1] * other.factors[4] + factors[2] * other.factors[8] + factors[3] * other.factors[12],
+			factors[0] * other.factors[1] + factors[1] * other.factors[5] + factors[2] * other.factors[9] + factors[3] * other.factors[13],
+			factors[0] * other.factors[2] + factors[1] * other.factors[6] + factors[2] * other.factors[10] + factors[3] * other.factors[14],
+			factors[0] * other.factors[3] + factors[1] * other.factors[7] + factors[2] * other.factors[11] + factors[3] * other.factors[15],
+			factors[4] * other.factors[0] + factors[5] * other.factors[4] + factors[6] * other.factors[8] + factors[7] * other.factors[12],
+			factors[4] * other.factors[1] + factors[5] * other.factors[5] + factors[6] * other.factors[9] + factors[7] * other.factors[13],
+			factors[4] * other.factors[2] + factors[5] * other.factors[6] + factors[6] * other.factors[10] + factors[7] * other.factors[14],
+			factors[4] * other.factors[3] + factors[5] * other.factors[7] + factors[6] * other.factors[11] + factors[7] * other.factors[15],
+			factors[8] * other.factors[0] + factors[9] * other.factors[4] + factors[10] * other.factors[8] + factors[11] * other.factors[12],
+			factors[8] * other.factors[1] + factors[9] * other.factors[5] + factors[10] * other.factors[9] + factors[11] * other.factors[13],
+			factors[8] * other.factors[2] + factors[9] * other.factors[6] + factors[10] * other.factors[10] + factors[11] * other.factors[14],
+			factors[8] * other.factors[3] + factors[9] * other.factors[7] + factors[10] * other.factors[11] + factors[11] * other.factors[15],
+			factors[12] * other.factors[0] + factors[13] * other.factors[4] + factors[14] * other.factors[8] + factors[15] * other.factors[12],
+			factors[12] * other.factors[1] + factors[13] * other.factors[5] + factors[14] * other.factors[9] + factors[15] * other.factors[13],
+			factors[12] * other.factors[2] + factors[13] * other.factors[6] + factors[14] * other.factors[10] + factors[15] * other.factors[14],
+			factors[12] * other.factors[3] + factors[13] * other.factors[7] + factors[14] * other.factors[11] + factors[15] * other.factors[15]		
+		});
+	}
+	
+	public double get(int r, int c) {
+		return factors[r * 4 + c];
+	}
+	
+}
+package com.JavaPathtracer.geometry;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.JavaPathtracer.Raytracer;
+
+// Don't use naked meshes, use BVHMesh!
+public class Mesh {
+
+	public int[] faces;
+	public Vector[] vertexes;
+	public Vector[] textureCoordinates;
+	
+	public Mesh(File file, Matrix matrix) throws IOException {
+		
+		BufferedReader reader = new BufferedReader(new FileReader(file));
+		
+		String line;
+		int lineNum = 1;
+		
+		List<Vector> vertexes = new ArrayList<Vector>();
+		//List<Vector> textureCoordinates = new ArrayList<Vector>();
+		List<Integer> faces = new ArrayList<Integer>();
+		
+		while((line = reader.readLine()) != null) {
+			
+			// Ignore empty lines and comments
+			if(line.length() == 0 || line.charAt(0) == '#') {
+				continue;
+			}
+			
+			// Split line
+			String[] parts = line.split("\\s+");
+			
+			if(parts[0].equals("v")) {
+				
+				if(parts.length != 4) {
+					throw new RuntimeException("File \"" + file.getName() + "\", line " + lineNum + ": wrong number of parameters for vertex (expected 4)");
+				}
+				
+				vertexes.add(matrix.transform(new Vector(
+					Double.parseDouble(parts[1]),
+					Double.parseDouble(parts[2]),
+					Double.parseDouble(parts[3])
+				)));
+				
+			} else if(parts[0].equals("f")) {
+				
+				// This could be extended into a loop for arbitrary-length polygons
+				// In practice, few meshes will ever have anything but tris and quads
+				if(parts.length == 4) {
+					
+					faces.add(Integer.parseInt(parts[1].split("/")[0]) - 1);
+					faces.add(Integer.parseInt(parts[2].split("/")[0]) - 1);
+					faces.add(Integer.parseInt(parts[3].split("/")[0]) - 1);
+					
+				} else if(parts.length == 5) {
+					
+					// Useless micro-optimization since I really can't help myself
+					int first = Integer.parseInt(parts[1].split("/")[0]) - 1;
+					int third = Integer.parseInt(parts[3].split("/")[0]) - 1;
+					
+					faces.add(first);
+					faces.add(Integer.parseInt(parts[2].split("/")[0]) - 1);
+					faces.add(third);
+					
+					faces.add(first);
+					faces.add(third);
+					faces.add(Integer.parseInt(parts[4].split("/")[0]) - 1);
+				
+				}
+				
+			} else if(parts[0].equals("vt")) {
+				
+			}
+			
+			lineNum++;
+			
+		}
+		
+		// Convert arraylists to arrays
+		this.vertexes = vertexes.toArray(new Vector[0]);
+		this.faces = faces.stream().mapToInt(Integer::valueOf).toArray();
+		reader.close();
+		
+	}
+	
+	// Moller-Trumbore triangle intersection algorithm
+	// Uses barycentric coordinates to test triangle intersection
+	// (...as well as some general math trickery)
+	// Normals are not normalized. This is to reduce the number of square roots.
+	public static final Hit intsersectTri(Ray ray, Vector v0, Vector v1, Vector v2) {
+		
+		Vector edge1 = v1.minus(v0);
+		Vector edge2 = v2.minus(v0);
+		Vector h = ray.direction.cross(edge2);
+		
+		double a = edge1.dot(h);
+		if(a > -Raytracer.EPSILON && a < Raytracer.EPSILON) {
+			return Hit.MISS;
+		}
+		
+		double f = 1 / a;
+		Vector s = ray.origin.minus(v0);
+		double u = f * s.dot(h);
+		if(u < 0.0 || u > 1.0)
+			return Hit.MISS;
+		
+		Vector q = s.cross(edge1);
+		double v = f * ray.direction.dot(q);
+		if(v < 0.0 || u + v > 1.0)
+			return Hit.MISS;
+		
+		double t = f * edge2.dot(q);
+		if(t > Raytracer.EPSILON) {
+			
+			// Make sure normal faces ray direction
+			Vector normal = edge1.cross(edge2);
+			if(normal.dot(ray.direction) > 0) {
+				normal.invert();
+			}
+			
+			return new Hit(ray.getPoint(t), normal, t, new Vector(u, v, 0.0));
+		} else {
+			return Hit.MISS;
+		}
+		
+	}
+	
+	public Hit intersect(Ray ray, int[] prims) {
+
+		Hit nearest = Hit.MISS;
+		for(int i: prims) {
+			Hit cur = Mesh.intsersectTri(ray, vertexes[faces[i * 3]], vertexes[faces[i * 3 + 1]], vertexes[faces[i * 3 + 2]]);
+			if(cur.distance < nearest.distance) nearest = cur;
+		}
+		
+		return nearest;
+	
+	}
+	
+}
+package com.JavaPathtracer.geometry;
+
+import com.JavaPathtracer.Raytracer;
+
+public class Plane implements Shape {
+
+	public Vector normal;
+	public Vector point;
+	public double tilingSize;
+	
+	public Plane(Vector normal, Vector point) {
+		this.normal = normal;
+		this.point = point;
+		this.tilingSize = 1.0;
+	}
+	
+	public Plane(Vector normal, Vector point, double tilingSize) {
+		this.normal = normal;
+		this.point = point;
+		this.tilingSize = tilingSize;
+	}
+	
+	/*
+	 * Ray-plane intersection.
+	 */
+	public Hit intersect(Ray ray) {
+		
+		/* Check if equation has solution.*/
+		double denom = ray.direction.dot(this.normal);
+		if(denom == 0) {
+			return Hit.MISS;
+		}
+		
+		Vector diff = ray.origin.minus(this.point).normalized();
+		if(diff.dot(this.normal) < 0) {
+			return Hit.MISS;
+		}
+		
+		/* Solve for the distance. */
+		double distance = this.point.minus(ray.origin).dot(this.normal) / denom;
+		
+		/* Make sure hit point is not behind ray. */
+		if(distance < Raytracer.EPSILON) {
+			return Hit.MISS;
+		}
+		
+		Vector point = ray.getPoint(distance);
+		
+		Vector vec = point.minus(this.point);
+		Vector ortho = normal.getOrthagonal();
+		double u = ortho.dot(vec);
+		double v = normal.cross(ortho).dot(vec);
+		u = u - Math.floor(u / this.tilingSize) * this.tilingSize;
+		v = v - Math.floor(v / this.tilingSize) * this.tilingSize;
+		
+		return new Hit(point, normal, distance, new Vector(u / this.tilingSize, v / this.tilingSize, 0.0));
+		
+	}
+	
+	
+}
+package com.JavaPathtracer.geometry;
+
+public class Ray {
+
+	public Vector origin;			// Origin of the ray
+	public Vector direction;		// Normalized direction vector
+	
+	public Ray(Vector origin, Vector direction) {
+		this.origin = origin;
+		this.direction = direction;
+	}
+	
+	// Get point on ray based on distance from origin
+	public Vector getPoint(double distance) {
+		return origin.plus(direction.times(distance));
+	}
+	
+}
+package com.JavaPathtracer.geometry;
+
+// Geometry-only primitive
+public interface Shape {
+
+	public Hit intersect(Ray ray);
+	
+}
+package com.JavaPathtracer.geometry;
+
+import com.JavaPathtracer.Raytracer;
+
+public class Sphere implements DirectSampleableShape {
+
+	private Vector center;
+	private double radius;
+	
+	public Sphere(Vector center, double radius) {
+		this.center = center;
+		this.radius = radius;
+	}
+	
+	public Hit intersect(Ray ray) {
+		
+		Vector center = this.center.minus(ray.origin);
+		
+		double b = -2 * ray.direction.dot(center);
+		double c = center.dot(center) - radius * radius;
+		
+		double discrim = b * b - 4 * c;
+		
+		if(discrim < 0) {
+			return Hit.MISS;
+		}
+		
+		discrim = Math.sqrt(discrim);
+		double t = (-b - discrim) / 2;
+		if(t < Raytracer.EPSILON) {
+			t = (-b + discrim) / 2;
+			if(t < Raytracer.EPSILON) {
+				return Hit.MISS;
+			}
+		}
+		
+		Hit result;
+		Vector point = ray.getPoint(t);
+		Vector normal = point.minus(this.center).normalized();
+		
+		// Do texture mapping
+		Vector invDir = new Vector(0.0, 0.0, 0.0).minus(normal);
+		double u = 0.5 + Math.atan2(invDir.z, invDir.x) / (2 * Math.PI);
+		double v = 0.5 - Math.asin(invDir.y) / Math.PI;
+		
+		result = new Hit(point, normal, t, new Vector(u, v, 0.0));
+		
+		return result;
+		
+	}
+	
+	public Sphere getBoundingSphere() {
+		return this;
+	}
+	
+}
+package com.JavaPathtracer.geometry;
+
+import com.JavaPathtracer.material.Sampleable;
+
+// 3D vector class
+// Implements Sampleable so you can use Vectors as colors, kind of janky but oh well
+public class Vector implements Sampleable {
+	
+	// Components
+	public double x, y, z;
+	
+	public Vector() {
+		
+	}
+	
+	public Vector(double x, double y, double z) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+	}
+	
+	// This could be useful, I guess
+	public double get(int component) {
+		return component == 0 ? x : (component == 1 ? y : z);
+	}
+	
+	// MUTABLE ADD
+	// Use for accumulating color only
+	public void add(Vector other) {
+		this.x += other.x;
+		this.y += other.y;
+		this.z += other.z;
+	}
+	
+	// MUTABLE INVERT
+	// In case, you know...
+	public void invert() {
+		this.x = -this.x;
+		this.y = -this.y;
+		this.z = -this.z;
+	}
+	
+	public Vector plus(Vector other) {
+		return new Vector(this.x + other.x, this.y + other.y, this.z + other.z);
+	}
+	
+	public Vector minus(Vector other) {
+		return new Vector(this.x - other.x, this.y - other.y, this.z - other.z);
+	}
+
+	// Direct multiplication, should only be used on colors
+	public Vector times(Vector other) {
+		return new Vector(this.x * other.x, this.y * other.y, this.z * other.z);
+	}
+	
+	// Scalar multiplication
+	public Vector times(double scalar) {
+		return new Vector(this.x * scalar, this.y * scalar, this.z * scalar);
+	}
+	
+	// Scalar division
+	public Vector divBy(double scalar) {
+		return new Vector(this.x / scalar, this.y / scalar, this.z / scalar);
+	}
+	
+	// Faster than length()
+	public double lengthSquared() {
+		return this.x * this.x + this.y * this.y + this.z * this.z;
+	}
+	
+	// Returns exact length
+	public double length() {
+		return Math.sqrt(this.lengthSquared());
+	}
+	
+	// Normalize vector
+	public Vector normalized() {
+		return this.times(1 / this.length());
+	}
+	
+	public void normalize() {
+		double length = this.length();
+		this.x /= length;
+		this.y /= length;
+		this.z /= length;
+	}
+	
+	// Cross product
+	public Vector cross(Vector other) {
+		return new Vector(
+			this.y * other.z - this.z * other.y,
+			this.z * other.x - this.x * other.z,
+			this.x * other.y - this.y * other.x
+		);
+	}
+	
+	// Dot product
+	public double dot(Vector other) {
+		return this.x * other.x + this.y * other.y + this.z * other.z;
+	}
+	
+	// Get orthagonal vector
+	public Vector getOrthagonal() {
+		Vector other;
+		if(this.y != 0 || this.z != 0) {
+			other = new Vector(1, 0, 0);
+		} else {
+			other = new Vector(0, 1, 0);
+		}
+		return this.cross(other);
+	}
+	
+	// Convert to string for debugging
+	public String toString() {
+		return new String("(" + this.x + ", " + this.y + ", " + this.z + ")");
+	}
+	
+	// Convert spherical coordinates to vector
+	public static Vector fromSpherical(double azimuth, double inclination) {
+		return new Vector(
+			Math.sin(inclination) * Math.cos(azimuth),
+			Math.cos(inclination),
+			Math.sin(inclination) * Math.sin(azimuth)
+		);
+	}
+	
+	public static Vector fromSpherical(Vector in) {
+		return Vector.fromSpherical(in.x, in.y);
+	}
+	
+	public Vector toSpherical() {
+		return new Vector(
+			Math.atan2(this.z, this.x),
+			Math.acos(this.y / Math.sqrt(this.x * this.x + this.z * this.z)),
+			0.0
+		);
+	}
+	
+	// Generate uniformly distributed vector in unit sphere
+	public static Vector uniformInSphere() {
+		double azimuth = 2 * Math.PI * Math.random();
+		double inclination = Math.acos(1 - 2 * Math.random());		// This step is necessary or else points clump at the poles
+		return Vector.fromSpherical(azimuth, inclination);
+	}
+	
+	//  Generate uniformly distributed vector in unit hemisphere
+	public static Vector uniformInHemisphere() {
+		Vector result = Vector.uniformInSphere();
+		result.y = Math.abs(result.y);
+		return result;
+	}
+	
+	public Vector sample(double u, double v) {
+		return this;
+	}
+	
+	public static Vector localToWorldCoords(Vector vector, Vector bvx, Vector bvy, Vector bvz) {
+		return new Vector(
+			vector.x * bvx.x + vector.y * bvy.x + vector.z * bvz.x,
+			vector.x * bvx.y + vector.y * bvy.y + vector.z * bvz.y,
+			vector.x * bvx.z + vector.y * bvy.z + vector.z * bvz.z
+		);
+	}
+	
+}
+package com.JavaPathtracer.geometry.bvh;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.JavaPathtracer.Main;
+import com.JavaPathtracer.geometry.BoundingBox;
+import com.JavaPathtracer.geometry.Hit;
+import com.JavaPathtracer.geometry.Mesh;
+import com.JavaPathtracer.geometry.Ray;
+import com.JavaPathtracer.geometry.Shape;
+import com.JavaPathtracer.geometry.Vector;
+
+public class BVHNode extends BoundingBox implements Shape {
+
+	public Mesh mesh;
+	public BVHNode left;
+	public BVHNode right;
+	public int[] primIndexes;
+	public List<PrimAssociatedBBox> children; // USED DURING CONSTRUCTION. NULL AFTER BVH DONE BUILDING SO IT CAN BE GC'D!
+
+	// More bins = higher quality BVH at the cost of slower construction (O(N))
+	public static final int NUM_BINS = 32;
+	public static final double COST_TRAVERSE = 1; // greater intersect cost = more splits
+	public static final double COST_INTERSECT = 8;
+	public static final int MAX_DEPTH = 5;
+	
+	private static final double minOf3(double a, double b, double c) {
+		return Math.min(a, Math.min(b, c));
+	}
+	
+	private static final double maxOf3(double a, double b, double c) {
+		return Math.max(a, Math.max(b, c));
+	}
+	
+	public BVHNode(Mesh mesh) {
+		
+		// Appease the compiler...
+		super(null, null);
+		
+		this.mesh = mesh;
+		this.children = new ArrayList<PrimAssociatedBBox>();
+
+		for(int face = 0; face < mesh.faces.length / 3; face++) {
+			
+			Vector v0 = mesh.vertexes[mesh.faces[face * 3]];
+			Vector v1 = mesh.vertexes[mesh.faces[face * 3 + 1]];
+			Vector v2 = mesh.vertexes[mesh.faces[face * 3 + 2]];
+			
+			children.add(getBoxOfTri(face, v0, v1, v2));
+			
+		}
+
+		BoundingBox self = getBoundingBoxOfBoxes(this.children);
+		this.min = self.min;
+		this.max = self.max;
+		
+		// Ready to build, finally!
+		split(0);
+		
+	}
+	
+	public BVHNode(Mesh mesh, BoundingBox box, List<PrimAssociatedBBox> boxes) {
+		super(box.min, box.max);
+		this.mesh = mesh;
+		this.children = boxes;
+	}
+	
+	public static BoundingBox getBoundingBoxOfBoxes(List<? extends BoundingBox> boxes) {
+		
+		Vector min = new Vector(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
+		Vector max = new Vector(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY);
+		
+		for(BoundingBox box: boxes) {
+			min.x = Math.min(min.x, box.min.x);
+			min.y = Math.min(min.y, box.min.y);
+			min.z = Math.min(min.z, box.min.z);
+			
+			max.x = Math.max(max.x, box.max.x);
+			max.y = Math.max(max.y, box.max.y);
+			max.z = Math.max(max.z, box.max.z);
+		}
+		
+		BoundingBox result = new BoundingBox(min, max);		
+		return result;
+		
+	}
+	
+	public static PrimAssociatedBBox getBoxOfTri(int face, Vector v0, Vector v1, Vector v2) {
+		
+		Vector min = new Vector(); 
+		Vector max = new Vector();
+		
+		min.x = minOf3(v0.x, v1.x, v2.x);
+		min.y = minOf3(v0.y, v1.y, v2.y);
+		min.z = minOf3(v0.z, v1.z, v2.z);
+		
+		max.x = maxOf3(v0.x, v1.x, v2.x);
+		max.y = maxOf3(v0.y, v1.y, v2.y);
+		max.z = maxOf3(v0.z, v1.z, v2.z);
+		
+		return new PrimAssociatedBBox(min, max, face);
+		
+	}
+	
+	public void split(int depth) {
+
+		if(depth >= MAX_DEPTH) {
+			primIndexes = children.stream().mapToInt(child -> Integer.valueOf(child.faceIndex)).toArray();
+			children = null;
+			return;
+		}
+		
+		// Find optimal split
+		double minSplitCost = Double.POSITIVE_INFINITY;
+		BoundingBox minSplitLeftBox = null;
+		BoundingBox minSplitRightBox = null;
+		List<PrimAssociatedBBox> minSplitLeftChildren = null;
+		List<PrimAssociatedBBox> minSplitRightChildren = null;
+		
+		double noSplitCost = children.size() * COST_INTERSECT;
+		
+		for(int axis = 0; axis < 3; axis++) {
+			
+			for(int split = 1; split < NUM_BINS - 1; split++) {
+				
+				double splitPos = this.min.get(axis) + ((double)split / NUM_BINS) * (this.max.get(axis) - this.min.get(axis));
+				
+				List<PrimAssociatedBBox> left = new ArrayList<PrimAssociatedBBox>();
+				List<PrimAssociatedBBox> right = new ArrayList<PrimAssociatedBBox>();
+				
+				for(PrimAssociatedBBox box: this.children) {
+					
+					double centroid = (box.min.get(axis) + box.max.get(axis)) / 2;
+					if(centroid < splitPos) {
+						left.add(box);
+					} else {
+						right.add(box);
+					}
+					
+				}
+
+				BoundingBox leftBox = getBoundingBoxOfBoxes(left);
+				BoundingBox rightBox = getBoundingBoxOfBoxes(right);
+				
+				double splitCost = COST_TRAVERSE +
+					(leftBox.area() / this.area() * left.size() * COST_INTERSECT) +
+					(rightBox.area() / this.area() * right.size() * COST_INTERSECT);
+				
+				if(splitCost < minSplitCost) {
+					minSplitCost = splitCost;
+					minSplitLeftBox = leftBox;
+					minSplitRightBox = rightBox;
+					minSplitLeftChildren = left;
+					minSplitRightChildren = right;
+				}
+				
+			}
+			
+		}
+		
+		if(minSplitCost < noSplitCost) {
+
+			// Split!
+			this.left = new BVHNode(this.mesh, minSplitLeftBox, minSplitLeftChildren);
+			this.right = new BVHNode(this.mesh, minSplitRightBox, minSplitRightChildren);
+
+			System.out.println(Main.repeat("\t", depth) + "LEFT: " + left + ", " + left.children.size());
+			
+			// Recurse
+			this.left.split(depth + 1);
+			
+			System.out.println(Main.repeat("\t", depth) + "RIGHT: " + right + ", " + right.children.size());
+			
+			this.right.split(depth + 1);
+			
+		} else {
+			
+			// Attach children
+			primIndexes = children.stream().mapToInt(child -> Integer.valueOf(child.faceIndex)).toArray();
+			
+		}
+		
+		// In any case, children array is no longer needed
+		children = null;
+		
+	}
+	
+	public Hit intersect(Ray ray) {
+		
+		// intersect self, first
+		Hit self = super.intersect(ray);
+		if(!self.hit) return self;
+		
+		if(left == null && right == null) {
+			if(this.primIndexes != null) {
+				return mesh.intersect(ray, this.primIndexes);
+			} else {
+				return Hit.MISS;
+			}
+		} else {
+			
+			Hit hl, hr;
+			hl = this.left.intersect(ray);
+			hr = this.right.intersect(ray);
+			return hl.distance < hr.distance ? hl : hr;
+			
+		}
+		
+	}
+	
+}package com.JavaPathtracer.geometry.bvh;
+
+import com.JavaPathtracer.geometry.BoundingBox;
+import com.JavaPathtracer.geometry.Vector;
+
+// Bounding box associated with a face index. Used during. BVH construction.
+public class PrimAssociatedBBox extends BoundingBox {
+	
+	public int faceIndex;
+	
+	public PrimAssociatedBBox(Vector min, Vector max, int faceIndex) {
+		super(min, max);
+		this.faceIndex = faceIndex;
+	}
+	
+}
+package com.JavaPathtracer.material;
+
+import com.JavaPathtracer.geometry.Vector;
+
+public class Checkerboard implements Sampleable {
+
+	private static final Vector BLACK = new Vector(0.0, 0.0, 0.0);
+	private static final Vector WHITE = new Vector(1.0, 1.0, 1.0);
+	
+	public Checkerboard() {
+	}
+	
+	@Override
+	public Vector sample(double u, double v) {
+		return ((int)(u / 0.5) % 2 == 0) ^ ((int)(v / 0.5) % 2 == 0) ? BLACK : WHITE;
+	}
+
+}
+package com.JavaPathtracer.material;
+
+import java.io.File;
+import java.io.IOException;
+
+import com.JavaHDR.HDREncoder;
+import com.JavaHDR.HDRImageRGB;
+import com.JavaPathtracer.geometry.Vector;
+
+public class HDRMap implements Sampleable {
+
+	private HDRImageRGB image;
+
+	public HDRMap(File file) {
+		
+		try {
+			image = (HDRImageRGB)HDREncoder.readHDR(file, true);
+		} catch(IOException exception) {
+			System.out.println("Failedto load HDR map from \"" + file.getName() + "\": " + exception.getMessage());
+			exception.printStackTrace();
+		}
+		
+	}
+	
+	@Override
+	public Vector sample(double u, double v) {
+		
+		// TODO: Configurable interpolation
+		int x = (int)Math.round(u * image.getWidth());
+		int y = (int)Math.round(v * image.getHeight());
+		
+		// Clamp
+		x = Math.max(Math.min(x, image.getWidth() - 1), 0);
+		y = Math.max(Math.min(y, image.getHeight() - 1), 0);
+		
+		float r = image.getPixelValue(x, y, 0);
+		float g = image.getPixelValue(x, y, 1);
+		float b = image.getPixelValue(x, y, 2);
+		
+		return new Vector(r, g, b);
+		
+	}
+	
+	
+	
+}
+package com.JavaPathtracer.material;
+
+import com.JavaPathtracer.geometry.Vector;
+
+public class Material {
+
+	private Sampleable color;
+	private Sampleable emission;
+	
+	public Material(Sampleable color, Sampleable emission) {
+		this.color = color;
+		this.emission = emission;
+	}
+	
+	public Vector getColor(double u, double v) {
+		return color.sample(u, v);
+	}
+	
+	public Vector getEmission(double u, double v) {
+		return emission.sample(u, v);
+	}
+	
+}
+package com.JavaPathtracer.material;
+
+import com.JavaPathtracer.geometry.Vector;
+
+// Things that can be sampled based on texture coordinate
+public interface Sampleable {
+
+	public Vector sample(double u, double v);
+	
+}
+package com.JavaPathtracer.material;
+
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
+import com.JavaPathtracer.geometry.Vector;
+
+public class Texture implements Sampleable {
+
+	private BufferedImage texture;
+	
+	public Texture(int width, int height) {
+		texture = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+	}
+	
+	public Texture(File imageFile) {
+		
+		try {
+			texture = ImageIO.read(imageFile);
+		} catch(IOException exception) {
+			System.out.println("Failed to load texture from file \"" + imageFile.getName() + "\": " + exception.getMessage());
+			exception.printStackTrace();
+		}
+		
+	}
+	
+	public Texture(BufferedImage image) {
+		this.texture = image;
+	}
+	
+	public BufferedImage asImage() {
+		return texture;
+	}
+	
+	public Vector sample(double u, double v) {
+
+		// TODO: Configurable interpolation
+		int x = (int)Math.round(u * texture.getWidth());
+		int y = (int)Math.round(v * texture.getHeight());
+		
+		// Clamp
+		x = Math.max(Math.min(x, texture.getWidth() - 1), 0);
+		y = Math.max(Math.min(y, texture.getHeight() - 1), 0);
+		
+		int rgb = texture.getRGB(x, y);
+		int r = (rgb >> 16) & 0xFF;
+		int g = (rgb >> 8) & 0xFF;
+		int b = rgb & 0xFF;
+		
+		return new Vector(r / 255.0, g / 255.0, b / 255.0);
+		
+	}
+	
+	public void set(int x, int y, Vector color) {
+		
+		if(color.x < 0 || color.y < 0 || color.z < 0) {
+			System.out.println("Warning: One or more color components were negative! " + color.toString());
+		}
+		
+		int r = (int)Math.max(0, Math.min(color.x * 255, 255));
+		int g = (int)Math.max(0, Math.min(color.y * 255, 255));
+		int b = (int)Math.max(0, Math.min(color.z * 255, 255));
+		int rgb = (r << 16) | (g << 8) | b;
+		
+		texture.setRGB(x, y, rgb);
+		
+	}
+	
+	public int getWidth() {
+		return texture.getWidth();
+	}
+	
+	public int getHeight() {
+		return texture.getHeight();
+	}
+	
+	public void saveToFile(File file) {
+		
+		try {
+			ImageIO.write(texture, "png", file);
+		} catch(IOException exception) {
+			System.out.println("Failed to save texture to file \"" + file.getName() + "\": " + exception.getMessage());
+			exception.printStackTrace();
+		}
+		
+	}
+	
+}
+package com.JavaPathtracer.renderers;
+
+import javax.swing.JFrame;
+
+import com.JavaPathtracer.material.Texture;
+
+public class LivePreviewFrame extends JFrame {
+	
+	// (Ditto... see LivePreviewPanel)
+	public static final long serialVersionUID = 1;
+	
+	public LivePreviewFrame(Texture output, int scale) {
+		super();
+		this.add(new LivePreviewPanel(output, scale));
+		this.pack();
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setTitle("Java Raytracer");
+		this.setVisible(true);
+	}
+	
+}
+package com.JavaPathtracer.renderers;
+
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JPanel;
+import javax.swing.Timer;
+
+import com.JavaPathtracer.material.Texture;
+
+public class LivePreviewPanel extends JPanel implements ActionListener {
+	
+	// Appease the serialization gods
+	public static final long serialVersionUID = 1;
+	
+	private Timer timer;
+	private Texture output;
+	private int scale;
+	
+	public LivePreviewPanel(Texture output, int scale) {
+		this.output = output;
+		this.timer = new Timer(1 / 60, this);
+		this.scale = scale;
+		this.timer.start();
+		this.setPreferredSize(new Dimension(output.getWidth() * scale, output.getHeight() * scale));
+	}
+	
+	@Override
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		g.drawImage(output.asImage().getScaledInstance(output.getWidth() * scale, output.getHeight() * scale, Image.SCALE_FAST), 0, 0, this);
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent event) {
+		this.repaint();
+	}
+	
+}
+package com.JavaPathtracer.renderers;
+
+import com.JavaPathtracer.Raytracer;
+import com.JavaPathtracer.material.Texture;
+
+public class LivePreviewRenderer extends ParallelRenderer {
+
+	private int scale;
+	
+	public LivePreviewRenderer(Raytracer pathtracer, int tiles, int scale) {
+		super(pathtracer, tiles);
+		this.scale = scale;
+	}
+	
+	@Override
+	public void render(Texture output) {
+		LivePreviewFrame frame = new LivePreviewFrame(output, scale);
+		super.render(output);
+	}
+	
+}package com.JavaPathtracer.renderers;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import com.JavaPathtracer.Raytracer;
+import com.JavaPathtracer.material.Texture;
+
+public class ParallelRenderer extends Renderer {
+
+	private Raytracer raytracer;
+	private ExecutorService executorService;
+	private final int threads;
+	private final int tiles;
+
+	public ParallelRenderer(Raytracer raytracer, int tiles) {
+		this.raytracer = raytracer;
+		this.tiles = tiles;
+		this.threads = tiles * tiles;
+		this.executorService = Executors.newFixedThreadPool(this.threads);
+	}
+	
+	public void render(Texture output) {
+		
+		CountDownLatch latch = new CountDownLatch(this.threads);
+		
+		int tileWidth = output.getWidth() / this.tiles;
+		int tileHeight = output.getHeight() / this.tiles;
+		for(int x = 0; x < this.tiles; x++) {
+			for(int y = 0; y < this.tiles; y++) {
+				this.executorService.execute(new RenderTask(
+					this.raytracer,
+					x * tileWidth,
+					y * tileHeight,
+					(x + 1) * tileWidth,
+					(y + 1) * tileHeight,
+					output,
+					latch
+				));
+			}
+		}
+		
+		try {
+			latch.await();
+		} catch(InterruptedException excep) {
+			throw new RuntimeException(excep);
+		}
+		
+		executorService.shutdownNow();
+		
+	}
+	
+	public void setraytracer(Raytracer raytracer) {
+		this.raytracer = raytracer;
+	}
+	
+}package com.JavaPathtracer.renderers;
+
+import com.JavaPathtracer.material.Texture;
+
+public abstract class Renderer {
+
+	public abstract void render(Texture output);
+	
+}
+package com.JavaPathtracer.renderers;
+
+import java.util.concurrent.CountDownLatch;
+
+import com.JavaPathtracer.Raytracer;
+import com.JavaPathtracer.material.Texture;
+
+public class RenderTask implements Runnable {
+
+	private Raytracer raytracer;
+	private int startX;
+	private int startY;
+	private int endX;
+	private int endY;
+	private Texture output;
+	private CountDownLatch latch;
+	
+	public RenderTask(Raytracer raytracer, int startX, int startY, int endX, int endY, Texture output, CountDownLatch latch) {
+		this.raytracer = raytracer;
+		this.startX = startX;
+		this.endX = endX;
+		this.startY = startY;
+		this.endY = endY;
+		this.output = output;
+		this.latch = latch;
+	}
+	
+	public void run() {
+		System.out.printf("Starting: (%d,%d), (%d,%d)\n", startX, startY, endX, endY);
+		this.raytracer.pathtraceTile(this.output, startX, startY, endX, endY);
+		System.out.printf("Done! (%d remaining) (%d,%d), (%d,%d)\n", latch.getCount() - 1, startX, startY, endX, endY);
+		latch.countDown();
+	}
+	
+}
+package com.JavaPathtracer.tonemapping;
+
+import com.JavaPathtracer.geometry.Vector;
+
+public class LinearTonemapper implements ToneMapper {
+
+	public Vector map(Vector inColor) {
+		return inColor;
+	}
+	
+}
+package com.JavaPathtracer.tonemapping;
+
+import com.JavaPathtracer.geometry.Vector;
+
+public interface ToneMapper {
+
+	public Vector map(Vector inColor);
+	
+}
+package com.JavaPathtracer;
+
+import com.JavaPathtracer.geometry.Ray;
+import com.JavaPathtracer.geometry.Vector;
+
+public class Camera {
+
+	public Vector position;			// Position of the camera
+	public Vector lookingAt;		// Unit vector, camera direction
+	public Vector up;				// Up vector (basis)
+	private double focalLength;
+	
+	public Camera() {
+		this.position = new Vector(0.0, 0.0, 0.0);
+		this.lookingAt = new Vector(0.0, 0.0, 1.0);
+		this.up = new Vector(0.0, 1.0, 0.0);
+	}
+	
+	public Camera(Vector position) {
+		this.position = position;
+		this.lookingAt = new Vector(0.0, 0.0, 1.0);
+		this.up = new Vector(0.0, 1.0, 0.0);
+	}
+	
+	public Camera(Vector position, Vector lookingAt, Vector up) {
+		this.position = position;
+		this.lookingAt = lookingAt;
+		this.up = up;
+	}
+	
+	public void setFOV(double FOV) {
+		this.focalLength = 0.5 / Math.tan(FOV * Math.PI / 360);	
+	}
+	
+	public void lookAt(Vector pos) {
+		this.lookingAt = pos.minus(this.position).normalized();
+		this.up = Vector.fromSpherical(this.lookingAt.toSpherical().minus(new Vector(0, Math.PI / 2, 0)));
+	}
+	
+	public double getFocalLength() {
+		return this.focalLength;
+	}
+	
+	// takes image plane coordinates (-1 to 1) and returns a camera ray
+	public Ray getCameraRay(double imagePlaneX, double imagePlaneY) {
+		Vector direction = new Vector(imagePlaneX, imagePlaneY, focalLength).normalized();
+		Vector basis = up.cross(lookingAt);
+		direction = Vector.localToWorldCoords(direction, basis, up, lookingAt);
+		Ray result = new Ray(this.position, direction);
+		return result;
+	}
+	
+}
+package com.JavaPathtracer;
+
+import com.JavaPathtracer.geometry.Hit;
+import com.JavaPathtracer.geometry.Ray;
+import com.JavaPathtracer.geometry.Vector;
+
+public class DebugTracer extends Raytracer {
+
+	public DebugTracer(Camera camera, Scene scene) {
+		super(camera, scene);
+	}
+	
+	public Vector traceRay(Ray ray) {
+		
+		Hit hit = scene.traceRay(ray);
+		if(hit.hit) {
+			double amt = new Vector(34, 100, 31).minus(hit.point).normalized().dot(hit.normal);
+			//return Raytracer.shadeNormal(hit.normal).times(amt);
+			return hit.hitObject.getMaterial().getColor(hit.textureCoordinates.x, hit.textureCoordinates.y).times(amt);
+		} else {
+			return scene.getSkyEmission(ray.direction);
+		}
+		
+	}
+	
+}
+package com.JavaPathtracer;
+
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import com.JavaPathtracer.geometry.BVHMesh;
+import com.JavaPathtracer.geometry.Matrix;
+import com.JavaPathtracer.geometry.Sphere;
+import com.JavaPathtracer.geometry.Vector;
+import com.JavaPathtracer.material.Material;
+import com.JavaPathtracer.material.Texture;
+import com.JavaPathtracer.renderers.LivePreviewRenderer;
+import com.JavaPathtracer.renderers.Renderer;
+
+public class Main {
+
+	public static void main(String[] args) throws IOException {
+		
+		BufferedImage outputImage = new BufferedImage(256, 256, BufferedImage.TYPE_INT_RGB);
+		Texture output = new Texture(outputImage);
+		
+		Camera camera = new Camera(new Vector(0.0, 2.0, -4.0));
+		camera.setFOV(60);
+		camera.lookAt(new Vector(0.2, 0.2, 0.2));
+		Scene scene = new Scene();
+		
+		//scene.setSkyEmission(new HDRMap(new File("assets/sky_cloudy/HDR_029_Sky_Cloudy_Ref.hdr")));
+		scene.setSkyEmission(new Vector(0.0, 0.0, 0.0));
+		
+		Material white = new Material(new Vector(1.0, 1.0, 1.0), new Vector(1.0, 1.0, 1.0).times(0.0));
+		Material light = new Material(new Vector(1.0, 1.0, 1.0), new Vector(1.0, 0.0, 0.0).times(100.0));
+		scene.add(new BVHMesh(new File("assets/UtahTeapot.obj"), Matrix.Scale(1, 1, 1)), white);
+		scene.add(new Sphere(new Vector(0.0, 4.0, -1.0), 0.3), light);
+		
+		long start = System.currentTimeMillis();
+		
+		//Raytracer rt = new DebugTracer(camera, scene);
+		Raytracer rt = new Pathtracer(5, 100, camera, scene);
+		
+		Renderer renderer = new LivePreviewRenderer(rt, 4, 2);
+		renderer.render(output);
+		
+		long end = System.currentTimeMillis();
+		System.out.println("Took " + (end - start) + "ms");
+
+		output.saveToFile(new File("output.png"));
+		System.out.println("Done.");
+		
+	}
+	
+	// for debugging
+	public static String repeat(String str, int times) {
+		StringBuilder result = new StringBuilder();
+		for(int i = 0; i < times; i++) {
+			result.append(str);
+		}
+		return result.toString();
+	}
+	
+}package com.JavaPathtracer;
+
+import com.JavaPathtracer.geometry.Hit;
+import com.JavaPathtracer.geometry.Ray;
+import com.JavaPathtracer.geometry.Vector;
+import com.JavaPathtracer.material.Material;
+import com.JavaPathtracer.material.Texture;
+
+public class Pathtracer extends Raytracer {
+
+	// Maximum depth of bounces
+	private int maxLightBounces;
+	private int samplesPerPixel;
+	
+	public Pathtracer(int maxLightBounces, int samplesPerPixel, Camera camera, Scene scene) {
+		super(camera, scene);
+		this.maxLightBounces = maxLightBounces;
+		this.samplesPerPixel = samplesPerPixel;
+	}
+	
+	public int getSamplesPerPixel() {
+		return this.samplesPerPixel;
+	}
+	
+	public int getMaxBounces() {
+		return this.maxLightBounces;
+	}
+	
+	// scatter diffuse
+	public Vector scatterDiffuse(Vector normal) {
+		Vector random = Vector.uniformInHemisphere();
+		Vector bvx = normal.getOrthagonal();
+		Vector bvy = normal;
+		Vector bvz = bvy.cross(bvx);
+		return Vector.localToWorldCoords(random, bvx, bvy, bvz);
+	}
+	
+	// trace a ray
+	public Vector pathtraceRay(Ray ray, int bounces) {
+		
+		if(bounces > this.maxLightBounces) {
+			return new Vector(0.0, 0.0, 0.0);
+		}
+		
+		Hit hit = scene.traceRay(ray);
+		if(hit.hit) {
+			
+			Material mat = hit.hitObject.getMaterial();
+			Vector texCoords = hit.textureCoordinates;
+			
+			// Recursively trace
+			Vector diffuseDir = scatterDiffuse(hit.normal);
+			Ray nextRay = new Ray(hit.point, diffuseDir);
+			
+			double factor = hit.normal.dot(diffuseDir);
+			Vector recursive = pathtraceRay(nextRay, bounces + 1).times(factor).times(mat.getColor(texCoords.x, texCoords.y));
+			
+			return mat.getEmission(texCoords.x, texCoords.y).plus(recursive.times(factor));
+			
+		} else {
+			return scene.getSkyEmission(ray.direction);
+		}
+		
+	}
+	
+	public Vector traceRay(Ray ray) {
+		
+		Vector result = new Vector();
+		for(int i = 0; i < samplesPerPixel; i++)
+			result.add(this.pathtraceRay(ray, 0));
+		
+		return result.divBy(samplesPerPixel);
+		
+	}
+	
+	@Override
+	public void pathtraceTile(Texture output, int startX, int startY, int endX, int endY) {
+		
+		double pixelWidth = 2 / output.getWidth();
+		double pixelHeight = 2 / output.getHeight();
+		
+		for(int x = startX; x < endX; x++) {
+			for(int y = startY; y < endY; y++) {
+				
+				// set pixel to green while working on it
+				output.set(x, output.getHeight() - y - 1, new Vector(0, 1, 0));
+				
+				// convert to image plane coordinates
+				double imageX = ((double)x / output.getWidth()) * 2 - 1;
+				double imageY = ((double)y / output.getHeight()) * 2 - 1;
+				
+				// apply jitter
+				Vector result = new Vector();
+				for(int i = 0; i < samplesPerPixel; i++) {
+					Ray ray = camera.getCameraRay(imageX + pixelWidth * Math.random(), imageY + pixelHeight * Math.random());
+					result.add(this.pathtraceRay(ray, 0));
+				}
+				
+				result = result.divBy(samplesPerPixel);
+
+				Vector color = toneMapper.map(result);
+				output.set(x, output.getHeight() - y - 1, color);
+
+				
+			}
+		}
+		
+	}
+	
+	// tonemapping
+	public double map(double val) {
+		return val;
+	}
+	
+}
+package com.JavaPathtracer;
+
+import com.JavaPathtracer.geometry.Ray;
+import com.JavaPathtracer.geometry.Vector;
+import com.JavaPathtracer.material.Texture;
+import com.JavaPathtracer.tonemapping.LinearTonemapper;
+import com.JavaPathtracer.tonemapping.ToneMapper;
+
+public abstract class Raytracer {
+
+	public static final double EPSILON = 0.000001;
+	
+	// Camera and scene
+	protected Camera camera;
+	protected Scene scene;
+	protected ToneMapper toneMapper;
+	
+	public Raytracer(Camera camera, Scene scene) {
+		this(camera, scene, new LinearTonemapper());
+	}
+	
+	public Raytracer(Camera camera, Scene scene, ToneMapper toneMapper) {
+		this.camera = camera;
+		this.scene = scene;
+		this.toneMapper = toneMapper;
+	}
+	
+	public Camera getCamera() {
+		return camera;
+	}
+	
+	// shade a normal for debugging
+	public static Vector shadeNormal(Vector normal) {
+		return normal.times(0.5).plus(new Vector(0.5, 0.5, 0.5));
+	}
+
+	public abstract Vector traceRay(Ray ray);
+
+	public void pathtraceTile(Texture output, int startX, int startY, int endX, int endY) {
+		
+		for(int x = startX; x < endX; x++) {
+			for(int y = startY; y < endY; y++) {
+				
+				// set pixel to green while working on it
+				output.set(x, output.getHeight() - y - 1, new Vector(0, 1, 0));
+				
+				// convert to image plane coordinates
+				double imageX = ((double)x / output.getWidth()) * 2 - 1;
+				double imageY = ((double)y / output.getHeight()) * 2 - 1;
+				
+				// apply jitter
+				Ray ray = camera.getCameraRay(imageX, imageY);
+
+				Vector color = toneMapper.map(traceRay(ray));
+				output.set(x, output.getHeight() - y - 1, color);
+
+				
+			}
+		}
+		
+	}
+	
+}
+package com.JavaPathtracer;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.JavaPathtracer.geometry.DirectSampleableShape;
+import com.JavaPathtracer.geometry.Hit;
+import com.JavaPathtracer.geometry.Ray;
+import com.JavaPathtracer.geometry.Shape;
+import com.JavaPathtracer.geometry.Vector;
+import com.JavaPathtracer.material.Material;
+import com.JavaPathtracer.material.Sampleable;
+
+public class Scene {
+
+	private List<WorldObject> objects;
+	private List<WorldObject> directSampleLights;
+	private Sampleable skyEmission;
+	
+	public Scene() {
+		objects = new ArrayList<WorldObject>();
+		
+		// Default = black sky
+		skyEmission = new Vector(0.0, 0.0, 0.0);
+	}
+	
+	public void setSkyEmission(Sampleable newSky) {
+		this.skyEmission = newSky;
+	}
+	
+	public Vector getSkyEmission(Vector direction) {
+		Vector invDir = new Vector(0.0, 0.0, 0.0).minus(direction);
+		double azimuth = (Math.atan2(invDir.z, invDir.x) + 0.5) % (2 * Math.PI);
+		double inclination = Math.asin(invDir.y);
+		double u = 0.5 + azimuth / (2 * Math.PI);
+		double v = 0.5 - inclination / Math.PI;
+		
+		return skyEmission.sample(u, v);
+	}
+	
+	public void add(WorldObject object) {
+		objects.add(object);
+		if(object.getShape() instanceof DirectSampleableShape) {
+			directSampleLights.add(new WorldObject(((DirectSampleableShape)object).getBoundingSphere(), object.getMaterial());
+		}
+	}
+	
+	public void add(Shape shape, Material material) {
+		this.add(new WorldObject(shape, material));
+	}
+	
+	// do geometry + material trace into scene
+	public Hit traceRay(Ray ray) {
+		
+		// empty constructor Hit has infinite distance which works out for us
+		Hit nearest = Hit.MISS;
+		for(WorldObject object: objects) {
+			
+			Hit hit = object.traceRay(ray);
+			if(hit.hit && hit.distance < nearest.distance && hit.distance > Raytracer.EPSILON) {
+				nearest = hit;
+			}
+			
+		}
+		
+		return nearest;
+		
+	}
+	
+}
+package com.JavaPathtracer;
+
+import com.JavaPathtracer.geometry.Hit;
+import com.JavaPathtracer.geometry.Ray;
+import com.JavaPathtracer.geometry.Shape;
+import com.JavaPathtracer.material.Material;
+
+public class WorldObject {
+
+	private Shape shape;
+	private Material material;
+
+	public WorldObject(Shape shape, Material material) {
+		this.shape = shape;
+		this.material = material;
+	}
+	
+	public Shape getShape() {
+		return shape;
+	}
+	
+	public Material getMaterial() {
+		return material;
+	}
+	
+	// do geometry+material raytrace
+	public Hit traceRay(Ray ray) {
+		Hit hit = shape.intersect(ray);
+		hit.hitObject = this;
+		return hit;
+	}
+	
+}

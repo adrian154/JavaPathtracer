@@ -14,8 +14,9 @@ public class Mesh implements Shape {
 
 	public int[] faces;
 	public Vector[] vertexes;
+	public Vector[] textureCoordinates;
 	
-	public Mesh(File file) throws IOException {
+	public Mesh(File file, Matrix matrix) throws IOException {
 		
 		BufferedReader reader = new BufferedReader(new FileReader(file));
 		
@@ -23,6 +24,7 @@ public class Mesh implements Shape {
 		int lineNum = 1;
 		
 		List<Vector> vertexes = new ArrayList<Vector>();
+		//List<Vector> textureCoordinates = new ArrayList<Vector>();
 		List<Integer> faces = new ArrayList<Integer>();
 		
 		while((line = reader.readLine()) != null) {
@@ -41,20 +43,22 @@ public class Mesh implements Shape {
 					throw new RuntimeException("File \"" + file.getName() + "\", line " + lineNum + ": wrong number of parameters for vertex (expected 4)");
 				}
 				
-				vertexes.add(new Vector(
+				vertexes.add(matrix.transform(new Vector(
 					Double.parseDouble(parts[1]),
 					Double.parseDouble(parts[2]),
 					Double.parseDouble(parts[3])
-				));
+				)));
 				
 			} else if(parts[0].equals("f")) {
 				
 				// This could be extended into a loop for arbitrary-length polygons
 				// In practice, few meshes will ever have anything but tris and quads
 				if(parts.length == 4) {
+					
 					faces.add(Integer.parseInt(parts[1].split("/")[0]) - 1);
 					faces.add(Integer.parseInt(parts[2].split("/")[0]) - 1);
 					faces.add(Integer.parseInt(parts[3].split("/")[0]) - 1);
+					
 				} else if(parts.length == 5) {
 					
 					// Useless micro-optimization since I really can't help myself
@@ -70,6 +74,8 @@ public class Mesh implements Shape {
 					faces.add(Integer.parseInt(parts[4].split("/")[0]) - 1);
 				
 				}
+				
+			} else if(parts[0].equals("vt")) {
 				
 			}
 			
@@ -87,6 +93,7 @@ public class Mesh implements Shape {
 	// Moller-Trumbore triangle intersection algorithm
 	// Uses barycentric coordinates to test triangle intersection
 	// (...as well as some general math trickery)
+	// Normals are not normalized. This is to reduce the number of square roots.
 	public static final Hit intsersectTri(Ray ray, Vector v0, Vector v1, Vector v2) {
 		
 		Vector edge1 = v1.minus(v0);
@@ -113,7 +120,7 @@ public class Mesh implements Shape {
 		if(t > Raytracer.EPSILON) {
 			
 			// Make sure normal faces ray direction
-			Vector normal = edge1.cross(edge2).normalized();
+			Vector normal = edge1.cross(edge2);
 			if(normal.dot(ray.direction) > 0) {
 				normal.invert();
 			}
@@ -136,13 +143,12 @@ public class Mesh implements Shape {
 		return nearest;
 	
 	}
-
-	// For debugging uses
+	
 	public Hit intersect(Ray ray) {
 		
 		Hit nearest = Hit.MISS;
-		for(int i = 0; i < this.faces.length / 3; i++) {
-			Hit cur = Mesh.intsersectTri(ray, vertexes[faces[i * 3]], vertexes[faces[i * 3 + 1]], vertexes[faces[i * 3 + 2]]);
+		for(int i = 0; i < faces.length; i += 3) {
+			Hit cur = Mesh.intsersectTri(ray, vertexes[faces[i]], vertexes[faces[i + 1]], vertexes[faces[i + 2]]);
 			if(cur.distance < nearest.distance) nearest = cur;
 		}
 		

@@ -25,16 +25,7 @@ public class Pathtracer extends Raytracer {
 	public int getMaxBounces() {
 		return this.maxLightBounces;
 	}
-	
-	// scatter diffuse
-	public Vector scatterDiffuse(Vector normal) {
-		Vector random = Vector.uniformInHemisphere();
-		Vector bvx = normal.getOrthagonal();
-		Vector bvy = normal;
-		Vector bvz = bvy.cross(bvx);
-		return Vector.localToWorldCoords(random, bvx, bvy, bvz);
-	}
-	
+
 	// trace a ray
 	public Vector pathtraceRay(Ray ray, int bounces) {
 		
@@ -49,10 +40,11 @@ public class Pathtracer extends Raytracer {
 			Vector texCoords = hit.textureCoordinates;
 			
 			// Recursively trace
-			Vector diffuseDir = scatterDiffuse(hit.normal);
-			Ray nextRay = new Ray(hit.point, diffuseDir);
+			//Vector nextDir = scatterDiffuse(hit.normal);
+			Vector nextDir = mat.scatter(ray.direction, hit.normal);
+			Ray nextRay = new Ray(hit.point, nextDir);
 			
-			double factor = hit.normal.dot(diffuseDir);
+			double factor = hit.normal.dot(nextDir);
 			Vector recursive = pathtraceRay(nextRay, bounces + 1).times(factor).times(mat.getColor(texCoords.x, texCoords.y));
 			
 			return mat.getEmission(texCoords.x, texCoords.y).plus(recursive.times(factor));
@@ -92,7 +84,7 @@ public class Pathtracer extends Raytracer {
 				// apply jitter
 				Vector result = new Vector();
 				for(int i = 0; i < samplesPerPixel; i++) {
-					Ray ray = camera.getCameraRay(imageX + pixelWidth * Math.random(), imageY + pixelHeight * Math.random());
+					Ray ray = camera.getCameraRay(imageX + pixelWidth * Math.random() - pixelWidth / 2, imageY + pixelHeight * Math.random() - pixelHeight / 2);
 					result.add(this.pathtraceRay(ray, 0));
 				}
 				

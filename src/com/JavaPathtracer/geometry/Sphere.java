@@ -49,4 +49,8 @@ public class Sphere implements Shape {
 		
 	}
 	
+	public Sphere getBoundingSphere() {
+		return this;
+	}
+	
 }

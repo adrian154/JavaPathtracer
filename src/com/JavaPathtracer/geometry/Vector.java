@@ -44,8 +44,22 @@ public class Vector implements Sampleable {
 		return new Vector(this.x + other.x, this.y + other.y, this.z + other.z);
 	}
 	
+	public Vector iadd(Vector other) {
+		this.x += other.x;
+		this.y += other.y;
+		this.z += other.z;
+		return this;
+	}
+	
 	public Vector minus(Vector other) {
 		return new Vector(this.x - other.x, this.y - other.y, this.z - other.z);
+	}
+	
+	public Vector isub(Vector other) {
+		this.x -= other.x;
+		this.y -= other.y;
+		this.z -= other.z;
+		return this;
 	}
 
 	// Direct multiplication, should only be used on colors
@@ -53,14 +67,35 @@ public class Vector implements Sampleable {
 		return new Vector(this.x * other.x, this.y * other.y, this.z * other.z);
 	}
 	
+	public Vector imul(Vector other) {
+		this.x *= other.x;
+		this.y *= other.y;
+		this.z *= other.z;
+		return this;
+	}
+	
 	// Scalar multiplication
 	public Vector times(double scalar) {
 		return new Vector(this.x * scalar, this.y * scalar, this.z * scalar);
 	}
 	
+	public Vector imul(double scalar) {
+		this.x *= scalar;
+		this.y *= scalar;
+		this.z *= scalar;
+		return this;
+	}
+	
 	// Scalar division
 	public Vector divBy(double scalar) {
 		return new Vector(this.x / scalar, this.y / scalar, this.z / scalar);
+	}
+	
+	public Vector idiv(double scalar) {
+		this.x /= scalar;
+		this.y /= scalar;
+		this.z /= scalar;
+		return this;
 	}
 	
 	// Faster than length()
@@ -76,6 +111,13 @@ public class Vector implements Sampleable {
 	// Normalize vector
 	public Vector normalized() {
 		return this.times(1 / this.length());
+	}
+	
+	public void normalize() {
+		double length = this.length();
+		this.x /= length;
+		this.y /= length;
+		this.z /= length;
 	}
 	
 	// Cross product

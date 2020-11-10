@@ -59,7 +59,7 @@ public class BoundingBox implements Shape {
 		double tmin = Math.max(Math.max(Math.min(t1, t2), Math.min(t3, t4)), Math.min(t5, t6));
 		double tmax = Math.min(Math.min(Math.max(t1, t2), Math.max(t3, t4)), Math.max(t5, t6));
 		
-		if(tmax < 0)
+		if(tmax < Raytracer.EPSILON)
 			return Hit.MISS;
 		
 		if(tmin > tmax)
@@ -88,7 +88,7 @@ public class BoundingBox implements Shape {
 		double tmax = Math.min(Math.min(Math.max(xmin, xmax), Math.max(ymin, ymax)), Math.max(zmin, zmax));
 	
 		/* Negative: AABB is behind the ray. */
-		if(tmax < 0) {
+		if(tmax < Raytracer.EPSILON) {
 			return Hit.MISS;
 		}
 		
@@ -127,11 +127,21 @@ public class BoundingBox implements Shape {
 		return point.x > this.min.x && point.y > this.min.y && point.z > this.min.z && point.x < this.max.x && point.y < this.max.y && point.z < this.max.z;
 	}
 	
+	public Sphere toSphere() {
+		Vector center = this.centroid();
+		return new Sphere(center, this.max.minus(center).length());
+	}
+	
 	public static final boolean overlap(BoundingBox a, BoundingBox b) {
 		return (a.min.x <= b.min.x && b.min.x <= a.max.x) ||
 				   (a.min.x <= b.max.x && b.max.x <= a.max.x) ||
 				   (b.min.x <= a.min.x && a.min.x <= b.max.x) ||
 				   (b.min.x <= a.max.x && a.max.x <= b.max.x);
+	}
+	
+	public void pad(double amount) {
+		this.min.add(new Vector(-amount, -amount, -amount));
+		this.max.add(new Vector(amount, amount, amount));
 	}
 	
 	// For debugging purposes
