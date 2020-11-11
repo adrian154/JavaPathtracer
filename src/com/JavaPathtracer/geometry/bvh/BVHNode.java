@@ -164,14 +164,9 @@ public class BVHNode extends BoundingBox implements Shape {
 			// Split!
 			this.left = new BVHNode(this.mesh, minSplitLeftBox, minSplitLeftChildren);
 			this.right = new BVHNode(this.mesh, minSplitRightBox, minSplitRightChildren);
-
-			System.out.println(Main.repeat("\t", depth) + "LEFT: " + left + ", " + left.children.size());
 			
 			// Recurse
 			this.left.split(depth + 1);
-			
-			System.out.println(Main.repeat("\t", depth) + "RIGHT: " + right + ", " + right.children.size());
-			
 			this.right.split(depth + 1);
 			
 		} else {
@@ -189,7 +184,7 @@ public class BVHNode extends BoundingBox implements Shape {
 	public Hit intersect(Ray ray) {
 		
 		// intersect self, first
-		Hit self = super.intersect(ray);
+		Hit self = super.intersectFast(ray);
 		if(!self.hit) return self;
 		
 		if(left == null && right == null) {

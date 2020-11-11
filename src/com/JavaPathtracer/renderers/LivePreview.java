@@ -1,22 +1,20 @@
 package com.JavaPathtracer.renderers;
 
-import com.JavaPathtracer.Raytracer;
 import com.JavaPathtracer.material.Texture;
 
-public class LivePreviewRenderer extends ParallelRenderer {
+public class LivePreview {
 
 	private int scale;
+	private Texture output;
 	private LivePreviewFrame frame;
 	
-	public LivePreviewRenderer(Raytracer pathtracer, int tiles, int scale) {
-		super(pathtracer, tiles);
+	public LivePreview(Texture output, int scale) {
+		this.output = output;
 		this.scale = scale;
 	}
-	
-	@Override
-	public void render(Texture output) {
+
+	public void start() {
 		this.frame = new LivePreviewFrame(output, scale);
-		super.render(output);
 	}
 
 	public LivePreviewFrame getPreviewFrame() {

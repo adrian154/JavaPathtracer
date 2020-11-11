@@ -11,12 +11,13 @@ import com.JavaPathtracer.Raytracer;
 
 // Don't use naked meshes, use BVHMesh!
 // This class has a few glaring flaws that make it unusable even if you forcibly trace rays against every ray
-public class Mesh {
+public class Mesh implements Shape {
 
 	public int[] faces;
 	public int[] texCoordIndices;
 	public Vector[] vertexes;
 	public Vector[] textureCoordinates;
+	public boolean hasTextureData;
 	
 	public Mesh(File file, Matrix matrix) throws IOException {
 		
@@ -65,9 +66,9 @@ public class Mesh {
 					faces.add(Integer.parseInt(parts[2].split("/")[0]) - 1);
 					faces.add(Integer.parseInt(parts[3].split("/")[0]) - 1);
 					
-					texCoordIndices.add(Integer.parseInt(parts[1].split("/")[1]) - 1);
-					texCoordIndices.add(Integer.parseInt(parts[2].split("/")[1]) - 1);
-					texCoordIndices.add(Integer.parseInt(parts[3].split("/")[1]) - 1);
+					if(parts[1].split("/").length > 1) texCoordIndices.add(Integer.parseInt(parts[1].split("/")[1]) - 1);
+					if(parts[2].split("/").length > 1) texCoordIndices.add(Integer.parseInt(parts[2].split("/")[1]) - 1);
+					if(parts[3].split("/").length > 1) texCoordIndices.add(Integer.parseInt(parts[3].split("/")[1]) - 1);
 					
 				} else if(parts.length == 5) {
 					
@@ -86,7 +87,9 @@ public class Mesh {
 				}
 				
 			} else if(parts[0].equals("vt")) {
-					
+				
+				hasTextureData = true;
+				
 				if(parts.length != 3) {
 					reader.close();
 					throw new RuntimeException("File \"" + file.getName() + "\", line " + lineNum + ": wrong number of components for texture coordinate (expected 2)");
@@ -174,17 +177,29 @@ public class Mesh {
 		
 		}
 		
-		if(nearest.hit) {
-
+		if(nearest.hit && hasTextureData) {
 			Vector tex1 = textureCoordinates[texCoordIndices[nearestIndex * 3]];
 			Vector tex2 = textureCoordinates[texCoordIndices[nearestIndex * 3 + 1]];
 			Vector tex3 = textureCoordinates[texCoordIndices[nearestIndex * 3 + 2]];
 			nearest.textureCoordinates = tex1.plus((tex2.minus(tex1).times(nearest.textureCoordinates.x)).plus(tex3.minus(tex1).times(nearest.textureCoordinates.y)));
-			
 		}
 		
 		return nearest;
 	
+	}
+	
+	@Override
+	@Deprecated
+	public Hit intersect(Ray ray) {
+		
+		Hit nearest = Hit.MISS;
+		for(int i = 0; i < this.faces.length; i+= 3) {
+			Hit cur = Mesh.intsersectTri(ray, vertexes[faces[i]], vertexes[faces[i + 1]], vertexes[faces[i + 2]]);
+			if(cur.distance < nearest.distance) nearest = cur;
+		}
+		
+		return nearest;
+		
 	}
 	
 }

@@ -8,8 +8,8 @@ import com.JavaPathtracer.geometry.Vector;
 // So... oh well.
 public class CombineMaterial implements IMaterial {
 	
-	private IMaterial A, B;
-	private ISampleableScalar proportion;
+	public IMaterial A, B;
+	public ISampleableScalar proportion;
 	
 	public CombineMaterial(IMaterial A, IMaterial B, ISampleableScalar proportion) {
 		this.A = A;
@@ -17,21 +17,24 @@ public class CombineMaterial implements IMaterial {
 		this.proportion = proportion;
 	}
 
+	@Deprecated
 	public Vector scatter(double u, double v, Vector incident, Vector normal) {
 		return (Math.random() < proportion.sampleScalar(u, v) ? A : B).scatter(u,  v, incident, normal);
 	}
 	
+	@Deprecated
 	public Vector getEmission(double u, double v) {
 		double prop = proportion.sampleScalar(u, v);
 		return A.getEmission(u, v).times(prop).plus(B.getEmission(u, v).times(1 - prop));
 	}
 	
+	@Deprecated
 	public Vector getColor(double u, double v) {
 		double prop = proportion.sampleScalar(u, v);
 		return A.getColor(u, v).times(prop).plus(B.getColor(u, v).times(1 - prop));
 	}
 	
-	// TODO: Fix. This is totally wrong and nonsensical.
+	@Deprecated
 	public boolean doDotProduct(double u, double v) {
 		return Math.random() > proportion.sampleScalar(u, v) ? A.doDotProduct(u, v) : B.doDotProduct(u, v);
 	}

@@ -23,9 +23,9 @@ public class Matrix {
 	
 	public static Matrix Translate(double x, double y, double z) {
 		Matrix result = new Matrix();
-		result.factors[12] = x;
-		result.factors[13] = y;
-		result.factors[14] = z;
+		result.factors[3] = x;
+		result.factors[7] = y;
+		result.factors[11] = z;
 		return result;
 	}
 	
@@ -53,10 +53,10 @@ public class Matrix {
 		Matrix result = new Matrix();
 		double cos = Math.cos(angle);
 		double sin = Math.sin(angle);
-		result.factors[4] = cos;
-		result.factors[5] = sin;
-		result.factors[8] = -sin;
-		result.factors[9] = cos;
+		result.factors[5] = cos;
+		result.factors[6] = -sin;
+		result.factors[7] = sin;
+		result.factors[8] = cos;
 		return result;
 	}
 	
@@ -64,10 +64,10 @@ public class Matrix {
 		Matrix result = new Matrix();
 		double cos = Math.cos(angle);
 		double sin = Math.sin(angle);
-		result.factors[1] = cos;
-		result.factors[9] = sin;
-		result.factors[0] = -sin;
-		result.factors[8] = cos;
+		result.factors[0] = cos;
+		result.factors[2] = sin;
+		result.factors[8] = -sin;
+		result.factors[10] = cos;
 		return result;
 	}
 	
@@ -75,10 +75,10 @@ public class Matrix {
 		Matrix result = new Matrix();
 		double cos = Math.cos(angle);
 		double sin = Math.sin(angle);
-		result.factors[5] = cos;
-		result.factors[1] = sin;
-		result.factors[4] = -sin;
 		result.factors[0] = cos;
+		result.factors[1] = -sin;
+		result.factors[4] = sin;
+		result.factors[5] = cos;
 		return result;
 	}
 	

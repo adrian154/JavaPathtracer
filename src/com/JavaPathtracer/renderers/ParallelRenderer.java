@@ -9,10 +9,10 @@ import com.JavaPathtracer.material.Texture;
 
 public class ParallelRenderer extends Renderer {
 
-	private Raytracer raytracer;
-	private ExecutorService executorService;
-	private final int threads;
-	private final int tiles;
+	protected Raytracer raytracer;
+	protected ExecutorService executorService;
+	protected final int threads;
+	protected final int tiles;
 
 	public ParallelRenderer(Raytracer raytracer, int tiles) {
 		this.raytracer = raytracer;

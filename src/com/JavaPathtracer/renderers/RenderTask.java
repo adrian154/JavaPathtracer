@@ -7,13 +7,13 @@ import com.JavaPathtracer.material.Texture;
 
 public class RenderTask implements Runnable {
 
-	private Raytracer raytracer;
-	private int startX;
-	private int startY;
-	private int endX;
-	private int endY;
-	private Texture output;
-	private CountDownLatch latch;
+	protected Raytracer raytracer;
+	protected int startX;
+	protected int startY;
+	protected int endX;
+	protected int endY;
+	protected Texture output;
+	protected CountDownLatch latch;
 	
 	public RenderTask(Raytracer raytracer, int startX, int startY, int endX, int endY, Texture output, CountDownLatch latch) {
 		this.raytracer = raytracer;

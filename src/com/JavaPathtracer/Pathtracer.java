@@ -3,6 +3,7 @@ package com.JavaPathtracer;
 import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Vector;
+import com.JavaPathtracer.material.CombineMaterial;
 import com.JavaPathtracer.material.IMaterial;
 import com.JavaPathtracer.material.Texture;
 import com.JavaPathtracer.tonemapping.IToneMapper;
@@ -42,11 +43,17 @@ public class Pathtracer extends Raytracer {
 		Hit hit = scene.traceRay(ray);
 		if(hit.hit) {
 			
-			IMaterial mat = hit.hitObject.getMaterial();
 			Vector texCoords = hit.textureCoordinates;
+			IMaterial mat = hit.hitObject.getMaterial();
+			if(mat instanceof CombineMaterial) {
+				CombineMaterial mtl = (CombineMaterial)mat;
+				if(Math.random() < mtl.proportion.sampleScalar(texCoords.x, texCoords.y))
+					mat = mtl.A;
+				else
+					mat = mtl.B;
+			}
 			
 			// Recursively trace
-			//Vector nextDir = scatterDiffuse(hit.normal);
 			Vector nextDir = mat.scatter(texCoords.x, texCoords.y, ray.direction, hit.normal);
 			Ray nextRay = new Ray(hit.point, nextDir);
 			

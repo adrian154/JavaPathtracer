@@ -16,6 +16,7 @@ public class BVHMesh extends Mesh implements Shape {
 	public BVHMesh(File file, Matrix matrix) throws IOException {
 		super(file, matrix);
 		BVHRoot = new BVHNode(this);
+		System.out.println("Box: " + BVHRoot);
 	}
 
 	public Hit intersect(Ray ray) {

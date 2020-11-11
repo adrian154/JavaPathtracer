@@ -1,0 +1,50 @@
+package com.JavaPathtracer.renderers;
+
+import java.util.concurrent.CountDownLatch;
+
+import com.JavaPathtracer.IterativePathtracer;
+import com.JavaPathtracer.material.Texture;
+
+public class IterativeRenderer extends ParallelRenderer {
+
+	private IterativePathtracer pathtracer;
+	
+	public IterativeRenderer(IterativePathtracer pathtracer, int tiles) {
+		super(pathtracer, tiles);
+		this.pathtracer = pathtracer;
+	}
+	
+	@Override
+	public void render(Texture output) {
+		
+		for(int iter = 1;; iter++) {
+			CountDownLatch latch = new CountDownLatch(this.threads);
+			
+			int tileWidth = output.getWidth() / this.tiles;
+			int tileHeight = output.getHeight() / this.tiles;
+			for(int x = 0; x < this.tiles; x++) {
+				for(int y = 0; y < this.tiles; y++) {
+					this.executorService.execute(new IterativeRenderTask(
+						this.pathtracer,
+						x * tileWidth,
+						y * tileHeight,
+						(x + 1) * tileWidth,
+						(y + 1) * tileHeight,
+						output,
+						latch,
+						iter
+					));
+				}
+			}
+			
+			try {
+				latch.await();
+			} catch(InterruptedException excep) {
+				executorService.shutdownNow();
+				break;
+			}
+		}
+		
+	}
+	
+}

@@ -40,7 +40,7 @@ public class BoundingBox implements Shape {
 		return min.plus(max).divBy(2);
 	}
 
-	public Hit intersect(Ray ray) {
+	public Hit intersectFast(Ray ray) {
 		
 		// Yet another micro-optimization!
 		double invX = 1 / ray.direction.x;
@@ -71,7 +71,8 @@ public class BoundingBox implements Shape {
 		
 	}
 
-	public Hit intersectSlow(Ray ray) {
+	@Override
+	public Hit intersect(Ray ray) {
 		
 		/* Intersections with all 6 AABB planes */
 		double xmin = (min.x - ray.origin.x) / ray.direction.x;
@@ -115,7 +116,7 @@ public class BoundingBox implements Shape {
 			normal = new Vector(0.0, 0.0, Math.signum(deltaZ));
 		}
 		
-		return new Hit(point, normal, 0, new Vector(0.0, 0.0, 0.0));
+		return new Hit(point, normal, t, new Vector(0.0, 0.0, 0.0));
 		
 	}
 	
