@@ -2,6 +2,10 @@ package com.JavaPathtracer.material;
 
 import com.JavaPathtracer.geometry.Vector;
 
+// This class is kind of terrible and reflects the flawed nature of the abstractions I have chosen for materials
+// The ideal way to implement this would be to pick a material randomly and use it for the rest of the pathtrace() cycle
+// However, that's not possible in the current IMaterial system. Trying to do so would be jamming a square peg into a round hole.
+// So... oh well.
 public class CombineMaterial implements IMaterial {
 	
 	private IMaterial A, B;
@@ -27,9 +31,9 @@ public class CombineMaterial implements IMaterial {
 		return A.getColor(u, v).times(prop).plus(B.getColor(u, v).times(1 - prop));
 	}
 	
-	// TODO: Think about whether this is such a good idea.
+	// TODO: Fix. This is totally wrong and nonsensical.
 	public boolean doDotProduct(double u, double v) {
-		return proportion.sampleScalar(u, v) > 0.5 ? A.doDotProduct(u, v) : B.doDotProduct(u, v);
+		return Math.random() > proportion.sampleScalar(u, v) ? A.doDotProduct(u, v) : B.doDotProduct(u, v);
 	}
 	
 }
