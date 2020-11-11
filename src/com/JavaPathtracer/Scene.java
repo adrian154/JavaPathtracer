@@ -29,10 +29,9 @@ public class Scene {
 	public Vector getSkyEmission(Vector direction) {
 		Vector invDir = new Vector(0.0, 0.0, 0.0).minus(direction);
 		double azimuth = (Math.atan2(invDir.z, invDir.x) + 0.5) % (2 * Math.PI);
-		double inclination = -Math.asin(invDir.y);
+		double inclination = Math.asin(invDir.y);
 		double u = 0.5 + azimuth / (2 * Math.PI);
 		double v = 0.5 - inclination / Math.PI;
-		
 		return skyEmission.sample(u, v);
 	}
 	

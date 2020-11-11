@@ -6,6 +6,8 @@ import java.io.IOException;
 
 import com.JavaPathtracer.geometry.BVHMesh;
 import com.JavaPathtracer.geometry.Vector;
+import com.JavaPathtracer.material.Checkerboard;
+import com.JavaPathtracer.material.CombineMaterial;
 import com.JavaPathtracer.material.DiffuseMaterial;
 import com.JavaPathtracer.material.IMaterial;
 import com.JavaPathtracer.material.Texture;
@@ -16,9 +18,9 @@ public class Main {
 
 	public static Camera createCamera() {
 	
-		Camera camera = new Camera(new Vector(1.0, 1.0, -1.0));
+		Camera camera = new Camera(new Vector(1.0, 0.4, -1.0).times(2.0));
 		camera.lookAt(new Vector(0, 0, 0));
-		camera.setFOV(40);
+		camera.setFOV(30);
 		
 		return camera;
 		
@@ -32,7 +34,9 @@ public class Main {
 		scene.setSkyEmission(new Vector(3.0));
 		
 		// materials
-		IMaterial mat = new DiffuseMaterial(new Texture(new File("assets/spot/spot.png")), new Vector(0.0));
+		IMaterial matdiff = new DiffuseMaterial(new Texture(new File("assets/spot/spot.png")), new Vector(0.0));
+		IMaterial matdiff2 = new DiffuseMaterial(new Vector(1.0, 0.0, 0.0), new Vector(0.0));
+		IMaterial mat = new CombineMaterial(matdiff, matdiff2, new Checkerboard());
 		
 		scene.add(new BVHMesh(new File("assets/spot/spot.obj")), mat);
 		
@@ -53,7 +57,7 @@ public class Main {
 		Raytracer rt = new DebugTracer(camera, scene);
 		//Raytracer rt = new Pathtracer(5, 500, camera, scene, new InverseTonemapper());
 		
-		Renderer renderer = new LivePreviewRenderer(rt, 4, 1);
+		Renderer renderer = new LivePreviewRenderer(rt, 4, 2);
 		renderer.render(output);
 		
 		long end = System.currentTimeMillis();
