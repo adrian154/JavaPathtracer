@@ -45,6 +45,10 @@ public class Matrix {
 		return Matrix.Scale(scale.x, scale.y, scale.z);
 	}
 	
+	public static Matrix Scale(double scale) {
+		return Matrix.Scale(scale, scale, scale);
+	}
+	
 	public static Matrix RotateX(double angle) {
 		Matrix result = new Matrix();
 		double cos = Math.cos(angle);

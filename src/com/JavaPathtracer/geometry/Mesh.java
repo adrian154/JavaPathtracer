@@ -10,9 +10,11 @@ import java.util.List;
 import com.JavaPathtracer.Raytracer;
 
 // Don't use naked meshes, use BVHMesh!
-public class Mesh implements Shape {
+// This class has a few glaring flaws that make it unusable even if you forcibly trace rays against every ray
+public class Mesh {
 
 	public int[] faces;
+	public int[] texCoordIndices;
 	public Vector[] vertexes;
 	public Vector[] textureCoordinates;
 	
@@ -24,8 +26,9 @@ public class Mesh implements Shape {
 		int lineNum = 1;
 		
 		List<Vector> vertexes = new ArrayList<Vector>();
-		//List<Vector> textureCoordinates = new ArrayList<Vector>();
+		List<Vector> textureCoordinates = new ArrayList<Vector>();
 		List<Integer> faces = new ArrayList<Integer>();
+		List<Integer> texCoordIndices = new ArrayList<Integer>();
 		
 		while((line = reader.readLine()) != null) {
 			
@@ -40,7 +43,8 @@ public class Mesh implements Shape {
 			if(parts[0].equals("v")) {
 				
 				if(parts.length != 4) {
-					throw new RuntimeException("File \"" + file.getName() + "\", line " + lineNum + ": wrong number of parameters for vertex (expected 4)");
+					reader.close();
+					throw new RuntimeException("File \"" + file.getName() + "\", line " + lineNum + ": wrong number of components for vertex (expected 3)");
 				}
 				
 				vertexes.add(matrix.transform(new Vector(
@@ -51,6 +55,8 @@ public class Mesh implements Shape {
 				
 			} else if(parts[0].equals("f")) {
 				
+				
+				
 				// This could be extended into a loop for arbitrary-length polygons
 				// In practice, few meshes will ever have anything but tris and quads
 				if(parts.length == 4) {
@@ -58,6 +64,10 @@ public class Mesh implements Shape {
 					faces.add(Integer.parseInt(parts[1].split("/")[0]) - 1);
 					faces.add(Integer.parseInt(parts[2].split("/")[0]) - 1);
 					faces.add(Integer.parseInt(parts[3].split("/")[0]) - 1);
+					
+					texCoordIndices.add(Integer.parseInt(parts[1].split("/")[1]) - 1);
+					texCoordIndices.add(Integer.parseInt(parts[2].split("/")[1]) - 1);
+					texCoordIndices.add(Integer.parseInt(parts[3].split("/")[1]) - 1);
 					
 				} else if(parts.length == 5) {
 					
@@ -76,8 +86,20 @@ public class Mesh implements Shape {
 				}
 				
 			} else if(parts[0].equals("vt")) {
+					
+				if(parts.length != 3) {
+					reader.close();
+					throw new RuntimeException("File \"" + file.getName() + "\", line " + lineNum + ": wrong number of components for texture coordinate (expected 2)");
+				}
+				
+				textureCoordinates.add(new Vector(
+					Double.parseDouble(parts[1]),
+					Double.parseDouble(parts[2]),
+					0.0
+				));
 				
 			}
+			
 			
 			lineNum++;
 			
@@ -86,6 +108,11 @@ public class Mesh implements Shape {
 		// Convert arraylists to arrays
 		this.vertexes = vertexes.toArray(new Vector[0]);
 		this.faces = faces.stream().mapToInt(Integer::valueOf).toArray();
+		this.texCoordIndices = texCoordIndices.stream().mapToInt(Integer::valueOf).toArray();
+		this.textureCoordinates = textureCoordinates.toArray(new Vector[0]);
+		
+		System.out.println("Mesh statistics: Vertexes=" + vertexes.size() + ", faces=" + faces.size() + ", texCoordIdxes=" + texCoordIndices.size() + ", texCoords=" + textureCoordinates.size());
+		
 		reader.close();
 		
 	}
@@ -94,6 +121,7 @@ public class Mesh implements Shape {
 	// Uses barycentric coordinates to test triangle intersection
 	// (...as well as some general math trickery)
 	// Normals are not normalized. This is to reduce the number of square roots.
+	// THe barycentric coordinates are returned as the texture coordinates for convenience, but beware they are not the same thing!!
 	public static final Hit intsersectTri(Ray ray, Vector v0, Vector v1, Vector v2) {
 		
 		Vector edge1 = v1.minus(v0);
@@ -135,25 +163,28 @@ public class Mesh implements Shape {
 	public Hit intersect(Ray ray, int[] prims) {
 
 		Hit nearest = Hit.MISS;
+		int nearestIndex = 0;
 		for(int i: prims) {
+			
 			Hit cur = Mesh.intsersectTri(ray, vertexes[faces[i * 3]], vertexes[faces[i * 3 + 1]], vertexes[faces[i * 3 + 2]]);
-			if(cur.distance < nearest.distance) nearest = cur;
+			if(cur.distance < nearest.distance) {
+				nearest = cur;
+				nearestIndex = i;
+			}
+		
+		}
+		
+		if(nearest.hit) {
+
+			Vector tex1 = textureCoordinates[texCoordIndices[nearestIndex * 3]];
+			Vector tex2 = textureCoordinates[texCoordIndices[nearestIndex * 3 + 1]];
+			Vector tex3 = textureCoordinates[texCoordIndices[nearestIndex * 3 + 2]];
+			nearest.textureCoordinates = tex1.plus((tex2.minus(tex1).times(nearest.textureCoordinates.x)).plus(tex3.minus(tex1).times(nearest.textureCoordinates.y)));
+			
 		}
 		
 		return nearest;
 	
-	}
-	
-	public Hit intersect(Ray ray) {
-		
-		Hit nearest = Hit.MISS;
-		for(int i = 0; i < faces.length; i += 3) {
-			Hit cur = Mesh.intsersectTri(ray, vertexes[faces[i]], vertexes[faces[i + 1]], vertexes[faces[i + 2]]);
-			if(cur.distance < nearest.distance) nearest = cur;
-		}
-		
-		return nearest;
-		
 	}
 	
 }

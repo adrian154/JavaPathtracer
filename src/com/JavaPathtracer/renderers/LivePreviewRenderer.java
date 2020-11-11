@@ -6,6 +6,7 @@ import com.JavaPathtracer.material.Texture;
 public class LivePreviewRenderer extends ParallelRenderer {
 
 	private int scale;
+	private LivePreviewFrame frame;
 	
 	public LivePreviewRenderer(Raytracer pathtracer, int tiles, int scale) {
 		super(pathtracer, tiles);
@@ -14,8 +15,12 @@ public class LivePreviewRenderer extends ParallelRenderer {
 	
 	@Override
 	public void render(Texture output) {
-		LivePreviewFrame frame = new LivePreviewFrame(output, scale);
+		this.frame = new LivePreviewFrame(output, scale);
 		super.render(output);
+	}
+
+	public LivePreviewFrame getPreviewFrame() {
+		return this.frame;
 	}
 	
 }

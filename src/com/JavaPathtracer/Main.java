@@ -4,24 +4,20 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-import com.JavaPathtracer.geometry.Plane;
-import com.JavaPathtracer.geometry.Sphere;
+import com.JavaPathtracer.geometry.BVHMesh;
 import com.JavaPathtracer.geometry.Vector;
-import com.JavaPathtracer.material.CombineMaterial;
 import com.JavaPathtracer.material.DiffuseMaterial;
 import com.JavaPathtracer.material.IMaterial;
-import com.JavaPathtracer.material.RoughMaterial;
-import com.JavaPathtracer.material.SampleableScalar;
 import com.JavaPathtracer.material.Texture;
 import com.JavaPathtracer.renderers.LivePreviewRenderer;
 import com.JavaPathtracer.renderers.Renderer;
-import com.JavaPathtracer.tonemapping.InverseTonemapper;
 
 public class Main {
 
 	public static Camera createCamera() {
 	
-		Camera camera = new Camera(new Vector(0.0, 0.0, 0.0));
+		Camera camera = new Camera(new Vector(1.0, 1.0, -1.0));
+		camera.lookAt(new Vector(0, 0, 0));
 		camera.setFOV(40);
 		
 		return camera;
@@ -36,14 +32,9 @@ public class Main {
 		scene.setSkyEmission(new Vector(3.0));
 		
 		// materials
-		IMaterial mat = new CombineMaterial(
-			new DiffuseMaterial(new Vector(0x72/255.0), new Vector(0.0)),
-			new RoughMaterial(new Vector(0x92/255.0, 0xf5/255.0, 0xf4/255.0), new Vector(0.0), new SampleableScalar(0.2)),
-			new Texture(new File("assets/map4.png"))
-		);
+		IMaterial mat = new DiffuseMaterial(new Texture(new File("assets/spot/spot.png")), new Vector(0.0));
 		
-		scene.add(new Plane(new Vector(0.0, 1.0, 0.0), new Vector(0.0, -1.0, 0.0)), mat);
-		scene.add(new Sphere(new Vector(0.0, 0.0, 3.0), 1.0), mat);
+		scene.add(new BVHMesh(new File("assets/spot/spot.obj")), mat);
 		
 		return scene;
 		
@@ -59,8 +50,8 @@ public class Main {
 		
 		long start = System.currentTimeMillis();
 		
-		//Raytracer rt = new DebugTracer(camera, scene);
-		Raytracer rt = new Pathtracer(5, 500, camera, scene, new InverseTonemapper());
+		Raytracer rt = new DebugTracer(camera, scene);
+		//Raytracer rt = new Pathtracer(5, 500, camera, scene, new InverseTonemapper());
 		
 		Renderer renderer = new LivePreviewRenderer(rt, 4, 1);
 		renderer.render(output);

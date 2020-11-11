@@ -294,8 +294,7 @@ public class RGBE {
      */
     public static void float2rgbe(byte[] rgbe, float red, float green, float blue) {
         float v;
-        int e;
-
+        
         v = red;
         if (green > v) {
             v = green;
@@ -321,7 +320,6 @@ public class RGBE {
      */
     public static void float2rgbe(byte[] rgbe, float red, float green, float blue,int off,int separation) {
         float v;
-        int e;
 
         v = red;
         if (green > v) {
@@ -348,7 +346,6 @@ public class RGBE {
      */
     public static void float2re(byte[] re, float red,int off,int separation) {
         float v;
-        int e;
 
         v = red;
 

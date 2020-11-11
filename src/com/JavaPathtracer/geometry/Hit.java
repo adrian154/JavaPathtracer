@@ -4,12 +4,12 @@ import com.JavaPathtracer.WorldObject;
 
 public class Hit {
 
-	public final boolean hit;					// Was there an intersection?
-	public final Vector point;					// Point of intersection
-	public final Vector normal;					// Point of normal
-	public final double distance;				// Distance from hitpoint to ray origin
-	public final Vector textureCoordinates;		// UV of the hit
-	public WorldObject hitObject;				// Hit object (used in tragically un-OOP ways!!)
+	public boolean hit;						// Was there an intersection?
+	public Vector point;					// Point of intersection
+	public Vector normal;					// Point of normal
+	public double distance;					// Distance from hitpoint to ray origin
+	public Vector textureCoordinates;		// UV of the hit
+	public WorldObject hitObject;			// Hit object (used in tragically un-OOP ways!!)
 	
 	public static final Hit MISS = new Hit(false, null, null, Double.POSITIVE_INFINITY, null);
 	public static final Hit BOGUS = new Hit(true, new Vector(1.0, 0.0, 0.0), new Vector(1.0, 0.0, 0.0), 0.0, new Vector(1.0, 0.0, 0.0));
