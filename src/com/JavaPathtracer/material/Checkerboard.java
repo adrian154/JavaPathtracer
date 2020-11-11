@@ -17,7 +17,7 @@ public class Checkerboard implements ISampleable, ISampleableScalar {
 	
 	@Override
 	public Vector sample(double u, double v) {
-		return ((int)(u / 0.03) % 2 == 0) ^ ((int)(v / 0.03) % 2 == 0) ? color1 : color2;
+		return ((int)(u / 0.1) % 2 == 0) ^ ((int)(v / 0.1) % 2 == 0) ? color1 : color2;
 	}
 	
 	@Override

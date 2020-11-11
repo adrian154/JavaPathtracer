@@ -43,7 +43,7 @@ public class Texture implements ISampleable, ISampleableScalar {
 		
 		// Clamp
 		x = Math.max(Math.min(x, texture.getWidth() - 1), 0);
-		y = texture.getHeight() - Math.max(Math.min(y, texture.getHeight() - 1), 0);
+		y = texture.getHeight() - Math.max(Math.min(y, texture.getHeight() - 1), 0) - 1;
 		
 		int rgb = texture.getRGB(x, y);
 		int r = (rgb >> 16) & 0xFF;
@@ -65,7 +65,7 @@ public class Texture implements ISampleable, ISampleableScalar {
 				
 		// Clamp
 		x = Math.max(Math.min(x, texture.getWidth() - 1), 0);
-		y = texture.getHeight() - Math.max(Math.min(y, texture.getHeight() - 1), 0);
+		y = texture.getHeight() - Math.max(Math.min(y, texture.getHeight() - 1), 0) - 1;
 				
 		int rgb = texture.getRGB(x, y);
 		int r = (rgb >> 16) & 0xFF;
