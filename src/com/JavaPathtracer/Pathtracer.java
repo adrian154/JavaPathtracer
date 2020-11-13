@@ -42,28 +42,8 @@ public class Pathtracer extends Raytracer {
 		
 		Hit hit = scene.traceRay(ray);
 		if(hit.hit) {
-			
-			Vector texCoords = hit.textureCoordinates;
 			IMaterial mat = hit.hitObject.getMaterial();
-			if(mat instanceof CombineMaterial) {
-				CombineMaterial mtl = (CombineMaterial)mat;
-				if(Math.random() < mtl.proportion.sampleScalar(texCoords.x, texCoords.y))
-					mat = mtl.A;
-				else
-					mat = mtl.B;
-			}
-			
-			// Recursively trace
-			Vector nextDir = mat.scatter(texCoords.x, texCoords.y, ray.direction, hit.normal);
-			Ray nextRay = new Ray(hit.point, nextDir);
-			
-			Vector recursive = pathtraceRay(nextRay, bounces + 1).times(mat.getColor(texCoords.x, texCoords.y));
-			if(mat.doDotProduct(texCoords.x, texCoords.y)) {
-				recursive.imul(hit.normal.dot(nextDir));
-			}
-			
-			return mat.getEmission(texCoords.x, texCoords.y).plus(recursive);
-			
+			return mat.shade(ray.direction, hit, bounces, this);
 		} else {
 			return scene.getSkyEmission(ray.direction);
 		}

@@ -12,6 +12,11 @@ public class IterativePathtracer extends Pathtracer {
 	public IterativePathtracer(Texture output, int maxLightBounces, Camera camera, Scene scene, IToneMapper toneMapper) {
 		super(maxLightBounces, 0, camera, scene, toneMapper);
 		image = new Vector[output.getWidth()][output.getHeight()];
+		for(int x = 0; x < image.length; x++) {
+			for(int y = 0; y < image[x].length; y++) {
+				image[x][y] = new Vector();
+			}
+		}
 	}
 	
 	public void pathtraceTile(Texture output, int startX, int startY, int endX, int endY, int iteration) {
@@ -32,8 +37,9 @@ public class IterativePathtracer extends Pathtracer {
 				// apply jitter
 				Ray ray = camera.getCameraRay(imageX + pixelWidth * Math.random() - pixelWidth / 2, imageY + pixelHeight * Math.random() - pixelHeight / 2);
 				Vector iter = this.pathtraceRay(ray, 0);
+				image[x][y].iadd(iter);
 				
-				Vector color = toneMapper.map(image[x][y].plus(iter).divBy(iteration));
+				Vector color = toneMapper.map(image[x][y].divBy(iteration));
 				output.set(x, output.getHeight() - y - 1, color);
 				
 			}

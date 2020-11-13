@@ -18,6 +18,7 @@ public class IterativeRenderTask extends RenderTask {
 	
 	public void run() {
 		iterTracer.pathtraceTile(output, startX, startY, endX, endY, this.iteration);
+		latch.countDown();
 	}
 	
 }

@@ -1,5 +1,7 @@
 package com.JavaPathtracer.material;
 
+import com.JavaPathtracer.Pathtracer;
+import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.Vector;
 
 // This class is kind of terrible and reflects the flawed nature of the abstractions I have chosen for materials
@@ -17,26 +19,9 @@ public class CombineMaterial implements IMaterial {
 		this.proportion = proportion;
 	}
 
-	@Deprecated
-	public Vector scatter(double u, double v, Vector incident, Vector normal) {
-		return (Math.random() < proportion.sampleScalar(u, v) ? A : B).scatter(u,  v, incident, normal);
-	}
-	
-	@Deprecated
-	public Vector getEmission(double u, double v) {
-		double prop = proportion.sampleScalar(u, v);
-		return A.getEmission(u, v).times(prop).plus(B.getEmission(u, v).times(1 - prop));
-	}
-	
-	@Deprecated
-	public Vector getColor(double u, double v) {
-		double prop = proportion.sampleScalar(u, v);
-		return A.getColor(u, v).times(prop).plus(B.getColor(u, v).times(1 - prop));
-	}
-	
-	@Deprecated
-	public boolean doDotProduct(double u, double v) {
-		return Math.random() > proportion.sampleScalar(u, v) ? A.doDotProduct(u, v) : B.doDotProduct(u, v);
+	@Override
+	public Vector shade(Vector incident, Hit hit, int bounces, Pathtracer pathtracer) {
+		return (Math.random() < proportion.sampleScalar(hit.textureCoordinates.x, hit.textureCoordinates.y) ? A : B).shade(incident, hit, bounces, pathtracer);
 	}
 	
 }

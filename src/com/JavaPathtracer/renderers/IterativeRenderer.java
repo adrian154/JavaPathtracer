@@ -1,5 +1,6 @@
 package com.JavaPathtracer.renderers;
 
+import java.io.File;
 import java.util.concurrent.CountDownLatch;
 
 import com.JavaPathtracer.IterativePathtracer;
@@ -17,7 +18,8 @@ public class IterativeRenderer extends ParallelRenderer {
 	@Override
 	public void render(Texture output) {
 		
-		for(int iter = 1;; iter++) {
+		for(int iter = 1; iter < 720; iter++) {
+			
 			CountDownLatch latch = new CountDownLatch(this.threads);
 			
 			int tileWidth = output.getWidth() / this.tiles;
@@ -39,10 +41,12 @@ public class IterativeRenderer extends ParallelRenderer {
 			
 			try {
 				latch.await();
+				output.saveToFile(new File("timelapse/iteration_" + iter + ".png"));
 			} catch(InterruptedException excep) {
 				executorService.shutdownNow();
 				break;
 			}
+			
 		}
 		
 	}

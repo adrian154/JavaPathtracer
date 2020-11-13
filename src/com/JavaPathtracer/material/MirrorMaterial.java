@@ -1,19 +1,23 @@
 package com.JavaPathtracer.material;
 
+import com.JavaPathtracer.Pathtracer;
+import com.JavaPathtracer.geometry.Hit;
+import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Vector;
 
-public class MirrorMaterial extends Material {
+public class MirrorMaterial extends BaseMaterial {
 
-	public MirrorMaterial(ISampleable color, ISampleable emission) {
-		super(color, emission);
+	public MirrorMaterial(ISampleable color) {
+		super(color);
 	}
 	
-	public Vector scatter(double u, double v, Vector incident, Vector normal) {
-		return incident.minus(normal.times(2 * normal.dot(incident)));
-	}
-	
-	public boolean doDotProduct(double u, double v) {
-		return false;
+	@Override
+	public Vector shade(Vector incident, Hit hit, int bounces, Pathtracer pathtracer) {
+		
+		Vector reflect = incident.minus(hit.normal.times(2 * hit.normal.dot(incident)));
+		Ray next = new Ray(hit.point, reflect);
+		return pathtracer.pathtraceRay(next, bounces + 1).times(this.getColor(hit.textureCoordinates.x, hit.textureCoordinates.y));
+		
 	}
 	
 }

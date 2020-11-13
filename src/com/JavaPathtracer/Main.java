@@ -13,6 +13,7 @@ import com.JavaPathtracer.geometry.Square;
 import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.material.CombineMaterial;
 import com.JavaPathtracer.material.DiffuseMaterial;
+import com.JavaPathtracer.material.EmissiveMaterial;
 import com.JavaPathtracer.material.IMaterial;
 import com.JavaPathtracer.material.MirrorMaterial;
 import com.JavaPathtracer.material.SampleableScalar;
@@ -20,7 +21,6 @@ import com.JavaPathtracer.material.Texture;
 import com.JavaPathtracer.renderers.LivePreview;
 import com.JavaPathtracer.renderers.ParallelRenderer;
 import com.JavaPathtracer.renderers.Renderer;
-import com.JavaPathtracer.tonemapping.FilmicTonemapper;
 
 public class Main {
 
@@ -45,11 +45,11 @@ public class Main {
 		int width = 7;
 		int height = 5;
 		int depth = 6;
-		IMaterial white = new DiffuseMaterial(new Vector(1.0, 1.0, 1.0), new Vector(0.0));
-		IMaterial oak = new DiffuseMaterial(new Texture(new File("assets/planks_oak.png")), new Vector(0.0));
-		IMaterial lwall = new DiffuseMaterial(new Vector(0xe6/255.0, 0x91/255.0, 0x50/255.0), new Vector(0.0));
-		IMaterial rwall = new DiffuseMaterial(new Vector(0x50/255.0, 0x9d/255.0, 0xe6/255.0), new Vector(0.0));
-		IMaterial floor = new DiffuseMaterial(new Texture(new File("assets/stonebrick.png")), new Vector(0.0));
+		IMaterial white = new DiffuseMaterial(new Vector(1.0, 1.0, 1.0));
+		IMaterial oak = new DiffuseMaterial(new Texture(new File("assets/planks_oak.png")));
+		IMaterial lwall = new DiffuseMaterial(new Vector(0xe6/255.0, 0x91/255.0, 0x50/255.0));
+		IMaterial rwall = new DiffuseMaterial(new Vector(0x50/255.0, 0x9d/255.0, 0xe6/255.0));
+		IMaterial floor = new DiffuseMaterial(new Texture(new File("assets/stonebrick.png")));
 		scene.add(new Plane(new Vector(0.0, 1.0, 0.0), new Vector(0.0, -height/2, 0.0)), floor);
 		scene.add(new Plane(new Vector(0.0, -1.0, 0.0), new Vector(0.0, height/2, 0.0)), white);
 		scene.add(new Plane(new Vector(1.0, 0.0, 0.0), new Vector(-width/2, 0.0, 0.0)), lwall);
@@ -58,18 +58,18 @@ public class Main {
 		scene.add(new Plane(new Vector(0.0, 0.0, -1.0), new Vector(0.0, 0.0, depth/2)), oak);
 
 		// add light
-		IMaterial light = new MirrorMaterial(new Vector(0.0, 0.0, 0.0), new Vector(1.0, 1.0, 0xd5/255.0).times(100.0));
+		IMaterial light = new EmissiveMaterial(new Vector(1.0, 1.0, 0xd5/255.0).times(100.0));
 		scene.add(new Square(new Vector(0.0, -1.0, 0.0), new Vector(0.0, height/2-0.05, 1.5), 0.75), light);
 		
 		// add spot
 		Matrix matrix = Matrix.Translate(1.5, -height/2 + 0.736784, 1.5).multiply(Matrix.RotateY(0.5));
-		IMaterial matdiff = new DiffuseMaterial(new Texture(new File("assets/spot/spot.png")), new Vector(0.0));
+		IMaterial matdiff = new DiffuseMaterial(new Texture(new File("assets/spot/spot.png")));
 		scene.add(new BVHMesh(new File("assets/spot/spot.obj"), matrix), matdiff);
 		
 		// add teapot
 		IMaterial ceramic = new CombineMaterial(
-			new DiffuseMaterial(new Vector(1.0), new Vector(0.0)),
-			new MirrorMaterial(new Vector(1.0), new Vector(0.0)),
+			new DiffuseMaterial(new Vector(1.0)),
+			new MirrorMaterial(new Vector(1.0)),
 			new SampleableScalar(0.9)
 		);
 		Matrix matrix2 = Matrix.Translate(0.0, -height/2, 0.8).multiply(Matrix.Scale(0.3));
@@ -77,7 +77,7 @@ public class Main {
 		
 		// add pedestal + globe
 		scene.add(new BoundingBox(new Vector(-2.0, -height/2, 1.0), new Vector(-1.0, -height/2 + 1.0, 2.0)), white);		
-		IMaterial earth = new DiffuseMaterial(new Texture(new File("assets/earth.jpg")), new Vector(0.0));
+		IMaterial earth = new DiffuseMaterial(new Texture(new File("assets/earth.jpg")));
 		scene.add(new Sphere(new Vector(-1.5, -height/2 + 1.0 + 0.5, 1.5), 0.5), earth);
 		
 		return scene;
@@ -86,7 +86,7 @@ public class Main {
 	
 	public static void main(String[] args) throws IOException {
 		
-		BufferedImage outputImage = new BufferedImage(256, 256, BufferedImage.TYPE_INT_RGB);
+		BufferedImage outputImage = new BufferedImage(720, 720, BufferedImage.TYPE_INT_RGB);
 		Texture output = new Texture(outputImage);
 		
 		Camera camera = createCamera();
@@ -94,9 +94,9 @@ public class Main {
 		
 		long start = System.currentTimeMillis();
 		
-		//Raytracer rt = new DebugTracer(camera, scene);
-		Raytracer rt = new Pathtracer(7, 10, camera, scene, new FilmicTonemapper());
-		LivePreview preview = new LivePreview(output, 2);
+		Raytracer rt = new DebugTracer(camera, scene);
+		//IterativePathtracer rt = new IterativePathtracer(output, 7, camera, scene, new FilmicTonemapper());
+		LivePreview preview = new LivePreview(output, 1);
 		Renderer renderer = new ParallelRenderer(rt, 4);
 		preview.start();
 		renderer.render(output);

@@ -1,24 +1,28 @@
 package com.JavaPathtracer.material;
 
+import com.JavaPathtracer.Pathtracer;
+import com.JavaPathtracer.geometry.Hit;
+import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Vector;
 
-public class RoughMaterial extends Material {
+public class RoughMaterial extends BaseMaterial {
 
 	private SampleableScalar roughness;
 	
-	public RoughMaterial(ISampleable color, ISampleable emission, SampleableScalar roughness) {
-		super(color, emission);
+	public RoughMaterial(ISampleable color, SampleableScalar roughness) {
+		super(color);
 		this.roughness = roughness;
 	}
 	
-	public Vector scatter(double u, double v, Vector incident, Vector normal) {
-		Vector reflect = incident.minus(normal.times(2 * normal.dot(incident)));
-		Vector rough = Vector.uniformInHemisphere().times(roughness.sampleScalar(u, v));
-		return (reflect.plus(rough)).normalize();
-	}
-	
-	public boolean doDotProduct(double u, double v) {
-		return false;
+	@Override
+	public Vector shade(Vector incident, Hit hit, int bounces, Pathtracer pathtracer) {
+		
+		Vector reflect = incident.minus(hit.normal.times(2 * hit.normal.dot(incident)));
+		reflect.iadd(Vector.uniformInSphere().times(Math.random() * roughness.sampleScalar(hit.textureCoordinates.x, hit.textureCoordinates.y))).normalize();
+		
+		Ray next = new Ray(hit.point, reflect);
+		return pathtracer.pathtraceRay(next, bounces + 1).times(this.getColor(hit.textureCoordinates.x, hit.textureCoordinates.y));
+		
 	}
 	
 }
