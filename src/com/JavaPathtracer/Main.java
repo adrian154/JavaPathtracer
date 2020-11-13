@@ -21,6 +21,7 @@ import com.JavaPathtracer.material.Texture;
 import com.JavaPathtracer.renderers.LivePreview;
 import com.JavaPathtracer.renderers.ParallelRenderer;
 import com.JavaPathtracer.renderers.Renderer;
+import com.JavaPathtracer.tonemapping.FilmicTonemapper;
 
 public class Main {
 
@@ -84,28 +85,33 @@ public class Main {
 		
 	}
 	
+	private static void startPreview(Texture output) {
+		LivePreview preview = new LivePreview(output, 2);
+		preview.start();
+	}
+	
+	private static void startRender(Camera camera, Scene scene, Texture output) {
+		//Raytracer rt = new DebugTracer(camera, scene);
+		Pathtracer rt = new Pathtracer(7, 100, camera, scene, new FilmicTonemapper());
+		Renderer renderer = new ParallelRenderer(rt, 4);
+		renderer.render(output);
+	}
+	
 	public static void main(String[] args) throws IOException {
 		
-		BufferedImage outputImage = new BufferedImage(720, 720, BufferedImage.TYPE_INT_RGB);
+		BufferedImage outputImage = new BufferedImage(256, 256, BufferedImage.TYPE_INT_RGB);
 		Texture output = new Texture(outputImage);
 		
 		Camera camera = createCamera();
 		Scene scene = createScene();
 		
 		long start = System.currentTimeMillis();
-		
-		Raytracer rt = new DebugTracer(camera, scene);
-		//IterativePathtracer rt = new IterativePathtracer(output, 7, camera, scene, new FilmicTonemapper());
-		LivePreview preview = new LivePreview(output, 1);
-		Renderer renderer = new ParallelRenderer(rt, 4);
-		preview.start();
-		renderer.render(output);
-		
+		startPreview(output);
+		startRender(camera, scene, output);
 		long end = System.currentTimeMillis();
+		
 		System.out.println("Took " + (end - start) + "ms");
-
 		output.saveToFile(new File("output.png"));
-		System.out.println("Done.");
 		
 	}
 	

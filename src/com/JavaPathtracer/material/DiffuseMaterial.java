@@ -19,10 +19,11 @@ public class DiffuseMaterial extends BaseMaterial {
 		Vector bvy = hit.normal;
 		Vector bvz = bvy.cross(bvx);
 		
-		Ray next = new Ray(hit.point, Vector.localToWorldCoords(random, bvx, bvy, bvz));
+		Vector dir = Vector.localToWorldCoords(random, bvx, bvy, bvz);
+		Ray next = new Ray(hit.point, dir);
 		
 		Vector color = this.getColor(hit.textureCoordinates.x, hit.textureCoordinates.y);
-		double dot = incident.dot(hit.normal);
+		double dot = dir.dot(hit.normal);
 		return pathtracer.pathtraceRay(next, bounces + 1).times(color).times(dot);
 		
 	}
