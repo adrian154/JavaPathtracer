@@ -4,31 +4,22 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-import com.JavaPathtracer.geometry.BVHMesh;
-import com.JavaPathtracer.geometry.BoundingBox;
-import com.JavaPathtracer.geometry.Matrix;
-import com.JavaPathtracer.geometry.Plane;
 import com.JavaPathtracer.geometry.Sphere;
-import com.JavaPathtracer.geometry.Square;
 import com.JavaPathtracer.geometry.Vector;
-import com.JavaPathtracer.material.CombineMaterial;
+import com.JavaPathtracer.geometry.csg.Difference;
 import com.JavaPathtracer.material.DiffuseMaterial;
-import com.JavaPathtracer.material.EmissiveMaterial;
 import com.JavaPathtracer.material.IMaterial;
-import com.JavaPathtracer.material.MirrorMaterial;
-import com.JavaPathtracer.material.SampleableScalar;
 import com.JavaPathtracer.material.Texture;
 import com.JavaPathtracer.renderers.LivePreview;
 import com.JavaPathtracer.renderers.ParallelRenderer;
 import com.JavaPathtracer.renderers.Renderer;
-import com.JavaPathtracer.tonemapping.FilmicTonemapper;
 
 public class Main {
 
 	public static Camera createCamera() {
 	
-		Camera camera = new Camera(new Vector(1.0, 0.5, -1.5));
-		camera.lookAt(new Vector(0.0, 0.0, 2.0));
+		Camera camera = new Camera(new Vector(2.0, 0.0, -2.0));
+		camera.lookAt(new Vector());
 		camera.setFOV(56);
 		
 		return camera;
@@ -41,45 +32,24 @@ public class Main {
 		
 		// set up sky
 		scene.setSkyEmission(new Vector(2.0));
-	
-		// Walls
-		int width = 7;
-		int height = 5;
-		int depth = 6;
-		IMaterial white = new DiffuseMaterial(new Vector(1.0, 1.0, 1.0));
-		IMaterial oak = new DiffuseMaterial(new Texture(new File("assets/planks_oak.png")));
-		IMaterial lwall = new DiffuseMaterial(new Vector(0xe6/255.0, 0x91/255.0, 0x50/255.0));
-		IMaterial rwall = new DiffuseMaterial(new Vector(0x50/255.0, 0x9d/255.0, 0xe6/255.0));
-		IMaterial floor = new DiffuseMaterial(new Texture(new File("assets/stonebrick.png")));
-		scene.add(new Plane(new Vector(0.0, 1.0, 0.0), new Vector(0.0, -height/2, 0.0)), floor);
-		scene.add(new Plane(new Vector(0.0, -1.0, 0.0), new Vector(0.0, height/2, 0.0)), white);
-		scene.add(new Plane(new Vector(1.0, 0.0, 0.0), new Vector(-width/2, 0.0, 0.0)), lwall);
-		scene.add(new Plane(new Vector(-1.0, 0.0, 0.0), new Vector(width/2, 0.0, 0.0)), rwall);
-		scene.add(new Plane(new Vector(0.0, 0.0, 1.0), new Vector(0.0, 0.0, -depth/2)), white);
-		scene.add(new Plane(new Vector(0.0, 0.0, -1.0), new Vector(0.0, 0.0, depth/2)), oak);
-
-		// add light
-		IMaterial light = new EmissiveMaterial(new Vector(1.0, 1.0, 0xd5/255.0).times(100.0));
-		scene.add(new Square(new Vector(0.0, -1.0, 0.0), new Vector(0.0, height/2-0.05, 1.5), 0.75), light);
+		IMaterial white = new DiffuseMaterial(new Vector(1.0));
 		
-		// add spot
-		Matrix matrix = Matrix.Translate(1.5, -height/2 + 0.736784, 1.5).multiply(Matrix.RotateY(0.5));
+		/*
+		Matrix matrix = new Matrix();
 		IMaterial matdiff = new DiffuseMaterial(new Texture(new File("assets/spot/spot.png")));
-		scene.add(new BVHMesh(new File("assets/spot/spot.obj"), matrix), matdiff);
+		Shape mesh = new BVHMesh(new File("assets/spot/spot.obj"), matrix);
+		//scene.add(mesh, matdiff);
+
+		Sphere sphere = new Sphere(new Vector(0.0, 0.5, -0.5), 0.5);
+		//scene.add(sphere, white);
 		
-		// add teapot
-		IMaterial ceramic = new CombineMaterial(
-			new DiffuseMaterial(new Vector(1.0)),
-			new MirrorMaterial(new Vector(1.0)),
-			new SampleableScalar(0.9)
-		);
-		Matrix matrix2 = Matrix.Translate(0.0, -height/2, 0.8).multiply(Matrix.Scale(0.3));
-		scene.add(new BVHMesh(new File("assets/UtahTeapot.obj"), matrix2), ceramic);
+		scene.add(new Difference(mesh, sphere), white);
+		*/
 		
-		// add pedestal + globe
-		scene.add(new BoundingBox(new Vector(-2.0, -height/2, 1.0), new Vector(-1.0, -height/2 + 1.0, 2.0)), white);		
-		IMaterial earth = new DiffuseMaterial(new Texture(new File("assets/earth.jpg")));
-		scene.add(new Sphere(new Vector(-1.5, -height/2 + 1.0 + 0.5, 1.5), 0.5), earth);
+		scene.add(new Difference(
+			new Sphere(new Vector(-0.5, 0.0, 2.0), 1.0),
+			new Sphere(new Vector(0.5, 0.0, 2.0), 1.0)
+		), white);
 		
 		return scene;
 		
@@ -91,9 +61,9 @@ public class Main {
 	}
 	
 	private static void startRender(Camera camera, Scene scene, Texture output) {
-		//Raytracer rt = new DebugTracer(camera, scene);
-		Pathtracer rt = new Pathtracer(7, 100, camera, scene, new FilmicTonemapper());
-		Renderer renderer = new ParallelRenderer(rt, 4);
+		Raytracer rt = new DebugTracer(camera, scene);
+		//Pathtracer rt = new Pathtracer(7, 100, camera, scene, new InverseTonemapper());
+		Renderer renderer = new ParallelRenderer(rt, 2);
 		renderer.render(output);
 	}
 	
