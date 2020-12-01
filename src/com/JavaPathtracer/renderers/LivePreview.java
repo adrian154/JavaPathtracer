@@ -7,7 +7,7 @@ public class LivePreview {
 	private int scale;
 	private Texture output;
 	private LivePreviewFrame frame;
-	
+
 	public LivePreview(Texture output, int scale) {
 		this.output = output;
 		this.scale = scale;
@@ -20,5 +20,5 @@ public class LivePreview {
 	public LivePreviewFrame getPreviewFrame() {
 		return this.frame;
 	}
-	
+
 }

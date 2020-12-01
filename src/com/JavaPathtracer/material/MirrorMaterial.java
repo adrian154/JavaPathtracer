@@ -10,14 +10,15 @@ public class MirrorMaterial extends BaseMaterial {
 	public MirrorMaterial(ISampleable color) {
 		super(color);
 	}
-	
+
 	@Override
 	public Vector shade(Vector incident, Hit hit, int bounces, Pathtracer pathtracer) {
-		
+
 		Vector reflect = incident.minus(hit.normal.times(2 * hit.normal.dot(incident)));
 		Ray next = new Ray(hit.point, reflect);
-		return pathtracer.pathtraceRay(next, bounces + 1).times(this.getColor(hit.textureCoordinates.x, hit.textureCoordinates.y));
-		
+		return pathtracer.pathtraceRay(next, bounces + 1)
+				.times(this.getColor(hit.textureCoordinates.x, hit.textureCoordinates.y));
+
 	}
-	
+
 }

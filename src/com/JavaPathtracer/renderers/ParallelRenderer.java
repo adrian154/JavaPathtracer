@@ -20,39 +20,33 @@ public class ParallelRenderer extends Renderer {
 		this.threads = tiles * tiles;
 		this.executorService = Executors.newFixedThreadPool(this.threads);
 	}
-	
+
+	@Override
 	public void render(Texture output) {
-		
+
 		CountDownLatch latch = new CountDownLatch(this.threads);
-		
+
 		int tileWidth = output.getWidth() / this.tiles;
 		int tileHeight = output.getHeight() / this.tiles;
-		for(int x = 0; x < this.tiles; x++) {
-			for(int y = 0; y < this.tiles; y++) {
-				this.executorService.execute(new RenderTask(
-					this.raytracer,
-					x * tileWidth,
-					y * tileHeight,
-					(x + 1) * tileWidth,
-					(y + 1) * tileHeight,
-					output,
-					latch
-				));
+		for (int x = 0; x < this.tiles; x++) {
+			for (int y = 0; y < this.tiles; y++) {
+				this.executorService.execute(new RenderTask(this.raytracer, x * tileWidth, y * tileHeight,
+						(x + 1) * tileWidth, (y + 1) * tileHeight, output, latch));
 			}
 		}
-		
+
 		try {
 			latch.await();
-		} catch(InterruptedException excep) {
+		} catch (InterruptedException excep) {
 			throw new RuntimeException(excep);
 		}
-		
+
 		executorService.shutdownNow();
-		
+
 	}
-	
+
 	public void setraytracer(Raytracer raytracer) {
 		this.raytracer = raytracer;
 	}
-	
+
 }

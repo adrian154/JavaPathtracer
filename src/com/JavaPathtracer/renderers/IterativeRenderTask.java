@@ -10,15 +10,17 @@ public class IterativeRenderTask extends RenderTask {
 	private int iteration;
 	private IterativePathtracer iterTracer;
 
-	public IterativeRenderTask(IterativePathtracer pathtracer, int startX, int startY, int endX, int endY, Texture output, CountDownLatch latch, int iteration) {
+	public IterativeRenderTask(IterativePathtracer pathtracer, int startX, int startY, int endX, int endY,
+			Texture output, CountDownLatch latch, int iteration) {
 		super(pathtracer, startX, startY, endX, endY, output, latch);
 		this.iteration = iteration;
 		this.iterTracer = pathtracer;
 	}
-	
+
+	@Override
 	public void run() {
 		iterTracer.pathtraceTile(output, startX, startY, endX, endY, this.iteration);
 		latch.countDown();
 	}
-	
+
 }

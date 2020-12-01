@@ -14,8 +14,9 @@ public class RenderTask implements Runnable {
 	protected int endY;
 	protected Texture output;
 	protected CountDownLatch latch;
-	
-	public RenderTask(Raytracer raytracer, int startX, int startY, int endX, int endY, Texture output, CountDownLatch latch) {
+
+	public RenderTask(Raytracer raytracer, int startX, int startY, int endX, int endY, Texture output,
+			CountDownLatch latch) {
 		this.raytracer = raytracer;
 		this.startX = startX;
 		this.endX = endX;
@@ -24,12 +25,13 @@ public class RenderTask implements Runnable {
 		this.output = output;
 		this.latch = latch;
 	}
-	
+
+	@Override
 	public void run() {
 		System.out.printf("Starting: (%d,%d), (%d,%d)\n", startX, startY, endX, endY);
 		this.raytracer.pathtraceTile(this.output, startX, startY, endX, endY);
 		System.out.printf("Done! (%d remaining) (%d,%d), (%d,%d)\n", latch.getCount() - 1, startX, startY, endX, endY);
 		latch.countDown();
 	}
-	
+
 }

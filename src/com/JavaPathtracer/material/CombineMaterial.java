@@ -9,10 +9,10 @@ import com.JavaPathtracer.geometry.Vector;
 // However, that's not possible in the current IMaterial system. Trying to do so would be jamming a square peg into a round hole.
 // So... oh well.
 public class CombineMaterial implements IMaterial {
-	
+
 	public IMaterial A, B;
 	public ISampleableScalar proportion;
-	
+
 	public CombineMaterial(IMaterial A, IMaterial B, ISampleableScalar proportion) {
 		this.A = A;
 		this.B = B;
@@ -21,7 +21,8 @@ public class CombineMaterial implements IMaterial {
 
 	@Override
 	public Vector shade(Vector incident, Hit hit, int bounces, Pathtracer pathtracer) {
-		return (Math.random() < proportion.sampleScalar(hit.textureCoordinates.x, hit.textureCoordinates.y) ? A : B).shade(incident, hit, bounces, pathtracer);
+		return (Math.random() < proportion.sampleScalar(hit.textureCoordinates.x, hit.textureCoordinates.y) ? A : B)
+				.shade(incident, hit, bounces, pathtracer);
 	}
-	
+
 }

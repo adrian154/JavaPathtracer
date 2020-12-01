@@ -6,5 +6,5 @@ import com.JavaPathtracer.geometry.Vector;
 public interface ISampleable {
 
 	public Vector sample(double u, double v);
-	
+
 }

@@ -5,10 +5,10 @@ import javax.swing.JFrame;
 import com.JavaPathtracer.material.Texture;
 
 public class LivePreviewFrame extends JFrame {
-	
+
 	// (Ditto... see LivePreviewPanel)
 	public static final long serialVersionUID = 1;
-	
+
 	public LivePreviewFrame(Texture output, int scale) {
 		super();
 		this.add(new LivePreviewPanel(output, scale));
@@ -17,5 +17,5 @@ public class LivePreviewFrame extends JFrame {
 		this.setTitle("Java Raytracer");
 		this.setVisible(true);
 	}
-	
+
 }

@@ -4,5 +4,5 @@ package com.JavaPathtracer.geometry;
 public interface Shape {
 
 	public Hit intersect(Ray ray);
-	
+
 }

@@ -9,7 +9,7 @@ public abstract class BaseMaterial implements IMaterial {
 	public BaseMaterial(ISampleable color) {
 		this.color = color;
 	}
-	
+
 	public Vector getColor(double u, double v) {
 		return color.sample(u, v);
 	}

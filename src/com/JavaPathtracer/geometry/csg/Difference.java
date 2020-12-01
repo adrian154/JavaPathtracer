@@ -9,18 +9,18 @@ public class Difference extends BooleanOperation {
 	public Difference(Shape A, Shape B) {
 		super(A, B);
 	}
-	
+
 	@Override
 	public Hit intersect(Ray ray) {
-		
+
 		boolean inA = false, inB = false;
-		
-		while(true) {
-			
+
+		while (true) {
+
 			Hit h1 = A.intersect(ray);
 			Hit h2 = B.intersect(ray);
-			
-			if(h1.hit && h1.distance < h2.distance) {
+
+			if (h1.hit && h1.distance < h2.distance) {
 				inA = !inA;
 				ray.origin = h1.point;
 			} else if (h2.hit) {
@@ -29,16 +29,16 @@ public class Difference extends BooleanOperation {
 			} else {
 				return Hit.MISS;
 			}
-			
-			if(inA && !inB) {
-				if(h1.normal.dot(ray.direction) > 0) {
+
+			if (inA && !inB) {
+				if (h1.normal.dot(ray.direction) > 0) {
 					h1.normal.invert();
 				}
 				return h1;
 			}
-			
+
 		}
-		
+
 	}
-	
+
 }

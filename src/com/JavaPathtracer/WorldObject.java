@@ -14,20 +14,20 @@ public class WorldObject {
 		this.shape = shape;
 		this.material = material;
 	}
-	
+
 	public Shape getShape() {
 		return shape;
 	}
-	
+
 	public IMaterial getMaterial() {
 		return material;
 	}
-	
+
 	// do geometry+material raytrace
 	public Hit traceRay(Ray ray) {
 		Hit hit = shape.intersect(ray);
 		hit.hitObject = this;
 		return hit;
 	}
-	
+
 }

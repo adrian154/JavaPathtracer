@@ -7,5 +7,5 @@ import com.JavaPathtracer.geometry.Vector;
 public interface IMaterial {
 
 	public Vector shade(Vector incident, Hit hit, int bounces, Pathtracer pathtracer);
-	
+
 }
