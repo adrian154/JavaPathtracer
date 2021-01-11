@@ -38,6 +38,8 @@ public abstract class Raytracer {
 
 	public void pathtraceTile(Texture output, int startX, int startY, int endX, int endY) {
 
+		int maxDim = Math.min(output.getWidth(), output.getHeight());
+		
 		for (int x = startX; x < endX; x++) {
 			for (int y = startY; y < endY; y++) {
 
@@ -45,8 +47,8 @@ public abstract class Raytracer {
 				output.set(x, output.getHeight() - y - 1, new Vector(0, 1, 0));
 
 				// convert to image plane coordinates
-				double imageX = ((double) x / output.getWidth()) * 2 - 1;
-				double imageY = ((double) y / output.getHeight()) * 2 - 1;
+				double imageX = ((double) x / maxDim) * 2 - 1;
+				double imageY = ((double) y / maxDim) * 2 - 1;
 
 				// apply jitter
 				Ray ray = camera.getCameraRay(imageX, imageY);

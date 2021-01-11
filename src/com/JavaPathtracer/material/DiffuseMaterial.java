@@ -23,8 +23,7 @@ public class DiffuseMaterial extends BaseMaterial {
 		Ray next = new Ray(hit.point, dir);
 
 		Vector color = this.getColor(hit.textureCoordinates.x, hit.textureCoordinates.y);
-		double dot = dir.dot(hit.normal);
-		return pathtracer.pathtraceRay(next, bounces + 1).times(color).times(dot);
+		return pathtracer.pathtraceRay(next, bounces + 1).times(color).times(dir.dot(hit.normal));
 
 	}
 

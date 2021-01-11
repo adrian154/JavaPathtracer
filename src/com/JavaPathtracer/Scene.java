@@ -26,6 +26,8 @@ public class Scene {
 		this.skyEmission = newSky;
 	}
 
+	//private static final Vector SKY_DIR = new Vector(0.8, 1.0, -1.0).normalized();
+	
 	public Vector getSkyEmission(Vector direction) {
 		Vector invDir = new Vector(0.0, 0.0, 0.0).minus(direction);
 		double azimuth = (Math.atan2(invDir.z, invDir.x) + 0.5) % (2 * Math.PI);
@@ -33,6 +35,7 @@ public class Scene {
 		double u = 0.5 + azimuth / (2 * Math.PI);
 		double v = 0.5 - inclination / Math.PI;
 		return skyEmission.sample(u, v);
+		//return direction.dot(SKY_DIR) < 0 ? new Vector(10.0, 0.0, 0.0) : new Vector();
 	}
 
 	public void add(WorldObject object) {

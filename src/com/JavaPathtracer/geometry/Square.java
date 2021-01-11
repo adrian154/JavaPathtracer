@@ -13,8 +13,7 @@ public class Square extends Plane {
 	public Hit intersect(Ray ray) {
 
 		Hit hit = super.intersect(ray);
-		if (hit.hit && Math.abs(hit.point.x - point.x) < size && Math.abs(hit.point.y - point.y) < size
-				&& Math.abs(hit.point.z - point.z) < size) {
+		if (hit.hit && Math.abs(hit.point.x - point.x) < size && Math.abs(hit.point.z - point.z) < size) {
 			return hit;
 		}
 

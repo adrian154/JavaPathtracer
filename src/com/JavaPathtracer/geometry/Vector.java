@@ -164,17 +164,16 @@ public class Vector implements ISampleable {
 
 	// Generate uniformly distributed vector in unit sphere
 	public static Vector uniformInSphere() {
-		double azimuth = 2 * Math.PI * Math.random();
-		double inclination = Math.acos(1 - 2 * Math.random()); // This step is necessary or else points clump at the
-																// poles
-		return Vector.fromSpherical(azimuth, inclination);
+		return new Vector(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1).normalize();
+	}
+	
+	public static Vector cosineWeightedInHemisphere() {
+		return Vector.fromSpherical(Math.random() * 2 * Math.PI, Math.random() * Math.PI / 2);
 	}
 
 	// Generate uniformly distributed vector in unit hemisphere
 	public static Vector uniformInHemisphere() {
-		Vector result = Vector.uniformInSphere();
-		result.y = Math.abs(result.y);
-		return result;
+		return Vector.fromSpherical(Math.random() * 2 * Math.PI, Math.acos(1 - Math.random()));
 	}
 
 	@Override
