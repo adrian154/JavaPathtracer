@@ -3,7 +3,7 @@ package com.JavaPathtracer.geometry;
 import com.JavaPathtracer.Raytracer;
 
 // container class for geometry
-public class BoundingBox implements Shape {
+public class BoundingBox implements FiniteShape {
 
 	public Vector min;
 	public Vector max;
@@ -118,6 +118,11 @@ public class BoundingBox implements Shape {
 
 		return new Hit(point, normal, t, new Vector(0.0, 0.0, 0.0));
 
+	}
+	
+	@Override
+	public Sphere getBoundingSphere() {
+		return new Sphere(this.centroid(), this.max.minus(this.centroid()).length());
 	}
 
 	public boolean containsBox(BoundingBox other) {

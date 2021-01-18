@@ -36,6 +36,11 @@ public class Camera {
 		this.lookingAt = pos.minus(this.position).normalized();
 		this.up = Vector.fromSpherical(this.lookingAt.toSpherical().minus(new Vector(0, Math.PI / 2, 0)));
 	}
+	
+	public void setAngles(double yaw, double pitch) {
+		this.lookingAt = Vector.fromSpherical(yaw, pitch);
+		this.up = Vector.fromSpherical(yaw, pitch - Math.PI / 2);
+	}
 
 	public double getFocalLength() {
 		return this.focalLength;
@@ -48,6 +53,12 @@ public class Camera {
 		direction = Vector.localToWorldCoords(direction, basis, up, lookingAt);
 		Ray result = new Ray(this.position, direction);
 		return result;
+	}
+	
+	public Ray getCameraRay(int x, int y, int maxDim, double jitterX, double jitterY) {
+		double imageX = ((double)x / maxDim) * 2 - 1;
+		double imageY = ((double)y / maxDim) * 2 - 1;
+		return getCameraRay(imageX + (Math.random() - 0.5) * jitterX, imageY + (Math.random() - 0.5) * jitterY);
 	}
 
 }

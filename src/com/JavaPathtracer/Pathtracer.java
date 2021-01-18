@@ -4,36 +4,18 @@ import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.material.IMaterial;
-import com.JavaPathtracer.material.Texture;
-import com.JavaPathtracer.tonemapping.IToneMapper;
 
 public class Pathtracer extends Raytracer {
 
 	// Maximum depth of bounces
 	private int maxLightBounces;
-	private int samplesPerPixel;
 
-	public Pathtracer(int maxLightBounces, int samplesPerPixel, Camera camera, Scene scene) {
-		super(camera, scene);
+	public Pathtracer(int maxLightBounces) {
 		this.maxLightBounces = maxLightBounces;
-		this.samplesPerPixel = samplesPerPixel;
-	}
-
-	public Pathtracer(int maxLightBounces, int samplesPerPixel, Camera camera, Scene scene, IToneMapper toneMapper) {
-		this(maxLightBounces, samplesPerPixel, camera, scene);
-		this.toneMapper = toneMapper;
-	}
-
-	public int getSamplesPerPixel() {
-		return this.samplesPerPixel;
-	}
-
-	public int getMaxBounces() {
-		return this.maxLightBounces;
 	}
 
 	// trace a ray
-	public Vector pathtraceRay(Ray ray, int bounces) {
+	public Vector pathtraceRay(Scene scene, Ray ray, int bounces) {
 
 		if (bounces > this.maxLightBounces) {
 			return new Vector(0.0, 0.0, 0.0);
@@ -42,7 +24,7 @@ public class Pathtracer extends Raytracer {
 		Hit hit = scene.traceRay(ray);
 		if (hit.hit) {
 			IMaterial mat = hit.hitObject.getMaterial();
-			return mat.shade(ray.direction, hit, bounces, this);
+			return mat.shade(ray.direction, hit, bounces, scene, this);
 		} else {
 			return scene.getSkyEmission(ray.direction);
 		}
@@ -50,48 +32,8 @@ public class Pathtracer extends Raytracer {
 	}
 
 	@Override
-	public Vector traceRay(Ray ray) {
-
-		Vector result = new Vector();
-		for (int i = 0; i < samplesPerPixel; i++)
-			result.iadd(this.pathtraceRay(ray, 0));
-
-		return result.idiv(samplesPerPixel);
-
-	}
-
-	@Override
-	public void pathtraceTile(Texture output, int startX, int startY, int endX, int endY) {
-
-		double pixelWidth = 2.0 / output.getWidth();
-		double pixelHeight = 2.0 / output.getHeight();
-
-		for (int x = startX; x < endX; x++) {
-			for (int y = startY; y < endY; y++) {
-
-				// set pixel to green while working on it
-				output.set(x, output.getHeight() - y - 1, new Vector(0, 1, 0));
-
-				// convert to image plane coordinates
-				double imageX = ((double) x / output.getWidth()) * 2 - 1;
-				double imageY = ((double) y / output.getHeight()) * 2 - 1;
-
-				// apply jitter
-				Vector result = new Vector();
-				for (int i = 0; i < samplesPerPixel; i++) {
-					Ray ray = camera.getCameraRay(imageX + pixelWidth * Math.random() - pixelWidth / 2,
-							imageY + pixelHeight * Math.random() - pixelHeight / 2);
-					result.iadd(this.pathtraceRay(ray, 0));
-				}
-
-				result.idiv(samplesPerPixel);
-
-				Vector color = toneMapper.map(result);
-				output.set(x, output.getHeight() - y - 1, color);
-
-			}
-		}
-
+	public Vector traceRay(Scene scene, Ray ray) {
+		return pathtraceRay(scene, ray, 0);
 	}
 
 }

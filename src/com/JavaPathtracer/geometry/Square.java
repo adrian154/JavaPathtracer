@@ -1,9 +1,10 @@
 package com.JavaPathtracer.geometry;
 
-public class Square extends Plane {
+// this thing extends circle because i don't want to make a FinitePlane class
+public class Square extends Plane implements FiniteShape {
 
-	public double size;
-
+	private double size;
+	
 	public Square(Vector normal, Vector point, double size) {
 		super(normal, point);
 		this.size = size;
@@ -19,6 +20,11 @@ public class Square extends Plane {
 
 		return Hit.MISS;
 
+	}
+	
+	@Override
+	public Sphere getBoundingSphere() {
+		return new Sphere(this.point, this.size);
 	}
 
 }

@@ -1,6 +1,7 @@
 package com.JavaPathtracer.material;
 
 import com.JavaPathtracer.Pathtracer;
+import com.JavaPathtracer.Scene;
 import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.Vector;
 
@@ -20,9 +21,9 @@ public class CombineMaterial implements IMaterial {
 	}
 
 	@Override
-	public Vector shade(Vector incident, Hit hit, int bounces, Pathtracer pathtracer) {
+	public Vector shade(Vector incident, Hit hit, int bounces, Scene scene,Pathtracer pathtracer) {
 		return (Math.random() < proportion.sampleScalar(hit.textureCoordinates.x, hit.textureCoordinates.y) ? A : B)
-				.shade(incident, hit, bounces, pathtracer);
+				.shade(incident, hit, bounces, scene, pathtracer);
 	}
 
 }

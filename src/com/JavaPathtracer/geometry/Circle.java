@@ -1,6 +1,6 @@
 package com.JavaPathtracer.geometry;
 
-public class Circle extends Plane {
+public class Circle extends Plane implements FiniteShape {
 
 	public double radius;
 

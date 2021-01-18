@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import com.JavaPathtracer.geometry.bvh.BVHNode;
 
-public class BVHMesh extends Mesh implements Shape {
+public class BVHMesh extends Mesh implements FiniteShape {
 
 	private BVHNode BVHRoot;
 

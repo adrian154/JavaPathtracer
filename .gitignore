@@ -1,6 +1,6 @@
 assets/
 bin/
-.settings/
-.classpath
-.project
-.png
+*.settings/
+*.classpath
+*.project
+/*.png

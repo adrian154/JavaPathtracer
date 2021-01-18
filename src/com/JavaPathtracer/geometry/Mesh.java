@@ -10,8 +10,8 @@ import java.util.List;
 import com.JavaPathtracer.Raytracer;
 
 // Don't use naked meshes, use BVHMesh!
-// This class has a few glaring flaws that make it unusable even if you forcibly trace rays against every ray
-public class Mesh implements Shape {
+// This class has a few glaring flaws that make it unusable even if you forcibly trace rays against every poly
+public class Mesh {
 
 	public int[] faces;
 	public int[] texCoordIndices;
@@ -183,20 +183,5 @@ public class Mesh implements Shape {
 		return nearest;
 
 	}
-
-	@Override
-	@Deprecated
-	public Hit intersect(Ray ray) {
-
-		Hit nearest = Hit.MISS;
-		for (int i = 0; i < this.faces.length; i += 3) {
-			Hit cur = Mesh.intsersectTri(ray, vertexes[faces[i]], vertexes[faces[i + 1]], vertexes[faces[i + 2]]);
-			if (cur.distance < nearest.distance)
-				nearest = cur;
-		}
-
-		return nearest;
-
-	}
-
+	
 }

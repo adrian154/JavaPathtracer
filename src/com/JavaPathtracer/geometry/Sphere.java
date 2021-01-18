@@ -50,6 +50,14 @@ public class Sphere implements Shape {
 
 	}
 
+	public Vector getCenter() {
+		return this.center;
+	}
+	
+	public double getRadius() {
+		return this.radius;
+	}
+	
 	public Sphere getBoundingSphere() {
 		return this;
 	}

@@ -8,12 +8,8 @@ import com.JavaPathtracer.material.IMaterial;
 
 public class DebugTracer extends Raytracer {
 
-	public DebugTracer(Camera camera, Scene scene) {
-		super(camera, scene);
-	}
-
 	@Override
-	public Vector traceRay(Ray ray) {
+	public Vector traceRay(Scene scene, Ray ray) {
 
 		Hit hit = scene.traceRay(ray);
 		if (hit.hit) {
@@ -26,7 +22,7 @@ public class DebugTracer extends Raytracer {
 				BaseMaterial baseMat = (BaseMaterial) material;
 				color = baseMat.getColor(hit.textureCoordinates.x, hit.textureCoordinates.y);
 			} else {
-				color = new Vector(1.0, 1.0, 0.0);
+				color = new Vector(1.0, 0.0, 1.0);
 			}
 
 			return color.times(amt < 0 ? 0 : amt);
