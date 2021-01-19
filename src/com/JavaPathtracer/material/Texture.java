@@ -8,7 +8,7 @@ import javax.imageio.ImageIO;
 
 import com.JavaPathtracer.geometry.Vector;
 
-public class Texture implements Sampleable, ISampleableScalar {
+public class Texture implements Sampleable, SampleableScalar {
 
 	private BufferedImage texture;
 
@@ -16,16 +16,8 @@ public class Texture implements Sampleable, ISampleableScalar {
 		texture = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 	}
 
-	public Texture(File imageFile) {
-
-		try {
-			texture = ImageIO.read(imageFile);
-		} catch (IOException exception) {
-			System.out.println(
-					"Failed to load texture from file \"" + imageFile.getName() + "\": " + exception.getMessage());
-			exception.printStackTrace();
-		}
-
+	public Texture(File imageFile) throws IOException {
+		texture = ImageIO.read(imageFile);
 	}
 
 	public Texture(BufferedImage image) {
@@ -101,15 +93,8 @@ public class Texture implements Sampleable, ISampleableScalar {
 		return texture.getHeight();
 	}
 
-	public void saveToFile(File file) {
-
-		try {
-			ImageIO.write(texture, "png", file);
-		} catch (IOException exception) {
-			System.out.println("Failed to save texture to file \"" + file.getName() + "\": " + exception.getMessage());
-			exception.printStackTrace();
-		}
-
+	public void saveToFile(File file) throws IOException {
+		ImageIO.write(texture, "png", file);
 	}
 
 }

@@ -9,7 +9,7 @@ import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Shape;
 import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.material.EmissiveMaterial;
-import com.JavaPathtracer.material.IMaterial;
+import com.JavaPathtracer.material.Material;
 import com.JavaPathtracer.material.Sampleable;
 
 public class Scene {
@@ -53,7 +53,7 @@ public class Scene {
 		}
 	}
 
-	public void add(Shape shape, IMaterial material) {
+	public void add(Shape shape, Material material) {
 		this.add(new WorldObject(shape, material));
 	}
 
@@ -107,7 +107,7 @@ public class Scene {
 		double minDist = shape.intersect(ray).distance;
 		for(WorldObject object: objects) {
 			Hit hit = object.traceRay(ray);
-			if(hit.distance < minDist + Raytracer.EPSILON) {
+			if(hit.distance + Raytracer.EPSILON < minDist) {
 				return false;
 			}
 		}

@@ -149,8 +149,11 @@ public class Vector implements Sampleable {
 
 	// Convert spherical coordinates to vector
 	public static Vector fromSpherical(double azimuth, double inclination) {
-		return new Vector(Math.sin(inclination) * Math.cos(azimuth), Math.cos(inclination),
-				Math.sin(inclination) * Math.sin(azimuth));
+		return new Vector(
+			Math.sin(inclination) * Math.cos(azimuth),
+			Math.cos(inclination),
+			Math.sin(inclination) * Math.sin(azimuth)
+		);
 	}
 
 	public static Vector fromSpherical(Vector in) {
@@ -173,7 +176,10 @@ public class Vector implements Sampleable {
 
 	// Generate uniformly distributed vector in unit hemisphere
 	public static Vector uniformInHemisphere() {
-		return Vector.fromSpherical(Math.random() * 2 * Math.PI, Math.acos(1 - Math.random()));
+		return Vector.fromSpherical(
+			Math.random() * 2 * Math.PI,
+			Math.acos(Math.random())
+		);
 	}
 
 	@Override

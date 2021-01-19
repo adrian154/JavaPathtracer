@@ -9,6 +9,10 @@ public class DiffuseMaterial extends BRDFMaterial {
 		super(color);
 	}
 	
+	public DiffuseMaterial() {
+		super(new Vector(1.0, 1.0, 1.0));
+	}
+	
 	@Override
 	public Vector sampleBRDF(Vector incident, Hit hit) {
 		
@@ -28,7 +32,7 @@ public class DiffuseMaterial extends BRDFMaterial {
 	
 	@Override
 	public boolean sampleLights() {
-		return true;
+		return false;
 	}
 
 }

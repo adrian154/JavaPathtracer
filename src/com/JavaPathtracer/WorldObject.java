@@ -3,14 +3,14 @@ package com.JavaPathtracer;
 import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Shape;
-import com.JavaPathtracer.material.IMaterial;
+import com.JavaPathtracer.material.Material;
 
 public class WorldObject {
 
 	protected Shape shape;
-	protected IMaterial material;
+	protected Material material;
 
-	public WorldObject(Shape shape, IMaterial material) {
+	public WorldObject(Shape shape, Material material) {
 		this.shape = shape;
 		this.material = material;
 	}
@@ -19,7 +19,7 @@ public class WorldObject {
 		return shape;
 	}
 
-	public IMaterial getMaterial() {
+	public Material getMaterial() {
 		return material;
 	}
 

@@ -4,19 +4,20 @@ import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.material.BRDFMaterial;
-import com.JavaPathtracer.material.IMaterial;
+import com.JavaPathtracer.material.Material;
 
 public class DebugTracer extends Raytracer {
 
 	@Override
 	public Vector traceRay(Scene scene, Ray ray) {
-		super.traceRay(scene, ray);
 		
+		super.traceRay(scene, ray);
+
 		Hit hit = scene.traceRay(ray);
 		if (hit.hit) {
 
 			double amt = ray.origin.minus(hit.point).normalized().dot(hit.normal);
-			IMaterial material = hit.hitObject.getMaterial();
+			Material material = hit.hitObject.getMaterial();
 
 			Vector color;
 			if (material instanceof BRDFMaterial) {

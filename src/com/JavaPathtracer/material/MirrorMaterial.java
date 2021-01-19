@@ -8,9 +8,15 @@ public class MirrorMaterial extends BRDFMaterial {
 	public MirrorMaterial(Sampleable color) {
 		super(color);
 	}
+	
+	public MirrorMaterial() {
+		this(new Vector(1.0, 1.0, 1.0));
+	}
 
+	// since the brdf is always analytically sampled..
+	// we can use a bogus BRDF even though the real BRDF is a delta func
 	public double BRDF(Vector incident, Vector outgoing, Vector normal) {
-		return outgoing.dot(normal);
+		return 1 / outgoing.dot(normal);
 	}
 	
 	public Vector sampleBRDF(Vector incident, Hit hit) {

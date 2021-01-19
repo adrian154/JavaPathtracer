@@ -9,12 +9,12 @@ import com.JavaPathtracer.geometry.Vector;
 // The ideal way to implement this would be to pick a material randomly and use it for the rest of the pathtrace() cycle
 // However, that's not possible in the current IMaterial system. Trying to do so would be jamming a square peg into a round hole.
 // So... oh well.
-public class CombineMaterial implements IMaterial {
+public class MixMaterial implements Material {
 
-	public IMaterial A, B;
-	public ISampleableScalar proportion;
+	public Material A, B;
+	public SampleableScalar proportion;
 
-	public CombineMaterial(IMaterial A, IMaterial B, ISampleableScalar proportion) {
+	public MixMaterial(Material A, Material B, SampleableScalar proportion) {
 		this.A = A;
 		this.B = B;
 		this.proportion = proportion;

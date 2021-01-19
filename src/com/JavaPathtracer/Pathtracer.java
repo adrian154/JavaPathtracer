@@ -4,7 +4,7 @@ import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.material.EmissiveMaterial;
-import com.JavaPathtracer.material.IMaterial;
+import com.JavaPathtracer.material.Material;
 
 public class Pathtracer extends Raytracer {
 
@@ -26,7 +26,7 @@ public class Pathtracer extends Raytracer {
 		Hit hit = scene.traceRay(ray);
 		if (hit.hit) {
 			
-			IMaterial mat = hit.hitObject.getMaterial();
+			Material mat = hit.hitObject.getMaterial();
 			if(mat instanceof EmissiveMaterial && !lights) {
 				return BLACK;
 			}

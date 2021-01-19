@@ -5,7 +5,7 @@ import com.JavaPathtracer.geometry.Vector;
 
 public abstract class Raytracer {
 
-	public static final double EPSILON = 0.000001;
+	public static final double EPSILON = 0.00001;
 	protected int rays;
 	
 	public Raytracer() {

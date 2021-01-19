@@ -1,16 +1,9 @@
 package com.JavaPathtracer.material;
 
-public class SampleableScalar implements ISampleableScalar {
+import com.JavaPathtracer.geometry.Vector;
 
-	private double value;
-
-	public SampleableScalar(double value) {
-		this.value = value;
-	}
-
-	@Override
-	public double sampleScalar(double u, double v) {
-		return value;
-	}
-
+public interface SampleableScalar {
+	
+	public double sampleScalar(double u, double v);
+	
 }
