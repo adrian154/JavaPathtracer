@@ -1,32 +1,32 @@
 package com.JavaPathtracer.material;
 
-import com.JavaPathtracer.Pathtracer;
-import com.JavaPathtracer.Scene;
 import com.JavaPathtracer.geometry.Hit;
-import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Vector;
 
-public class RoughMaterial extends BaseMaterial {
+/*
+ * A rudimentary "rough" material.
+ * Not very sophisticated, pretty unrigorous mathematically/physically
+ * NEVER use (after I implement proper microfacets...)
+ */
+public class RoughMaterial extends MirrorMaterial {
 
 	private SampleableScalar roughness;
 
-	public RoughMaterial(ISampleable color, SampleableScalar roughness) {
+	public RoughMaterial(Sampleable color, SampleableScalar roughness) {
 		super(color);
 		this.roughness = roughness;
 	}
-
+	
 	@Override
-	public Vector shade(Vector incident, Hit hit, int bounces, Scene scene, Pathtracer pathtracer) {
-
-		Vector reflect = incident.minus(hit.normal.times(2 * hit.normal.dot(incident)));
-		reflect.iadd(Vector.uniformInSphere()
-				.times(Math.random() * roughness.sampleScalar(hit.textureCoordinates.x, hit.textureCoordinates.y)))
-				.normalize();
-
-		Ray next = new Ray(hit.point, reflect);
-		return pathtracer.pathtraceRay(scene, next, bounces + 1)
-				.times(this.getColor(hit.textureCoordinates.x, hit.textureCoordinates.y));
-
+	public double BRDF(Vector incident, Vector outgoing, Vector normal) {
+		return 0; // this is totally bogus, but:
+		          // it doesn't matter since no light sampling = no BRDF evaluation
+	}
+	
+	@Override
+	public Vector sampleBRDF(Vector incident, Hit hit) {
+		Vector rand = Vector.uniformInHemisphere().times(Math.random() * roughness.sampleScalar(hit.textureCoordinates.x, hit.textureCoordinates.y));
+		return super.sampleBRDF(incident, hit).iadd(rand).normalize();
 	}
 
 }

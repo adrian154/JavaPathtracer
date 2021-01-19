@@ -2,7 +2,7 @@ package com.JavaPathtracer.material;
 
 import com.JavaPathtracer.geometry.Vector;
 
-public class Checkerboard implements ISampleable, ISampleableScalar {
+public class Checkerboard implements Sampleable, ISampleableScalar {
 
 	private Vector color1, color2;
 

@@ -7,8 +7,8 @@ import com.JavaPathtracer.material.IMaterial;
 
 public class WorldObject {
 
-	private Shape shape;
-	private IMaterial material;
+	protected Shape shape;
+	protected IMaterial material;
 
 	public WorldObject(Shape shape, IMaterial material) {
 		this.shape = shape;

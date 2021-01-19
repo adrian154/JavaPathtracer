@@ -8,7 +8,7 @@ import javax.imageio.ImageIO;
 
 import com.JavaPathtracer.geometry.Vector;
 
-public class Texture implements ISampleable, ISampleableScalar {
+public class Texture implements Sampleable, ISampleableScalar {
 
 	private BufferedImage texture;
 

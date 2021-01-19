@@ -11,6 +11,7 @@ import com.JavaPathtracer.geometry.Shape;
 import com.JavaPathtracer.geometry.Square;
 import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.material.DiffuseMaterial;
+import com.JavaPathtracer.material.EmissiveMaterial;
 import com.JavaPathtracer.material.IMaterial;
 import com.JavaPathtracer.material.Texture;
 import com.JavaPathtracer.renderers.LivePreview;
@@ -44,8 +45,9 @@ public class Main {
 		Shape mesh = new BVHMesh(new File("assets/tinker.obj"), matrix);
 		scene.add(mesh, matdiff);
 
-		//IMaterial light = new EmissiveMaterial(new Vector(0xfe/255.0, 0xf8/255.0, 0xd0/255.0).times(70));
-		scene.addLight(new Square(new Vector(0.0, -1.0, 0.0), new Vector(28, 45, 18), 10), new Vector(0xfe/255.0, 0xf8/255.0, 0xd0/255.0).times(70));
+		IMaterial light = new EmissiveMaterial(new Vector(0xfe/255.0, 0xf8/255.0, 0xd0/255.0).times(70));
+		Square square = new Square(new Vector(0.0, -1.0, 0.0), new Vector(28, 45, 18), 10);
+		scene.add(square, light);
 		scene.add(new Plane(new Vector(0.0, 1.0, 0.0), new Vector(0.0, 0.0, 0.0)), new DiffuseMaterial(new Vector(1.0, 1.0, 1.0)));
 		
 		return scene;
@@ -56,22 +58,22 @@ public class Main {
 		return new Pathtracer(3);
 	}
 	
-	private static void startPreview(Texture output) {
-		LivePreview preview = new LivePreview(output, 3);
+	private static void startPreview(Texture output, Renderer renderer) {
+		LivePreview preview = new LivePreview(output, renderer, 3);
 		preview.start();
 	}
 	
 	public static void main(String[] args) throws IOException {
 
-		BufferedImage outputImage = new BufferedImage(384, 256, BufferedImage.TYPE_INT_RGB);
+		BufferedImage outputImage = new BufferedImage(128, 128, BufferedImage.TYPE_INT_RGB);
 		Texture output = new Texture(outputImage);
 		
 		Camera camera = createCamera();
 		Scene scene = createScene();
 		Raytracer raytracer = createRaytracer();
-
-		startPreview(output);
-		Renderer renderer = new Renderer(scene, camera, raytracer, 16, 500, new FilmicTonemapper());
+		
+		Renderer renderer = new Renderer(scene, camera, raytracer, 16, 100, new FilmicTonemapper());
+		startPreview(output, renderer);
 		renderer.render(output);
 		output.saveToFile(new File("output.png"));
 

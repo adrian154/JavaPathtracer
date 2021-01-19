@@ -1,27 +1,27 @@
-package com.JavaPathtracer.material;
+package com.JavaPathtracer;
 
 import com.JavaPathtracer.geometry.FiniteShape;
 import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.Ray;
-import com.JavaPathtracer.geometry.Shape;
 import com.JavaPathtracer.geometry.Sphere;
-import com.JavaPathtracer.geometry.Vector;
+import com.JavaPathtracer.material.EmissiveMaterial;
 
-public class Light implements FiniteShape {
+public class Light extends WorldObject implements FiniteShape {
 
-	protected Vector color;
+	public EmissiveMaterial material;
 	protected Sphere bounding;
-	protected Shape shape;
 	
-	public Light(FiniteShape shape, Vector color) {
-		this.shape = shape;
+	public Light(FiniteShape shape, EmissiveMaterial material) {
+		super(shape, null);
 		this.bounding = shape.getBoundingSphere();
-		this.color = color;
+		this.material = material;
 	}
 
 	@Override
 	public Hit intersect(Ray ray) {
-		return shape.intersect(ray);
+		Hit hit = shape.intersect(ray);
+		hit.hitObject = this;
+		return hit;
 	}
 	
 	@Override

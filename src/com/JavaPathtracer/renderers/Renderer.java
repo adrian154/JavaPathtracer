@@ -40,6 +40,18 @@ public class Renderer {
 		this(scene, camera, raytracer, tonemapper, tiles, Runtime.getRuntime().availableProcessors(), samples);
 	}
 	
+	public Raytracer getRaytracer() {
+		return this.raytracer;
+	}
+	
+	public int getThreads() {
+		return this.threads;
+	}
+	
+	public int getSamples() {
+		return this.samples;
+	}
+	
 	public void render(Texture output) {
 		
 		ExecutorService executor = Executors.newFixedThreadPool(this.threads);
@@ -95,6 +107,8 @@ public class Renderer {
 		@Override
 		public void run() {
 		
+			final Vector GREEN = new Vector(0, 1, 0);
+			
 			int maxDim = Math.min(output.getWidth(), output.getHeight());
 			double pixelWidth = 2.0 / output.getWidth();
 			double pixelHeight = 2.0 / output.getHeight();
@@ -102,6 +116,8 @@ public class Renderer {
 			for(int x = startX; x < endX; x++) {
 				for(int y = startY; y < endY; y++) {
 	
+					output.set(x, output.getHeight() - y - 1, GREEN);
+					
 					Vector result = new Vector();
 					for(int i = 0; i < samples; i++) {
 						Ray ray = camera.getCameraRay(x, y, maxDim, pixelWidth, pixelHeight);

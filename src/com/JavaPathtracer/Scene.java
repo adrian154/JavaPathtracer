@@ -8,15 +8,15 @@ import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Shape;
 import com.JavaPathtracer.geometry.Vector;
+import com.JavaPathtracer.material.EmissiveMaterial;
 import com.JavaPathtracer.material.IMaterial;
-import com.JavaPathtracer.material.ISampleable;
-import com.JavaPathtracer.material.Light;
+import com.JavaPathtracer.material.Sampleable;
 
 public class Scene {
 
 	private List<WorldObject> objects;
 	private List<Light> lights;
-	private ISampleable skyEmission;
+	private Sampleable skyEmission;
 
 	public Scene() {
 		objects = new ArrayList<WorldObject>();
@@ -26,7 +26,7 @@ public class Scene {
 		skyEmission = new Vector(0.0, 0.0, 0.0);
 	}
 
-	public void setSkyEmission(ISampleable newSky) {
+	public void setSkyEmission(Sampleable newSky) {
 		this.skyEmission = newSky;
 	}
 
@@ -48,14 +48,9 @@ public class Scene {
 
 	public void add(WorldObject object) {
 		objects.add(object);
-	}
-	
-	public void add(Light light) {
-		lights.add(light);
-	}
-	
-	public void addLight(FiniteShape shape, Vector color) {
-		lights.add(new Light(shape, color));
+		if(object.getMaterial() instanceof EmissiveMaterial && object.getShape() instanceof FiniteShape) {
+			this.lights.add(new Light((FiniteShape)object.getShape(), (EmissiveMaterial)object.getMaterial()));
+		}
 	}
 
 	public void add(Shape shape, IMaterial material) {
@@ -78,6 +73,22 @@ public class Scene {
 
 		return nearest;
 
+	}
+
+	public Hit traceLightRay(Ray ray) {
+		
+		Hit nearest = Hit.MISS;
+		for(Light light: lights) {
+			
+			Hit hit = light.intersect(ray);
+			if(hit.hit && hit.distance < hit.distance && hit.distance > Raytracer.EPSILON) {
+				nearest = hit;
+			}
+			
+		}
+		
+		return nearest;
+		
 	}
 	
 	public boolean traceSkyRay(Ray ray) {

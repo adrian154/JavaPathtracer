@@ -2,7 +2,7 @@ package com.JavaPathtracer.geometry;
 
 import com.JavaPathtracer.Raytracer;
 
-public class Sphere implements Shape {
+public class Sphere implements FiniteShape {
 
 	private Vector center;
 	private double radius;
