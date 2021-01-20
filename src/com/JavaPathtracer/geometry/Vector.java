@@ -1,5 +1,7 @@
 package com.JavaPathtracer.geometry;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 import com.JavaPathtracer.material.Sampleable;
 
 // 3D vector class
@@ -162,25 +164,35 @@ public class Vector implements Sampleable {
 		return Vector.fromSpherical(in.x, in.y);
 	}
 
+	// this is kind of scuffed...
 	public Vector toSpherical() {
-		return new Vector(Math.atan2(this.z, this.x), Math.acos(this.y / Math.sqrt(this.x * this.x + this.z * this.z)),
-				0.0);
+		return new Vector(
+			Math.atan2(this.z, this.x),
+			Math.acos(this.y / Math.sqrt(this.x * this.x + this.z * this.z)),
+			0.0
+		);
 	}
 
 	// Generate uniformly distributed vector in unit sphere
 	public static Vector uniformInSphere() {
-		return new Vector(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1).normalize();
+		return Vector.fromSpherical(
+			ThreadLocalRandom.current().nextDouble() * 2 * Math.PI,
+			Math.acos(1 - 2 * ThreadLocalRandom.current().nextDouble())
+		);
 	}
 	
 	public static Vector cosineWeightedInHemisphere() {
-		return Vector.fromSpherical(Math.random() * 2 * Math.PI, Math.random() * Math.PI / 2);
+		return Vector.fromSpherical(
+			ThreadLocalRandom.current().nextDouble() * 2 * Math.PI,
+			ThreadLocalRandom.current().nextDouble() * Math.PI / 2
+		);
 	}
 
 	// Generate uniformly distributed vector in unit hemisphere
 	public static Vector uniformInHemisphere() {
 		return Vector.fromSpherical(
-			Math.random() * 2 * Math.PI,
-			Math.acos(Math.random())
+			ThreadLocalRandom.current().nextDouble() * 2 * Math.PI,
+			Math.acos(ThreadLocalRandom.current().nextDouble())
 		);
 	}
 

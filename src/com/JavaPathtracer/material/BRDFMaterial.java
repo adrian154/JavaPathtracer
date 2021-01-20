@@ -1,6 +1,7 @@
 package com.JavaPathtracer.material;
 
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import com.JavaPathtracer.Light;
 import com.JavaPathtracer.Pathtracer;
@@ -36,10 +37,10 @@ public abstract class BRDFMaterial extends BaseMaterial {
 		Vector toLight = bounding.getCenter().minus(hit.point).normalize();
 		
 		// pick random angle
-		double angle = Math.random() * 2 * Math.PI;
+		double angle = ThreadLocalRandom.current().nextDouble() * 2 * Math.PI;
 		
 		// generate a random vector on the disc
-		Vector randomOnDisc = new Vector(Math.cos(angle), 0, Math.sin(angle)).imul(Math.random() * bounding.getRadius());
+		Vector randomOnDisc = new Vector(Math.cos(angle), 0, Math.sin(angle)).imul(ThreadLocalRandom.current().nextDouble() * bounding.getRadius());
 		
 		// transform that random disc vector into a coordinate space whose XZ plane is in the plane of the disc
 		Vector bvx = toLight.getOrthagonal();

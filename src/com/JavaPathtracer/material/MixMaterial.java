@@ -1,5 +1,7 @@
 package com.JavaPathtracer.material;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 import com.JavaPathtracer.Pathtracer;
 import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.Vector;
@@ -22,7 +24,7 @@ public class MixMaterial implements Material {
 
 	@Override
 	public Vector shade(Vector incident, Hit hit, int bounces, Scene scene,Pathtracer pathtracer) {
-		return (Math.random() < proportion.sampleScalar(hit.textureCoordinates.x, hit.textureCoordinates.y) ? A : B)
+		return (ThreadLocalRandom.current().nextDouble() < proportion.sampleScalar(hit.textureCoordinates.x, hit.textureCoordinates.y) ? A : B)
 				.shade(incident, hit, bounces, scene, pathtracer);
 	}
 

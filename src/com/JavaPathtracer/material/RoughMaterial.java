@@ -1,5 +1,7 @@
 package com.JavaPathtracer.material;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.Vector;
 
@@ -24,7 +26,7 @@ public class RoughMaterial extends MirrorMaterial {
 	
 	@Override
 	public Vector sampleBRDF(Vector incident, Hit hit) {
-		Vector rand = Vector.uniformInHemisphere().times(Math.random() * roughness.sampleScalar(hit.textureCoordinates.x, hit.textureCoordinates.y));
+		Vector rand = Vector.uniformInHemisphere().times(ThreadLocalRandom.current().nextDouble() * roughness.sampleScalar(hit.textureCoordinates.x, hit.textureCoordinates.y));
 		return super.sampleBRDF(incident, hit).iadd(rand).normalize();
 	}
 
