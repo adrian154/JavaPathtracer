@@ -8,7 +8,7 @@ import javax.imageio.ImageIO;
 
 import com.JavaPathtracer.geometry.Vector;
 
-public class Texture implements Sampleable, SampleableScalar {
+public class Texture implements Sampleable, SampleableScalar, Saveable {
 
 	private BufferedImage texture;
 
@@ -93,6 +93,7 @@ public class Texture implements Sampleable, SampleableScalar {
 		return texture.getHeight();
 	}
 
+	@Override
 	public void saveToFile(File file) throws IOException {
 		ImageIO.write(texture, "png", file);
 	}

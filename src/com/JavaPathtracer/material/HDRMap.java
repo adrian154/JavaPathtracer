@@ -7,7 +7,7 @@ import com.JavaHDR.HDREncoder;
 import com.JavaHDR.HDRImageRGB;
 import com.JavaPathtracer.geometry.Vector;
 
-public class HDRMap implements Sampleable {
+public class HDRMap implements Sampleable, Saveable {
 
 	private HDRImageRGB image;
 
@@ -39,6 +39,11 @@ public class HDRMap implements Sampleable {
 
 		return new Vector(r, g, b);
 
+	}
+	
+	@Override
+	public void saveToFile(File file) throws IOException {
+		HDREncoder.writeHDR(image, file);
 	}
 
 }
