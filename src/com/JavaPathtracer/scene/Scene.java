@@ -1,8 +1,10 @@
-package com.JavaPathtracer;
+package com.JavaPathtracer.scene;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import com.JavaPathtracer.Light;
+import com.JavaPathtracer.Raytracer;
 import com.JavaPathtracer.geometry.FiniteShape;
 import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.Ray;
@@ -10,40 +12,33 @@ import com.JavaPathtracer.geometry.Shape;
 import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.material.EmissiveMaterial;
 import com.JavaPathtracer.material.Material;
-import com.JavaPathtracer.material.Sampleable;
 
 public class Scene {
 
 	private List<WorldObject> objects;
 	private List<Light> lights;
-	private Sampleable skyEmission;
+	private Sky sky;
 
 	public Scene() {
+		
 		objects = new ArrayList<WorldObject>();
 		lights = new ArrayList<Light>();
 
 		// Default = black sky
-		skyEmission = new Vector(0.0, 0.0, 0.0);
+		sky = new BasicSky(Vector.ZERO);
+		
 	}
 
-	public void setSkyEmission(Sampleable newSky) {
-		this.skyEmission = newSky;
+	public void setSky(Sky sky) {
+		this.sky = sky;
 	}
 
-	//private static final Vector SKY_DIR = new Vector(0.8, 1.0, -1.0).normalized();
-	
 	public List<Light> getLights() {
 		return this.lights;
 	}
 	
 	public Vector getSkyEmission(Vector direction) {
-		Vector invDir = new Vector(0.0, 0.0, 0.0).minus(direction);
-		double azimuth = (Math.atan2(invDir.z, invDir.x) + 0.5) % (2 * Math.PI);
-		double inclination = Math.asin(invDir.y);
-		double u = 0.5 + azimuth / (2 * Math.PI);
-		double v = 0.5 - inclination / Math.PI;
-		return skyEmission.sample(u, v);
-		//return direction.dot(SKY_DIR) < 0 ? new Vector(10.0, 0.0, 0.0) : new Vector();
+		return sky.getEmission(direction);
 	}
 
 	public void add(WorldObject object) {

@@ -1,6 +1,6 @@
 package com.JavaPathtracer.geometry;
 
-import com.JavaPathtracer.WorldObject;
+import com.JavaPathtracer.scene.WorldObject;
 
 public class Hit {
 

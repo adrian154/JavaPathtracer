@@ -1,9 +1,9 @@
 package com.JavaPathtracer.material;
 
 import com.JavaPathtracer.Pathtracer;
-import com.JavaPathtracer.Scene;
 import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.Vector;
+import com.JavaPathtracer.scene.Scene;
 
 /*
  * NOTE: Use a Light instead of an emissive material for simple lights!

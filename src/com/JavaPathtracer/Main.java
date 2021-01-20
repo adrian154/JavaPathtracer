@@ -4,12 +4,13 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-import com.JavaPathtracer.geometry.BVHMesh;
+import com.JavaPathtracer.cameras.Camera;
+import com.JavaPathtracer.cameras.OrthographicCamera;
 import com.JavaPathtracer.geometry.Vector;
-import com.JavaPathtracer.material.DiffuseMaterial;
 import com.JavaPathtracer.material.Texture;
 import com.JavaPathtracer.renderers.LivePreview;
 import com.JavaPathtracer.renderers.Renderer;
+import com.JavaPathtracer.scene.Scene;
 import com.JavaPathtracer.tonemapping.FilmicTonemapper;
 
 public class Main {
@@ -22,24 +23,9 @@ public class Main {
 		return camera;
 	}
 
-	public static Scene createScene() throws IOException {
-
-		
-		Scene scene = new Scene();
-		
-		// set up sky
-		scene.setSkyEmission(new Vector(20.0));
-
-		scene.add(new BVHMesh(new File("assets/girl/Camellia.obj")), new DiffuseMaterial(new Texture("assets/girl/Textures/Camellia_Body_diffuse.jpg")));
-		//scene.add(new BVHMesh(new File("assets/girl/Camellia.obj")), new DiffuseMaterial());
-		
-		return scene;
-		
-	}
-
 	public static Raytracer createRaytracer() {
-		//return new Pathtracer(3);
-		return new DebugTracer();
+		return new Pathtracer(3);
+		//return new DebugTracer();
 	}
 	
 	private static void startPreview(Texture output, Renderer renderer) {
@@ -53,7 +39,7 @@ public class Main {
 		Texture output = new Texture(outputImage);
 		
 		Camera camera = createCamera();
-		Scene scene = createScene();
+		Scene scene = new TestScene();
 		Raytracer raytracer = createRaytracer();
 		
 		Renderer renderer = new Renderer(scene, camera, raytracer, 16, 256, new FilmicTonemapper());

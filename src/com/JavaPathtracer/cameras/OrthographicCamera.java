@@ -1,4 +1,4 @@
-package com.JavaPathtracer;
+package com.JavaPathtracer.cameras;
 
 import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Vector;

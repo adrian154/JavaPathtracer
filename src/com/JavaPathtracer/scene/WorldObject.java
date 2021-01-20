@@ -1,4 +1,4 @@
-package com.JavaPathtracer;
+package com.JavaPathtracer.scene;
 
 import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.Ray;

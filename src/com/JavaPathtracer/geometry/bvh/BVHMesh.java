@@ -1,9 +1,14 @@
-package com.JavaPathtracer.geometry;
+package com.JavaPathtracer.geometry.bvh;
 
 import java.io.File;
 import java.io.IOException;
 
-import com.JavaPathtracer.geometry.bvh.BVHNode;
+import com.JavaPathtracer.geometry.FiniteShape;
+import com.JavaPathtracer.geometry.Hit;
+import com.JavaPathtracer.geometry.Matrix;
+import com.JavaPathtracer.geometry.Mesh;
+import com.JavaPathtracer.geometry.Ray;
+import com.JavaPathtracer.geometry.Sphere;
 
 public class BVHMesh extends Mesh implements FiniteShape {
 

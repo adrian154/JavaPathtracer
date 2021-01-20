@@ -5,6 +5,7 @@ import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.material.EmissiveMaterial;
 import com.JavaPathtracer.material.Material;
+import com.JavaPathtracer.scene.Scene;
 
 public class Pathtracer extends Raytracer {
 

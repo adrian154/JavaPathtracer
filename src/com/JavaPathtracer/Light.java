@@ -5,6 +5,7 @@ import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Sphere;
 import com.JavaPathtracer.material.EmissiveMaterial;
+import com.JavaPathtracer.scene.WorldObject;
 
 public class Light extends WorldObject implements FiniteShape {
 

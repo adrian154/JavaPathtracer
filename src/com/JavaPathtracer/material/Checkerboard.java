@@ -5,8 +5,7 @@ import com.JavaPathtracer.geometry.Vector;
 public class Checkerboard implements Sampleable, SampleableScalar {
 
 	private Vector color1, color2;
-	private double size;
-	
+
 	public Checkerboard(Vector color1, Vector color2) {
 		this.color1 = color1;
 		this.color2 = color2;

@@ -4,12 +4,12 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.JavaPathtracer.Camera;
 import com.JavaPathtracer.Raytracer;
-import com.JavaPathtracer.Scene;
+import com.JavaPathtracer.cameras.Camera;
 import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.material.Texture;
+import com.JavaPathtracer.scene.Scene;
 import com.JavaPathtracer.tonemapping.IToneMapper;
 import com.JavaPathtracer.tonemapping.LinearTonemapper;
 

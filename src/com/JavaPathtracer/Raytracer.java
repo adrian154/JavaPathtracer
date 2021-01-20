@@ -2,6 +2,7 @@ package com.JavaPathtracer;
 
 import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Vector;
+import com.JavaPathtracer.scene.Scene;
 
 public abstract class Raytracer {
 

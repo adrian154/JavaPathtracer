@@ -9,16 +9,18 @@ public class Vector implements Sampleable {
 	// Components
 	public double x, y, z;
 
+	public static final Vector ZERO = new Vector(0.0, 0.0, 0.0);
+	
 	public Vector() {
-
+		this(0);
 	}
-
-	public Vector(double x) {
-		this.x = x;
-		this.y = x;
-		this.z = x;
+	
+	public Vector(double val) {
+		this.x = val;
+		this.y = val;
+		this.z = val;
 	}
-
+	
 	public Vector(double x, double y, double z) {
 		this.x = x;
 		this.y = y;
