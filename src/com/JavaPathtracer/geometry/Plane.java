@@ -9,9 +9,7 @@ public class Plane implements Shape {
 	public double tilingSize;
 
 	public Plane(Vector normal, Vector point) {
-		this.normal = normal;
-		this.point = point;
-		this.tilingSize = 1.0;
+		this(normal, point, 1.0);
 	}
 
 	public Plane(Vector normal, Vector point, double tilingSize) {

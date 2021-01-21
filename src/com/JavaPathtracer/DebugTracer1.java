@@ -7,7 +7,7 @@ import com.JavaPathtracer.material.BRDFMaterial;
 import com.JavaPathtracer.material.Material;
 import com.JavaPathtracer.scene.Scene;
 
-public class DebugTracer extends Raytracer {
+public class DebugTracer1 extends Raytracer {
 
 	@Override
 	public Vector traceRay(Scene scene, Ray ray) {

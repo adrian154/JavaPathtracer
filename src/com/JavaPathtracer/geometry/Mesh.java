@@ -14,8 +14,10 @@ import com.JavaPathtracer.Raytracer;
 public class Mesh {
 
 	public int[] faces;
+	public int[] faceNormIndices;
 	public int[] texCoordIndices;
 	public Vector[] vertexes;
+	public Vector[] vertexNormals;
 	public Vector[] textureCoordinates;
 	public boolean hasTextureData;
 
@@ -27,8 +29,10 @@ public class Mesh {
 		int lineNum = 1;
 
 		List<Vector> vertexes = new ArrayList<Vector>();
+		List<Vector> vertexNormals = new ArrayList<Vector>();
 		List<Vector> textureCoordinates = new ArrayList<Vector>();
 		List<Integer> faces = new ArrayList<Integer>();
+		List<Integer> faceNormIndices = new ArrayList<Integer>();
 		List<Integer> texCoordIndices = new ArrayList<Integer>();
 
 		while ((line = reader.readLine()) != null) {
@@ -52,37 +56,46 @@ public class Mesh {
 				vertexes.add(matrix.transform(new Vector(Double.parseDouble(parts[1]), Double.parseDouble(parts[2]),
 						Double.parseDouble(parts[3]))));
 
+			} else if(parts[0].equals("vn")) {
+				
+				if (parts.length != 4) {
+					reader.close();
+					throw new RuntimeException("File \"" + file.getName() + "\", line " + lineNum
+							+ ": wrong number of components for vertex normal (expected 3)");
+				}
+
+				vertexNormals.add(matrix.transform(new Vector(Double.parseDouble(parts[1]), Double.parseDouble(parts[2]),
+						Double.parseDouble(parts[3]))));
+
+				
 			} else if (parts[0].equals("f")) {
 
-				// This could be extended into a loop for arbitrary-length polygons
-				// In practice, few meshes will ever have anything but tris and quads
-				if (parts.length == 4) {
-
-					faces.add(Integer.parseInt(parts[1].split("/")[0]) - 1);
-					faces.add(Integer.parseInt(parts[2].split("/")[0]) - 1);
-					faces.add(Integer.parseInt(parts[3].split("/")[0]) - 1);
-
-					if (parts[1].split("/").length > 1)
-						texCoordIndices.add(Integer.parseInt(parts[1].split("/")[1]) - 1);
-					if (parts[2].split("/").length > 1)
-						texCoordIndices.add(Integer.parseInt(parts[2].split("/")[1]) - 1);
-					if (parts[3].split("/").length > 1)
-						texCoordIndices.add(Integer.parseInt(parts[3].split("/")[1]) - 1);
-
-				} else if (parts.length == 5) {
-
-					// Useless micro-optimization since I really can't help myself
-					int first = Integer.parseInt(parts[1].split("/")[0]) - 1;
-					int third = Integer.parseInt(parts[3].split("/")[0]) - 1;
-
-					faces.add(first);
-					faces.add(Integer.parseInt(parts[2].split("/")[0]) - 1);
-					faces.add(third);
-
-					faces.add(first);
-					faces.add(third);
-					faces.add(Integer.parseInt(parts[4].split("/")[0]) - 1);
-
+				int components = parts.length - 1;
+				int[] faceVertexes = new int[components];
+				int[] faceTexCoords = new int[components];
+				int[] faceVertNormals = new int[components];
+				
+				for(int i = 0; i < parts.length - 1; i++) {
+					String[] split = parts[i + 1].split("/");
+					faceVertexes[i] = Integer.parseInt(split[0]) - 1;
+					if(split.length > 1) faceTexCoords[i] = Integer.parseInt(split[1]) - 1;
+					if(split.length > 2) faceVertNormals[i] = Integer.parseInt(split[2]) - 1;
+				}
+				
+				for(int i = 1; i < components - 1; i++) {
+					
+					faces.add(faceVertexes[0]);
+					faces.add(faceVertexes[i]);
+					faces.add(faceVertexes[i + 1]);
+					
+					texCoordIndices.add(faceTexCoords[0]);
+					texCoordIndices.add(faceTexCoords[i]);
+					texCoordIndices.add(faceTexCoords[i + 1]);
+					
+					faceNormIndices.add(faceVertNormals[0]);
+					faceNormIndices.add(faceVertNormals[i]);
+					faceNormIndices.add(faceVertNormals[i + 1]);
+					
 				}
 
 			} else if (parts[0].equals("vt")) {
@@ -105,7 +118,9 @@ public class Mesh {
 
 		// Convert arraylists to arrays
 		this.vertexes = vertexes.toArray(new Vector[0]);
+		this.vertexNormals = vertexNormals.size() > 0 ? vertexNormals.toArray(new Vector[0]) : null;
 		this.faces = faces.stream().mapToInt(Integer::valueOf).toArray();
+		this.faceNormIndices = faceNormIndices.stream().mapToInt(Integer::valueOf).toArray();
 		this.texCoordIndices = texCoordIndices.stream().mapToInt(Integer::valueOf).toArray();
 		this.textureCoordinates = textureCoordinates.toArray(new Vector[0]);
 
@@ -122,8 +137,12 @@ public class Mesh {
 	// Normals are not normalized. This is to reduce the number of square roots.
 	// THe barycentric coordinates are returned as the texture coordinates for
 	// convenience, but beware they are not the same thing!!
-	public static final Hit intsersectTri(Ray ray, Vector v0, Vector v1, Vector v2) {
+	public Hit intersectTri(Ray ray, int which) {
 
+		Vector v0 = vertexes[faces[which * 3]];
+		Vector v1 = vertexes[faces[which * 3 + 1]];
+		Vector v2 = vertexes[faces[which * 3 + 2]];
+		
 		Vector edge1 = v1.minus(v0);
 		Vector edge2 = v2.minus(v0);
 		Vector h = ray.direction.cross(edge2);
@@ -146,10 +165,27 @@ public class Mesh {
 
 		double t = f * edge2.dot(q);
 		if (t > Raytracer.EPSILON) {
-			Vector normal = edge1.cross(edge2);
-			if (normal.dot(ray.direction) > 0) {
-				normal.invert();
+			
+			Vector normal;
+			
+			if(vertexNormals == null) {
+			
+				// No vertex normals = can't interpolate :(
+				// Assume tri is flat
+				normal = edge1.cross(edge2);
+				if (normal.dot(ray.direction) > 0) {
+					normal.invert();
+				}
+				
+			} else {
+
+				Vector norm1 = vertexNormals[faceNormIndices[which * 3]];
+				Vector norm2 = vertexNormals[faceNormIndices[which * 3 + 1]];
+				Vector norm3 = vertexNormals[faceNormIndices[which * 3 + 2]];
+				normal = norm1.times(1 - u - v).plus(norm2.times(u)).plus(norm3.times(v)).normalize();
+				
 			}
+			
 			return new Hit(ray.getPoint(t), normal, t, new Vector(u, v, 0.0));
 		} else {
 			return Hit.MISS;
@@ -163,8 +199,7 @@ public class Mesh {
 		int nearestIndex = 0;
 		for (int i : prims) {
 
-			Hit cur = Mesh.intsersectTri(ray, vertexes[faces[i * 3]], vertexes[faces[i * 3 + 1]],
-					vertexes[faces[i * 3 + 2]]);
+			Hit cur = intersectTri(ray, i);
 			if (cur.distance < nearest.distance) {
 				nearest = cur;
 				nearestIndex = i;

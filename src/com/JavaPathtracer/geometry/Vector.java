@@ -12,6 +12,7 @@ public class Vector implements Sampleable {
 	public double x, y, z;
 
 	public static final Vector ZERO = new Vector(0.0, 0.0, 0.0);
+	public static final Vector ONE = new Vector(1.0, 1.0, 1.0);
 	
 	public Vector() {
 		this(0);
