@@ -63,7 +63,7 @@ public class Renderer {
 		int tileHeight = output.getHeight() / tiles;
 		for(int x = 0; x < tiles; x++) {
 			for(int y = 0; y < tiles; y++) {
-				executor.submit(new RenderTask(
+				executor.execute(new RenderTask(
 						x * tileWidth,
 						y * tileHeight,
 						x * tileWidth + tileWidth,
@@ -110,8 +110,8 @@ public class Renderer {
 			final Vector GREEN = new Vector(0, 1, 0);
 			
 			int maxDim = Math.min(output.getWidth(), output.getHeight());
-			double pixelWidth = 1.0 / output.getWidth();
-			double pixelHeight = 1.0 / output.getHeight();
+			double pixelWidth = 2.0 / output.getWidth();
+			double pixelHeight = 2.0 / output.getHeight();
 		
 			for(int x = startX; x < endX; x++) {
 				for(int y = startY; y < endY; y++) {

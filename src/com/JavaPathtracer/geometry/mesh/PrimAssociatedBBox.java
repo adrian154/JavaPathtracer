@@ -1,4 +1,4 @@
-package com.JavaPathtracer.geometry.bvh;
+package com.JavaPathtracer.geometry.mesh;
 
 import com.JavaPathtracer.geometry.BoundingBox;
 import com.JavaPathtracer.geometry.Vector;

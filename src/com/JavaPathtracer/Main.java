@@ -5,22 +5,22 @@ import java.io.File;
 import java.io.IOException;
 
 import com.JavaPathtracer.cameras.Camera;
-import com.JavaPathtracer.cameras.PerspectiveCamera;
+import com.JavaPathtracer.cameras.OrthographicCamera;
 import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.material.Texture;
 import com.JavaPathtracer.renderers.LivePreview;
 import com.JavaPathtracer.renderers.Renderer;
 import com.JavaPathtracer.scene.Scene;
-import com.JavaPathtracer.tonemapping.LinearTonemapper;
+import com.JavaPathtracer.tonemapping.FilmicTonemapper;
 
 public class Main {
 
 	public static Camera createCamera() {
-		PerspectiveCamera camera = new PerspectiveCamera();
-		camera.moveTo(new Vector(0.0, 180.0, 150.0));
-		camera.setAngles(-Math.PI / 2, Math.PI / 2 + 0.2);
+		OrthographicCamera camera = new OrthographicCamera();
+		camera.moveTo(new Vector(0.0, 140.0, 150.0));
+		camera.setAngles(-Math.PI / 2, Math.PI / 2);
 		//camera.setScale(50);
-		camera.setFOV(10);
+		camera.setScale(60);
 		return camera;
 	}
 
@@ -43,7 +43,7 @@ public class Main {
 		Scene scene = new TestScene();
 		Raytracer raytracer = createRaytracer();
 		
-		Renderer renderer = new Renderer(scene, camera, raytracer, 16, 3, new LinearTonemapper());
+		Renderer renderer = new Renderer(scene, camera, raytracer, 16, 512, new FilmicTonemapper());
 		startPreview(output, renderer);
 		renderer.render(output);
 		output.saveToFile(new File("output.png"));

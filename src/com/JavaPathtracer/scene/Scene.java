@@ -25,7 +25,7 @@ public class Scene {
 		lights = new ArrayList<Light>();
 
 		// Default = black sky
-		sky = new BasicSky(Vector.ZERO);
+		sky = new SimpleSky(Vector.ZERO);
 		
 	}
 
@@ -43,13 +43,17 @@ public class Scene {
 
 	public void add(WorldObject object) {
 		objects.add(object);
-		if(object.getMaterial() instanceof EmissiveMaterial && object.getShape() instanceof FiniteShape) {
+	}
+	
+	public void add(SimpleObject object) {
+		this.add((WorldObject)object);
+		if(object.getMaterial() instanceof EmissiveMaterial) {
 			this.lights.add(new Light((FiniteShape)object.getShape(), (EmissiveMaterial)object.getMaterial()));
 		}
 	}
 
 	public void add(Shape shape, Material material) {
-		this.add(new WorldObject(shape, material));
+		this.add(new SimpleObject(shape, material));
 	}
 
 	// do geometry + material trace into scene
@@ -57,7 +61,7 @@ public class Scene {
 
 		// empty constructor Hit has infinite distance which works out for us
 		Hit nearest = Hit.MISS;
-		for (WorldObject object : objects) {
+		for (WorldObject object: objects) {
 
 			Hit hit = object.traceRay(ray);
 			if (hit.hit && hit.distance < nearest.distance && hit.distance > Raytracer.EPSILON) {

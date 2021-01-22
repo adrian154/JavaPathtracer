@@ -1,25 +1,23 @@
-package com.JavaPathtracer.geometry.bvh;
+package com.JavaPathtracer.geometry.mesh;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.JavaPathtracer.geometry.BoundingBox;
 import com.JavaPathtracer.geometry.Hit;
-import com.JavaPathtracer.geometry.Mesh;
 import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Shape;
 import com.JavaPathtracer.geometry.Vector;
 
 public class BVHNode extends BoundingBox implements Shape {
 
-	public Mesh mesh;
+	public MeshGeometryContainer mesh;
 	public BVHNode left;
 	public BVHNode right;
 	public int[] primIndexes;
 	public List<PrimAssociatedBBox> children; // USED DURING CONSTRUCTION. NULL AFTER BVH DONE BUILDING SO IT CAN BE
-												// GC'D!
 
-	// More bins = higher quality BVH at the cost of slower construction (O(N))
+	// More bins = higher quality BVH at the cost of slower construction
 	public static final int NUM_BINS = 32;
 	public static final double COST_TRAVERSE = 1; // greater intersect cost = more splits
 	public static final double COST_INTERSECT = 12;
@@ -33,7 +31,7 @@ public class BVHNode extends BoundingBox implements Shape {
 		return Math.max(a, Math.max(b, c));
 	}
 
-	public BVHNode(Mesh mesh) {
+	public BVHNode(MeshGeometryContainer mesh) {
 
 		// Appease the compiler...
 		super(null, null);
@@ -60,7 +58,7 @@ public class BVHNode extends BoundingBox implements Shape {
 
 	}
 
-	public BVHNode(Mesh mesh, BoundingBox box, List<PrimAssociatedBBox> boxes) {
+	public BVHNode(MeshGeometryContainer mesh, BoundingBox box, List<PrimAssociatedBBox> boxes) {
 		super(box.min, box.max);
 		this.mesh = mesh;
 		this.children = boxes;

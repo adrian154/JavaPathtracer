@@ -5,9 +5,9 @@ import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Sphere;
 import com.JavaPathtracer.material.EmissiveMaterial;
-import com.JavaPathtracer.scene.WorldObject;
+import com.JavaPathtracer.scene.SimpleObject;
 
-public class Light extends WorldObject implements FiniteShape {
+public class Light extends SimpleObject implements FiniteShape {
 
 	public EmissiveMaterial material;
 	protected Sphere bounding;
@@ -21,7 +21,7 @@ public class Light extends WorldObject implements FiniteShape {
 	@Override
 	public Hit intersect(Ray ray) {
 		Hit hit = shape.intersect(ray);
-		hit.hitObject = this;
+		hit.material = material;
 		return hit;
 	}
 	

@@ -27,7 +27,7 @@ public class Pathtracer extends Raytracer {
 		Hit hit = scene.traceRay(ray);
 		if (hit.hit) {
 			
-			Material mat = hit.hitObject.getMaterial();
+			Material mat = hit.material;
 			if(mat instanceof EmissiveMaterial && !lights) {
 				return BLACK;
 			}

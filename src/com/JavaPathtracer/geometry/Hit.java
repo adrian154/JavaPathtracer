@@ -1,6 +1,6 @@
 package com.JavaPathtracer.geometry;
 
-import com.JavaPathtracer.scene.WorldObject;
+import com.JavaPathtracer.material.Material;
 
 public class Hit {
 
@@ -9,7 +9,7 @@ public class Hit {
 	public Vector normal; // Point of normal
 	public double distance; // Distance from hitpoint to ray origin
 	public Vector textureCoordinates; // UV of the hit
-	public WorldObject hitObject; // Hit object (used in tragically un-OOP ways!!)
+	public Material material; // used in tragically un-OOP ways!
 
 	public static final Hit MISS = new Hit(false, null, null, Double.POSITIVE_INFINITY, null);
 	public static final Hit BOGUS = new Hit(true, new Vector(1.0, 0.0, 0.0), new Vector(1.0, 0.0, 0.0), 0.0,

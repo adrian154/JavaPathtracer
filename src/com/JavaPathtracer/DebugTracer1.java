@@ -18,7 +18,7 @@ public class DebugTracer1 extends Raytracer {
 		if (hit.hit) {
 
 			double amt = ray.origin.minus(hit.point).normalized().dot(hit.normal);
-			Material material = hit.hitObject.getMaterial();
+			Material material = hit.material;
 
 			Vector color;
 			if (material instanceof BRDFMaterial) {

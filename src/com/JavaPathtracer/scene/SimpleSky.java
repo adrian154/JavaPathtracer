@@ -2,11 +2,11 @@ package com.JavaPathtracer.scene;
 
 import com.JavaPathtracer.geometry.Vector;
 
-public class BasicSky implements Sky {
+public class SimpleSky implements Sky {
 
 	protected Vector color;
 	
-	public BasicSky(Vector color) {
+	public SimpleSky(Vector color) {
 		this.color = color;
 	}
 	
