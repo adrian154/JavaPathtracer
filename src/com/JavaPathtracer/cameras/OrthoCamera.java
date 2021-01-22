@@ -3,7 +3,7 @@ package com.JavaPathtracer.cameras;
 import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Vector;
 
-public class OrthographicCamera extends Camera {
+public class OrthoCamera extends Camera {
 
 	private double scale;
 	

@@ -192,8 +192,8 @@ public class Vector implements Sampleable {
 	// Generate uniformly distributed vector in unit hemisphere
 	public static Vector uniformInHemisphere() {
 		return Vector.fromSpherical(
-			ThreadLocalRandom.current().nextDouble() * 2 * Math.PI,
-			Math.acos(ThreadLocalRandom.current().nextDouble())
+			Math.random() * 2 * Math.PI,
+			Math.acos(Math.random())
 		);
 	}
 
@@ -203,9 +203,11 @@ public class Vector implements Sampleable {
 	}
 
 	public static Vector localToWorldCoords(Vector vector, Vector bvx, Vector bvy, Vector bvz) {
-		return new Vector(vector.x * bvx.x + vector.y * bvy.x + vector.z * bvz.x,
-				vector.x * bvx.y + vector.y * bvy.y + vector.z * bvz.y,
-				vector.x * bvx.z + vector.y * bvy.z + vector.z * bvz.z);
+		return new Vector(
+			vector.x * bvx.x + vector.y * bvy.x + vector.z * bvz.x,
+			vector.x * bvx.y + vector.y * bvy.y + vector.z * bvz.y,
+			vector.x * bvx.z + vector.y * bvy.z + vector.z * bvz.z
+		);
 	}
 
 }

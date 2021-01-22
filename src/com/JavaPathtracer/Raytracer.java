@@ -6,7 +6,7 @@ import com.JavaPathtracer.scene.Scene;
 
 public abstract class Raytracer {
 
-	public static final double EPSILON = 0.00001;
+	public static final double EPSILON = 0.000001;
 	protected int rays;
 	
 	public Raytracer() {

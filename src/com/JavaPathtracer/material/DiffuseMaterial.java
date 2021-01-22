@@ -32,7 +32,7 @@ public class DiffuseMaterial extends BRDFMaterial {
 	
 	@Override
 	public boolean sampleLights() {
-		return true;
+		return false;
 	}
 
 }

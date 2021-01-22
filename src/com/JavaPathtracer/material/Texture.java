@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import com.JavaPathtracer.Stopwatch;
 import com.JavaPathtracer.geometry.Vector;
 
 public class Texture implements Sampleable, SampleableScalar, Saveable {
@@ -17,7 +18,9 @@ public class Texture implements Sampleable, SampleableScalar, Saveable {
 	}
 
 	public Texture(File imageFile) throws IOException {
+		Stopwatch stopwatch = new Stopwatch("LoadImageTexture");
 		texture = ImageIO.read(imageFile);
+		stopwatch.stop();
 	}
 
 	public Texture(BufferedImage image) {
@@ -95,7 +98,9 @@ public class Texture implements Sampleable, SampleableScalar, Saveable {
 
 	@Override
 	public void saveToFile(File file) throws IOException {
+		Stopwatch stopwatch = new Stopwatch("SaveTexture");
 		ImageIO.write(texture, "png", file);
+		stopwatch.stop();
 	}
 
 }

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.JavaPathtracer.Stopwatch;
 import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.Matrix;
 import com.JavaPathtracer.geometry.MeshHit;
@@ -31,11 +32,12 @@ public class MeshObject implements WorldObject {
 	
 	public MeshObject(File file, Matrix matrix, Map<String, Material> materials) throws IOException {
 
-		// sets
+		// set locals
 		this.materials = materials.values().stream().collect(Collectors.toList());
 		
+		// read mesh
+		Stopwatch stopwatch = new Stopwatch("LoadMesh");
 		BufferedReader reader = new BufferedReader(new FileReader(file));
-
 		String line;
 		int lineNum = 1;
 
@@ -135,6 +137,8 @@ public class MeshObject implements WorldObject {
 
 		}
 
+		stopwatch.lap("parseFile");
+		
 		// Convert arraylists to arrays
 		this.geometry = new MeshGeometryContainer(
 			vertexes,
@@ -145,9 +149,11 @@ public class MeshObject implements WorldObject {
 			texCoordIndices
 		);
 		
+		stopwatch.lap("constructGeomContainer");
+		
 		faceMaterials = faceMaterialIndices.stream().mapToInt(Integer::valueOf).toArray();
-
 		reader.close();
+		stopwatch.stop();
 
 	}
 	

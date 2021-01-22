@@ -3,6 +3,7 @@ package com.JavaPathtracer.geometry.mesh;
 import java.util.List;
 
 import com.JavaPathtracer.Raytracer;
+import com.JavaPathtracer.Stopwatch;
 import com.JavaPathtracer.geometry.FiniteShape;
 import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.MeshHit;
@@ -37,7 +38,10 @@ public class MeshGeometryContainer implements FiniteShape {
 		this.faceTexCoordIndices = faceTexCoordIndices.stream().mapToInt(Integer::valueOf).toArray();
 		this.textureCoordinates = textureCoordinates.toArray(new Vector[0]);
 		
+
+		Stopwatch stopwatch = new Stopwatch("BVHBuild");
 		BVHRoot = new BVHNode(this);
+		stopwatch.stop();
 		
 	}
 	
@@ -82,19 +86,22 @@ public class MeshGeometryContainer implements FiniteShape {
 				// No vertex normals = can't interpolate :(
 				// Assume tri is flat
 				normal = edge1.cross(edge2);
-				if (normal.dot(ray.direction) > 0) {
-					normal.invert();
-				}
 				
 			} else {
 
+				// interpolate between vertex normals based on barycentric coordinates
 				Vector norm1 = vertexNormals[faceNormIndices[which * 3]];
 				Vector norm2 = vertexNormals[faceNormIndices[which * 3 + 1]];
 				Vector norm3 = vertexNormals[faceNormIndices[which * 3 + 2]];
-				normal = norm1.times(1 - u - v).plus(norm2.times(u)).plus(norm3.times(v)).normalize();
+				normal = norm1.times(1 - u - v).plus(norm2.times(u)).plus(norm3.times(v));
 				
 			}
-			
+		
+			normal.normalize();
+			if (normal.dot(ray.direction) > 0) {
+				normal.invert();
+			}
+		
 			return new MeshHit(ray.getPoint(t), normal, t, new Vector(u, v, 0.0), which);
 		} else {
 			return Hit.MISS;

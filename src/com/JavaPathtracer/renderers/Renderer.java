@@ -5,6 +5,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.JavaPathtracer.Raytracer;
+import com.JavaPathtracer.Stopwatch;
 import com.JavaPathtracer.cameras.Camera;
 import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Vector;
@@ -57,8 +58,8 @@ public class Renderer {
 		ExecutorService executor = Executors.newFixedThreadPool(this.threads);
 		CountDownLatch latch = new CountDownLatch(this.tiles * this.tiles);
 		
-		long start = System.currentTimeMillis();
-		
+		Stopwatch stopwatch = new Stopwatch("Render");
+
 		int tileWidth = output.getWidth() / tiles;
 		int tileHeight = output.getHeight() / tiles;
 		for(int x = 0; x < tiles; x++) {
@@ -80,7 +81,7 @@ public class Renderer {
 			throw new RuntimeException(exception);
 		}
 		
-		System.out.println("Finished render in " + (System.currentTimeMillis() - start) + " ms");
+		stopwatch.stop();
 		executor.shutdownNow();
 		
 	}
@@ -106,7 +107,7 @@ public class Renderer {
 		
 		@Override
 		public void run() {
-		
+			
 			final Vector GREEN = new Vector(0, 1, 0);
 			
 			int maxDim = Math.min(output.getWidth(), output.getHeight());

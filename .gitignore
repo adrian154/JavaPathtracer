@@ -1,5 +1,6 @@
 assets/
 bin/
+anim/
 *.settings/
 *.classpath
 *.project
