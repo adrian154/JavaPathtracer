@@ -16,7 +16,8 @@ public class DebugTracer extends Raytracer {
 		NORMAL,
 		DEPTH,
 		UV,
-		SCATTER
+		SCATTER,
+		STENCIL
 	}
 	
 	private Mode mode;
@@ -72,6 +73,10 @@ public class DebugTracer extends Raytracer {
 		return shadeVector(material.sample(ray.direction, hit));
 	}
 	
+	private Vector shadeStencil(Hit hit, Ray ray) {
+		return hit.hit ? Vector.ONE : Vector.ZERO;
+	}
+	
 	@Override
 	public Vector traceRay(Scene scene, Ray ray) {
 		
@@ -86,6 +91,7 @@ public class DebugTracer extends Raytracer {
 				case NORMAL: return shadeNormal(hit, ray);
 				case DEPTH: return shadeDepth(hit, ray);
 				case SCATTER: return shadeScatterVector(hit, ray);
+				case STENCIL: return shadeStencil(hit, ray);
 				case UV: default: return shadeUV(hit, ray);
 			}
 			

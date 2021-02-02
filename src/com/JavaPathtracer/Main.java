@@ -24,14 +24,14 @@ public class Main {
 		
 		//camera.moveTo(Vector.fromSpherical(3.83, Math.PI / 2).times(150).plus(new Vector(0, 80, 0)));
 		//camera.setLook(new Vector(0, 80, 0).minus(camera.getPos()).normalize());
-		camera.moveTo(new Vector(0, 150, 0));
+		camera.moveTo(new Vector(1, 150, 0));
 		
 		return camera;
 	
 	}
 
 	public static Raytracer createRaytracer() {
-		return new DebugTracer(DebugTracer.Mode.ALBEDO);
+		return new DebugTracer(DebugTracer.Mode.NORMAL);
 	}
 	
 	private static void startPreview(Texture output, Renderer renderer) {
