@@ -14,7 +14,7 @@ public class DiffuseMaterial extends BRDFMaterial {
 	}
 	
 	@Override
-	public Vector sampleBRDF(Vector incident, Hit hit) {
+	public Vector sample(Vector incident, Hit hit) {
 		
 		Vector random = Vector.uniformInHemisphere();
 		Vector bvx = hit.normal.getOrthagonal();

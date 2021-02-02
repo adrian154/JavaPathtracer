@@ -32,12 +32,11 @@ public class MeshGeometryContainer implements FiniteShape {
 	) {
 		
 		this.vertexes = vertexes.toArray(new Vector[0]);
-		this.vertexNormals = vertexNormals.size() > 0 ? vertexNormals.toArray(new Vector[0]) : null;
+		//this.vertexNormals = vertexNormals.size() > 0 ? vertexNormals.toArray(new Vector[0]) : null;
 		this.faces = faces.stream().mapToInt(Integer::valueOf).toArray();
 		this.faceNormIndices = faceNormIndices.stream().mapToInt(Integer::valueOf).toArray();
 		this.faceTexCoordIndices = faceTexCoordIndices.stream().mapToInt(Integer::valueOf).toArray();
 		this.textureCoordinates = textureCoordinates.toArray(new Vector[0]);
-		
 
 		Stopwatch stopwatch = new Stopwatch("BVHBuild");
 		BVHRoot = new BVHNode(this);

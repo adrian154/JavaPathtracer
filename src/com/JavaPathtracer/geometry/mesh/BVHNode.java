@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.JavaPathtracer.geometry.BoundingBox;
 import com.JavaPathtracer.geometry.Hit;
+import com.JavaPathtracer.geometry.MeshHit;
 import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Shape;
 import com.JavaPathtracer.geometry.Vector;
@@ -44,7 +45,6 @@ public class BVHNode extends BoundingBox implements Shape {
 			Vector v0 = mesh.vertexes[mesh.faces[face * 3]];
 			Vector v1 = mesh.vertexes[mesh.faces[face * 3 + 1]];
 			Vector v2 = mesh.vertexes[mesh.faces[face * 3 + 2]];
-
 			children.add(getBoxOfTri(face, v0, v1, v2));
 
 		}
@@ -183,13 +183,14 @@ public class BVHNode extends BoundingBox implements Shape {
 	public Hit intersect(Ray ray) {
 
 		// intersect self, first
-		Hit self = super.intersectFast(ray);
-		if (!self.hit)
-			return self;
+		if (!super.intersectFast(ray))
+			return Hit.MISS;
 
 		if (left == null && right == null) {
 			if (this.primIndexes != null) {
-				return mesh.intersect(ray, this.primIndexes);
+				Hit h = super.intersect(ray);
+				return new MeshHit(h.point, h.normal, h.distance, h.textureCoordinates, 0);
+				//return mesh.intersect(ray, this.primIndexes);
 			} else {
 				return Hit.MISS;
 			}

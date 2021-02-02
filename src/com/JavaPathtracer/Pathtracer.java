@@ -20,13 +20,17 @@ public class Pathtracer extends Raytracer {
 	// trace a ray
 	public Vector pathtraceRay(Scene scene, Ray ray, int bounces, boolean lights) {
 
+		
 		if (bounces >= this.maxLightBounces) {
-			return new Vector(0.0, 0.0, 0.0);
+			return Vector.ZERO;
 		}
 		
 		Hit hit = scene.traceRay(ray);
 		if (hit.hit) {
 			
+			if(bounces > 0)
+				System.out.println("hitpoint=" + hit.point + ", normal=" + hit.normal + ", dist=" + hit.distance);
+		
 			Material mat = hit.material;
 			if(mat instanceof EmissiveMaterial && !lights) {
 				return BLACK;

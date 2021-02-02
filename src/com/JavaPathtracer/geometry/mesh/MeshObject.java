@@ -27,13 +27,16 @@ public class MeshObject implements WorldObject {
 	protected int[] faceMaterials;
 	
 	public MeshObject(String string, Matrix matrix, Material material) throws IOException {
-		// do something here...?
+		this(new File(string), matrix, Map.of("default", material));
 	}
 	
 	public MeshObject(File file, Matrix matrix, Map<String, Material> materials) throws IOException {
 
 		// set locals
 		this.materials = materials.values().stream().collect(Collectors.toList());
+		if(materials.size() == 0) {
+			throw new RuntimeException("No materials were provided");
+		}
 		
 		// read mesh
 		Stopwatch stopwatch = new Stopwatch("LoadMesh");
@@ -69,11 +72,11 @@ public class MeshObject implements WorldObject {
 				
 				Material material = materials.get(parts[1]);
 				if(material == null) {
-					reader.close();
-					throw new RuntimeException("No material for \"" + parts[1] + "\"");
+					System.out.println("Warning: using default material since no material provided for \"" + parts[1] + "\"");
+					currentMaterialIdx = 0;
+				} else {
+					currentMaterialIdx = this.materials.indexOf(material);
 				}
-				
-				currentMaterialIdx = this.materials.indexOf(material);
 				
 			} else if (parts[0].equals("v")) {
 

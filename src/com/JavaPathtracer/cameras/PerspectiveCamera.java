@@ -17,10 +17,10 @@ public class PerspectiveCamera extends Camera {
 	
 	@Override
 	public Ray getCameraRay(double imagePlaneX, double imagePlaneY)  {
-		Vector direction = new Vector(imagePlaneX, imagePlaneY, focalLength).normalized();
+		Vector direction = new Vector(imagePlaneX, imagePlaneY, focalLength);
 		Vector basis = up.cross(lookingAt);
 		direction = Vector.localToWorldCoords(direction, basis, up, lookingAt);
-		Ray result = new Ray(this.position, direction);
+		Ray result = new Ray(this.position, direction.normalized());
 		return result;
 	}
 	

@@ -19,7 +19,7 @@ public class MirrorMaterial extends BRDFMaterial {
 		return 1 / outgoing.dot(normal);
 	}
 	
-	public Vector sampleBRDF(Vector incident, Hit hit) {
+	public Vector sample(Vector incident, Hit hit) {
 		return incident.minus(hit.normal.times(2 * hit.normal.dot(incident)));
 	}
 	

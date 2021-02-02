@@ -25,9 +25,9 @@ public class RoughMaterial extends MirrorMaterial {
 	}
 	
 	@Override
-	public Vector sampleBRDF(Vector incident, Hit hit) {
+	public Vector sample(Vector incident, Hit hit) {
 		Vector rand = Vector.uniformInHemisphere().times(ThreadLocalRandom.current().nextDouble() * roughness.sampleScalar(hit.textureCoordinates.x, hit.textureCoordinates.y));
-		return super.sampleBRDF(incident, hit).iadd(rand).normalize();
+		return super.sample(incident, hit).iadd(rand).normalize();
 	}
 
 }

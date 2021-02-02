@@ -40,7 +40,7 @@ public class BoundingBox implements FiniteShape {
 		return min.plus(max).divBy(2);
 	}
 
-	public Hit intersectFast(Ray ray) {
+	public boolean intersectFast(Ray ray) {
 
 		// Yet another micro-optimization!
 		double invX = 1 / ray.direction.x;
@@ -60,15 +60,13 @@ public class BoundingBox implements FiniteShape {
 		double tmax = Math.min(Math.min(Math.max(t1, t2), Math.max(t3, t4)), Math.max(t5, t6));
 
 		if (tmax < Raytracer.EPSILON)
-			return Hit.MISS;
+			return false;
 
 		if (tmin > tmax)
-			return Hit.MISS;
+			return false;
 
-		// Everything on this Hit besides whether it hit is bogus
-		// Beware!
-		return new Hit(true, null, null, 0, null);
-
+		return true;
+		
 	}
 
 	@Override

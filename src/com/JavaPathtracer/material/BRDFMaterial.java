@@ -21,7 +21,7 @@ public abstract class BRDFMaterial extends BaseMaterial {
 	public abstract double BRDF(Vector incident, Vector outgoing, Vector normal);
 	
 	// generate reflection vector distributed against BRDF
-	public abstract Vector sampleBRDF(Vector incident, Hit hit);
+	public abstract Vector sample(Vector incident, Hit hit);
 	
 	// should light sampling be used?
 	// using this in lieu of proper MIS
@@ -93,9 +93,11 @@ public abstract class BRDFMaterial extends BaseMaterial {
 		
 		boolean samplingLights = sampleLights();
 		
-		Ray next = new Ray(hit.point, sampleBRDF(incident, hit));
-		Vector result = pathtracer.pathtraceRay(scene, next, bounces + 1, !samplingLights).times(BRDF(incident, next.direction, hit.normal)).times(next.direction.dot(hit.normal));
-		
+		Ray next = new Ray(hit.point, sample(incident, hit));
+
+		Vector recursive = pathtracer.pathtraceRay(scene, next, bounces + 1, !samplingLights);
+		Vector result = recursive.times(BRDF(incident, next.direction, hit.normal)).times(next.direction.dot(hit.normal));
+
 		if(samplingLights) {
 			result.iadd(sampleLights(incident, hit, scene));
 		}
