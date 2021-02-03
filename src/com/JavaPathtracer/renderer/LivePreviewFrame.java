@@ -20,6 +20,7 @@ public class LivePreviewFrame extends JFrame implements ActionListener {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setTitle("Java Raytracer");
 		this.setVisible(true);
+		this.setResizable(false);
 		
 		timer = new Timer(1 / 60, this);
 		timer.start();

@@ -6,12 +6,14 @@ import java.io.IOException;
 
 import com.JavaPathtracer.cameras.Camera;
 import com.JavaPathtracer.cameras.OrthoCamera;
+import com.JavaPathtracer.cameras.PerspectiveCamera;
 import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.material.Texture;
 import com.JavaPathtracer.renderer.LivePreview;
 import com.JavaPathtracer.renderer.RenderJob;
 import com.JavaPathtracer.renderer.Renderer;
 import com.JavaPathtracer.scene.Scene;
+import com.JavaPathtracer.testscenes.TestScene;
 import com.JavaPathtracer.tonemapping.LinearTonemapper;
 
 public class Main {
@@ -28,10 +30,10 @@ public class Main {
 		return camera;
 	
 	}
-
+	
 	public static Raytracer createRaytracer() {
-		return new Pathtracer(2);
-		//return new DebugTracer(DebugTracer.Mode.ALBEDO);
+		//return new Pathtracer(2);
+		return new DebugTracer(DebugTracer.Mode.TEST);
 	}
 	
 	private static void startPreview(RenderJob job) {
@@ -49,7 +51,7 @@ public class Main {
 		Raytracer raytracer = createRaytracer();		
 		Renderer renderer = new Renderer(scene, camera, raytracer, 16, 256, new LinearTonemapper());
 
-		// renderz
+		// render
 		Stopwatch stopwatch = new Stopwatch("Render");
 		RenderJob job = renderer.render(output);
 		startPreview(job);

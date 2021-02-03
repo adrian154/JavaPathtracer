@@ -94,7 +94,7 @@ public class DebugTracer extends Raytracer {
 	}
 	
 	@Override
-	public String getName() {
+	public String toString() {
 		return String.format("Debug raytracer (%s mode)", this.mode.toString());
 	}
 

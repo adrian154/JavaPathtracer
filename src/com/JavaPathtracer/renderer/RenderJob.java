@@ -36,6 +36,10 @@ public class RenderJob {
 		return renderer.getThreads();
 	}
 	
+	public Renderer getRenderer() {
+		return renderer;
+	}
+	
 	public long getRemainingTiles() {
 		return latch.getCount();
 	}

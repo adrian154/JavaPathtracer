@@ -22,6 +22,4 @@ public abstract class Raytracer {
 		return rays;
 	}
 	
-	public abstract String getName();
-
 }

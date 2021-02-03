@@ -51,7 +51,7 @@ public class Pathtracer extends Raytracer {
 	}
 	
 	@Override
-	public String getName() {
+	public String toString() {
 		return String.format("Pathtracer (%d light bounces)", this.maxLightBounces);
 	}
 

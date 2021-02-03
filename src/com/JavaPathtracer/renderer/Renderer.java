@@ -53,6 +53,18 @@ public class Renderer {
 		return this.samples;
 	}
 	
+	public IToneMapper getTonemapper() {
+		return this.toneMapper;
+	}
+	
+	public Scene getScene() {
+		return this.scene;
+	}
+	
+	public Camera getCamera() {
+		return this.camera;
+	}
+	
 	public RenderJob render(Texture output) {
 		
 		ExecutorService executor = Executors.newFixedThreadPool(this.threads);

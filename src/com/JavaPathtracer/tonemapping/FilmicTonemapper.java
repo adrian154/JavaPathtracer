@@ -22,5 +22,10 @@ public class FilmicTonemapper implements IToneMapper {
 		double max = Math.max(inColor.x, Math.max(inColor.y, inColor.z));
 		return inColor.times(hable(max) / max);
 	}
+	
+	@Override
+	public String toString() {
+		return "Filmic";
+	}
 
 }

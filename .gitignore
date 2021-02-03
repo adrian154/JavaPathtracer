@@ -5,4 +5,4 @@ anim/
 *.classpath
 *.project
 /*.png
-src/com/JavaPathtracer/scenes/*
+src/com/JavaPathtracer/testscenes/*

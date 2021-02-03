@@ -8,5 +8,10 @@ public class LinearTonemapper implements IToneMapper {
 	public Vector map(Vector inColor) {
 		return inColor;
 	}
+	
+	@Override
+	public String toString() {
+		return "Linear";
+	}
 
 }
