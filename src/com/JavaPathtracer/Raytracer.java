@@ -21,5 +21,7 @@ public abstract class Raytracer {
 	public int getRays() {
 		return rays;
 	}
+	
+	public abstract String getName();
 
 }

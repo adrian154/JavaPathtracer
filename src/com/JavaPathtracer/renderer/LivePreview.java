@@ -1,4 +1,4 @@
-package com.JavaPathtracer.renderers;
+package com.JavaPathtracer.renderer;
 
 import com.JavaPathtracer.material.Texture;
 
@@ -6,12 +6,12 @@ public class LivePreview {
 
 	private int scale;
 	private Texture output;
-	private Renderer renderer;
+	private RenderJob job;
 	private LivePreviewFrame frame;
 
-	public LivePreview(Texture output, Renderer renderer, int scale) {
-		this.output = output;
-		this.renderer = renderer;
+	public LivePreview(RenderJob renderJob, int scale) {
+		this.output = renderJob.getOutput();
+		this.job = renderJob;
 		this.scale = scale;
 	}
 
@@ -27,8 +27,8 @@ public class LivePreview {
 		return this.output;
 	}
 
-	public Renderer getRenderer() {
-		return this.renderer;
+	public RenderJob getRenderJob() {
+		return this.job;
 	}
 	
 }

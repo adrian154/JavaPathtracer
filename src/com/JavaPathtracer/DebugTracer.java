@@ -1,11 +1,10 @@
-package com.JavaPathtracer.debug;
+package com.JavaPathtracer;
 
-import com.JavaPathtracer.Raytracer;
 import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.material.BRDFMaterial;
-import com.JavaPathtracer.material.Material;
+import com.JavaPathtracer.material.DiffuseMaterial;
 import com.JavaPathtracer.scene.Scene;
 
 public class DebugTracer extends Raytracer {
@@ -16,21 +15,14 @@ public class DebugTracer extends Raytracer {
 		NORMAL,
 		DEPTH,
 		UV,
-		SCATTER,
-		STENCIL
+		STENCIL,
+		TEST
 	}
 	
 	private Mode mode;
-	private BRDFMaterial material;
-	
+
 	public DebugTracer(Mode mode) {
 		this.mode = mode;
-	}
-	
-	public DebugTracer(Mode mode, BRDFMaterial material) {
-		if(mode != Mode.SCATTER) throw new RuntimeException("Can't instantiate DebugTracer with material outside of scattering mode");
-		this.mode = mode;
-		this.material = material;
 	}
 	
 	private Vector shadeVector(Vector hit) {
@@ -69,8 +61,8 @@ public class DebugTracer extends Raytracer {
 		return hit.textureCoordinates;
 	}
 	
-	private Vector shadeScatterVector(Hit hit, Ray ray) {
-		return shadeVector(material.sample(ray.direction, hit));
+	private Vector shadeTest(Hit hit, Ray ray) {
+		return shadeVector(hit.normal.getOrthagonal().cross(hit.normal));
 	}
 	
 	private Vector shadeStencil(Hit hit, Ray ray) {
@@ -90,7 +82,7 @@ public class DebugTracer extends Raytracer {
 				case SIMPLE_SHADED: return shadeSimple(hit, ray);
 				case NORMAL: return shadeNormal(hit, ray);
 				case DEPTH: return shadeDepth(hit, ray);
-				case SCATTER: return shadeScatterVector(hit, ray);
+				case TEST: return shadeTest(hit, ray);
 				case STENCIL: return shadeStencil(hit, ray);
 				case UV: default: return shadeUV(hit, ray);
 			}
@@ -99,6 +91,11 @@ public class DebugTracer extends Raytracer {
 			return scene.getSkyEmission(ray.direction);
 		}
 
+	}
+	
+	@Override
+	public String getName() {
+		return String.format("Debug raytracer (%s mode)", this.mode.toString());
 	}
 
 }

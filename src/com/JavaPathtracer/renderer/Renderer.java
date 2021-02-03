@@ -1,4 +1,4 @@
-package com.JavaPathtracer.renderers;
+package com.JavaPathtracer.renderer;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -53,12 +53,11 @@ public class Renderer {
 		return this.samples;
 	}
 	
-	public void render(Texture output) {
+	public RenderJob render(Texture output) {
 		
 		ExecutorService executor = Executors.newFixedThreadPool(this.threads);
 		CountDownLatch latch = new CountDownLatch(this.tiles * this.tiles);
-		
-		Stopwatch stopwatch = new Stopwatch("Render");
+		RenderJob job = new RenderJob(this, latch, output);
 
 		int tileWidth = output.getWidth() / tiles;
 		int tileHeight = output.getHeight() / tiles;
@@ -75,14 +74,8 @@ public class Renderer {
 			}
 		}
 		
-		try {
-			latch.await();
-		} catch(InterruptedException exception) {
-			throw new RuntimeException(exception);
-		}
-		
-		stopwatch.stop();
-		executor.shutdownNow();
+		executor.shutdown();
+		return job;
 		
 	}
 	

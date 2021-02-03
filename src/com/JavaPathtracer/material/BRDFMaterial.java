@@ -92,7 +92,7 @@ public abstract class BRDFMaterial extends BaseMaterial {
 	public Vector shade(Vector incident, Hit hit, int bounces, Scene scene, Pathtracer pathtracer) {
 		
 		boolean samplingLights = sampleLights();
-		
+
 		Ray next = new Ray(hit.point, sample(incident, hit));
 
 		Vector recursive = pathtracer.pathtraceRay(scene, next, bounces + 1, !samplingLights);

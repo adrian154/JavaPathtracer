@@ -8,15 +8,15 @@ public class Stopwatch {
 	public Stopwatch(String taskName) {
 		this.taskName = taskName;
 		startTime = System.currentTimeMillis();
-		System.out.println("Started \"" + taskName + "\"");
+		System.out.println("START: " + taskName + "");
 	}
 	
 	public void stop() {
-		System.out.println("Finished \"" + taskName + "\" in " + (System.currentTimeMillis() - startTime) + " milliseconds");
+		System.out.println("FINISH: " + taskName + " (" + (System.currentTimeMillis() - startTime) + "ms)");
 	}
 	
 	public void lap(String lapName) {
-		System.out.println("Reached \"" + taskName + "." + lapName + "\" in " + (System.currentTimeMillis() - startTime) + " milliseconds");
+		System.out.println("REACHED: " + taskName + "." + lapName + " (" + (System.currentTimeMillis() - startTime) + "ms)");
 	}
 	
 }

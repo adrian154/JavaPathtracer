@@ -28,8 +28,8 @@ public class Pathtracer extends Raytracer {
 		Hit hit = scene.traceRay(ray);
 		if (hit.hit) {
 			
-			if(bounces > 0)
-				System.out.println("hitpoint=" + hit.point + ", normal=" + hit.normal + ", dist=" + hit.distance);
+			//if(bounces > 0)
+				//System.out.println("hitpoint=" + hit.point + ", normal=" + hit.normal + ", dist=" + hit.distance);
 		
 			Material mat = hit.material;
 			if(mat instanceof EmissiveMaterial && !lights) {
@@ -48,6 +48,11 @@ public class Pathtracer extends Raytracer {
 	public Vector traceRay(Scene scene, Ray ray) {
 		super.traceRay(scene, ray);
 		return pathtraceRay(scene, ray, 0, true);
+	}
+	
+	@Override
+	public String getName() {
+		return String.format("Pathtracer (%d light bounces)", this.maxLightBounces);
 	}
 
 }
