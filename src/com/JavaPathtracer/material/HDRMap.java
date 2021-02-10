@@ -31,7 +31,7 @@ public class HDRMap implements Sampleable, Saveable {
 
 		// Clamp
 		x = Math.max(Math.min(x, image.getWidth() - 1), 0);
-		y = Math.max(Math.min(y, image.getHeight() - 1), 0);
+		y = Math.max(Math.min(image.getHeight() - y - 1, image.getHeight() - 1), 0);
 
 		float r = image.getPixelValue(x, y, 0);
 		float g = image.getPixelValue(x, y, 1);

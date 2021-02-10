@@ -47,6 +47,10 @@ public class Vector implements Sampleable {
 		return new Vector(this.x + other.x, this.y + other.y, this.z + other.z);
 	}
 
+	public Vector plus(double scalar) {
+		return new Vector(this.x + scalar, this.y + scalar, this.z + scalar);
+	}
+	
 	public Vector iadd(Vector other) {
 		this.x += other.x;
 		this.y += other.y;

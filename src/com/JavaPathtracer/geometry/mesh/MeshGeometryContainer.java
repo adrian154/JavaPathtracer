@@ -36,7 +36,7 @@ public class MeshGeometryContainer implements FiniteShape {
 		this.faces = faces.stream().mapToInt(Integer::valueOf).toArray();
 		this.faceNormIndices = faceNormIndices.stream().mapToInt(Integer::valueOf).toArray();
 		this.faceTexCoordIndices = faceTexCoordIndices.stream().mapToInt(Integer::valueOf).toArray();
-		this.textureCoordinates = textureCoordinates.toArray(new Vector[0]);
+		this.textureCoordinates = textureCoordinates.size() > 0 ? textureCoordinates.toArray(new Vector[0]) : null;
 
 		Stopwatch stopwatch = new Stopwatch("BVHBuild");
 		BVHRoot = new BVHNode(this);
@@ -122,7 +122,7 @@ public class MeshGeometryContainer implements FiniteShape {
 
 		}
 
-		if (nearest.hit && faceTexCoordIndices != null) {
+		if (nearest.hit && textureCoordinates != null) {
 			Vector tex1 = textureCoordinates[faceTexCoordIndices[nearestIndex * 3]];
 			Vector tex2 = textureCoordinates[faceTexCoordIndices[nearestIndex * 3 + 1]];
 			Vector tex3 = textureCoordinates[faceTexCoordIndices[nearestIndex * 3 + 2]];

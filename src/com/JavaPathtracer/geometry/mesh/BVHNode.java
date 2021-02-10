@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.JavaPathtracer.geometry.BoundingBox;
 import com.JavaPathtracer.geometry.Hit;
-import com.JavaPathtracer.geometry.MeshHit;
 import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Shape;
 import com.JavaPathtracer.geometry.Vector;
@@ -19,7 +18,7 @@ public class BVHNode extends BoundingBox implements Shape {
 	public List<PrimAssociatedBBox> children; // USED DURING CONSTRUCTION. NULL AFTER BVH DONE BUILDING SO IT CAN BE
 
 	// More bins = higher quality BVH at the cost of slower construction
-	public static final int NUM_BINS = 32;
+	public static final int NUM_BINS = 10;
 	public static final double COST_TRAVERSE = 1; // greater intersect cost = more splits
 	public static final double COST_INTERSECT = 12;
 	public static final int MAX_DEPTH = 12;
@@ -103,6 +102,8 @@ public class BVHNode extends BoundingBox implements Shape {
 
 	public void split(int depth) {
 
+		System.out.println(" ".repeat(depth) + "Splitting at depth " + depth);
+		
 		if (depth >= MAX_DEPTH) {
 			primIndexes = children.stream().mapToInt(child -> Integer.valueOf(child.faceIndex)).toArray();
 			children = null;

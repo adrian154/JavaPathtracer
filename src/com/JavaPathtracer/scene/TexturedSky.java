@@ -3,7 +3,7 @@ package com.JavaPathtracer.scene;
 import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.material.Sampleable;
 
-public class TexturedSky {
+public class TexturedSky implements Sky {
 
 	protected Sampleable emission;
 	
@@ -11,6 +11,7 @@ public class TexturedSky {
 		this.emission = emission;
 	}
 	
+	@Override
 	public Vector getEmission(Vector direction) {
 		Vector invDir = new Vector(0.0, 0.0, 0.0).minus(direction);
 		double azimuth = (Math.atan2(invDir.z, invDir.x) + 0.5) % (2 * Math.PI);

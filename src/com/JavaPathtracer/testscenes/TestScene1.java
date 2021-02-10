@@ -12,9 +12,9 @@ import com.JavaPathtracer.material.Texture;
 import com.JavaPathtracer.scene.Scene;
 import com.JavaPathtracer.scene.SimpleSky;
 
-public class TestScene extends Scene {
+public class TestScene1 extends Scene {
 
-	public TestScene() throws IOException {
+	public TestScene1() throws IOException {
 		
 		super();
 		this.setSky(new SimpleSky(new Vector(1)));

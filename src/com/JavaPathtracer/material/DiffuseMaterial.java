@@ -27,12 +27,12 @@ public class DiffuseMaterial extends BRDFMaterial {
 	
 	@Override
 	public double BRDF(Vector incident, Vector outgoing, Vector normal) {
-		return 1;
+		return normal.dot(outgoing) < 0 ? 0 : 1;
 	}
 	
 	@Override
 	public boolean sampleLights() {
-		return false;
+		return true;
 	}
 
 }

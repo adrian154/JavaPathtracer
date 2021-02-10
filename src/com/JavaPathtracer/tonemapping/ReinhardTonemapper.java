@@ -2,7 +2,7 @@ package com.JavaPathtracer.tonemapping;
 
 import com.JavaPathtracer.geometry.Vector;
 
-public class InverseTonemapper implements IToneMapper {
+public class ReinhardTonemapper implements IToneMapper {
 
 	@Override
 	public Vector map(Vector inColor) {

@@ -22,7 +22,10 @@ I wanted to learn about photorealistic rendering without having to grapple with 
 
 ## Gallery
 
-I have not made any "showcase" renders recently despite JavaPathtracer's capabilities changing radically. These renders are all quite old.
+**Recent Tests**
+![statue](images/statue.png)
+
+**Older Renders**
 
 ![diamond floor](images/dirtydiamond.png)
 ![materials demo](images/materials.png)
