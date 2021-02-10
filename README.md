@@ -23,6 +23,7 @@ I wanted to learn about photorealistic rendering without having to grapple with 
 ## Gallery
 
 **Recent Tests**
+
 ![statue](images/statue.png)
 
 **Older Renders**
