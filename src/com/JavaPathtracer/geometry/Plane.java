@@ -30,7 +30,7 @@ public class Plane implements Shape {
 		/* Check if equation has solution. */
 		double denom = ray.direction.dot(this.normal);
 		if (denom == 0) {
-			return Hit.MISS;
+			return null;
 		}
 
 		/* Solve for the distance. */
@@ -38,7 +38,7 @@ public class Plane implements Shape {
 
 		/* Make sure hit point is not behind ray. */
 		if (distance < Raytracer.EPSILON) {
-			return Hit.MISS;
+			return null;
 		}
 
 		Vector point = ray.getPoint(distance);
@@ -49,7 +49,7 @@ public class Plane implements Shape {
 		u = u - Math.floor(u / this.tilingSize) * this.tilingSize;
 		v = v - Math.floor(v / this.tilingSize) * this.tilingSize;
 		
-		return new Hit(point, normal, distance, new Vector(u / this.tilingSize, v / this.tilingSize, 0.0));
+		return new Hit(ray, point, normal, distance, new Vector(u / this.tilingSize, v / this.tilingSize, 0.0));
 
 	}
 

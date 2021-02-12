@@ -17,7 +17,7 @@ public class EmissiveMaterial extends BaseMaterial {
 	}
 	
 	@Override
-	public Vector shade(Vector incident, Hit hit, int bounces, Scene scene, Pathtracer pathtracer) {
+	public Vector shade(Hit hit, int bounces, Scene scene, Pathtracer pathtracer) {
 		return this.getColor(hit.textureCoordinates.x, hit.textureCoordinates.y);
 	}
 	

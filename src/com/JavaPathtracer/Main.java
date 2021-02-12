@@ -12,8 +12,8 @@ import com.JavaPathtracer.renderer.LivePreview;
 import com.JavaPathtracer.renderer.RenderJob;
 import com.JavaPathtracer.renderer.Renderer;
 import com.JavaPathtracer.scene.Scene;
-import com.JavaPathtracer.testscenes.TestScene2;
-import com.JavaPathtracer.tonemapping.FilmicTonemapper;
+import com.JavaPathtracer.testscenes.TestScene3;
+import com.JavaPathtracer.tonemapping.ACESTonemapper;
 
 public class Main {
 
@@ -23,8 +23,8 @@ public class Main {
 		camera.enableJitter();
 		camera.setFOV(30);
 		
-		camera.moveTo(new Vector(-100, 800, 2000));
-		camera.setAngles(-Math.PI / 2, 100 * Math.PI / 180);
+		camera.moveTo(new Vector(0, 0, 3));
+		camera.setAngles(-Math.PI / 2, Math.PI / 2);
 		
 		return camera;
 	
@@ -32,7 +32,7 @@ public class Main {
 	
 	public static Raytracer createRaytracer() {
 		return new Pathtracer(5);
-		//return new DebugTracer(DebugTracer.Mode.NORMAL);
+		//return new DebugTracer(DebugTracer.Mode.ALBEDO);
 	}
 	
 	private static void startPreview(RenderJob job) {
@@ -43,15 +43,15 @@ public class Main {
 	public static void main(String[] args) throws IOException, InterruptedException {
 
 		// read args
-		boolean preview = args.length > 0 && args[0].equals("nopreview");
+		boolean preview = !(args.length > 0 && args[0].equals("nopreview"));
 				
 		// set up objs
-		BufferedImage outputImage = new BufferedImage(720, 720, BufferedImage.TYPE_INT_RGB);
+		BufferedImage outputImage = new BufferedImage(512, 512, BufferedImage.TYPE_INT_RGB);
 		Texture output = new Texture(outputImage);
 		Camera camera = createCamera();
-		Scene scene = new TestScene2();
+		Scene scene = new TestScene3();
 		Raytracer raytracer = createRaytracer();		
-		Renderer renderer = new Renderer(scene, camera, raytracer, 16, 3, new FilmicTonemapper());
+		Renderer renderer = new Renderer(scene, camera, raytracer, 16, 100, new ACESTonemapper());
 
 		// render
 		Stopwatch stopwatch = new Stopwatch("Render");

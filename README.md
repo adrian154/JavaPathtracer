@@ -23,6 +23,7 @@ I wanted to learn about photorealistic rendering without having to grapple with 
 ## Gallery
 
 **Recent Tests**
+
 ![statue](images/statue.png)
 
 **Older Renders**
@@ -34,5 +35,5 @@ I wanted to learn about photorealistic rendering without having to grapple with 
 ## Dark Past
 
 This project has two dead siblings:
-* **[Pathtracer2](https://github.com/adrian154/Pathtracer2)**: the first pathtracer to achieve Monte Carlo pathtracing. It, too, is the result of an earlier and completely unsuccessful attempt. Read the source code at your own peril.
+* **[Pathtracer2](https://github.com/adrian154/Pathtracer2)**: my first pathtracer to achieve Monte Carlo pathtracing. It, too, is the result of an earlier and completely unsuccessful attempt. Read the source code at your own peril.
 * **[java-pathtracer](https://github.com/adrian154/java-pathtracer)**: more successful but ultimately abandoned version of Pathtracer2. Probably failed because its name didn't adhere to Java naming convention :-)

@@ -20,14 +20,14 @@ public class Difference extends BooleanOperation {
 			Hit h1 = A.intersect(ray);
 			Hit h2 = B.intersect(ray);
 
-			if (h1.hit && h1.distance < h2.distance) {
+			if (h1 != null && h1.distance < h2.distance) {
 				inA = !inA;
 				ray.origin = h1.point;
-			} else if (h2.hit) {
+			} else if (h2 != null) {
 				inB = !inB;
 				ray.origin = h2.point;
 			} else {
-				return Hit.MISS;
+				return null;
 			}
 
 			if (inA && !inB) {

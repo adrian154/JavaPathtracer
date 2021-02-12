@@ -165,7 +165,7 @@ public class MeshObject implements WorldObject {
 		
 		Hit hit = geometry.intersect(ray);
 		
-		if(hit.hit) {
+		if(hit != null) {
 			MeshHit meshHit = (MeshHit)hit;
 			hit.material = materials.get(faceMaterials[meshHit.face]);
 			return hit;

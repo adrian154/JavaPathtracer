@@ -55,7 +55,7 @@ public abstract class BRDFMaterial extends BaseMaterial {
 		
 	}
 	
-	public Vector sampleLights(Vector incident, Hit hit, Scene scene) {
+	public Vector sampleLights(Hit hit, Scene scene) {
 		
 		// for each light...
 		Vector sum = new Vector();
@@ -78,7 +78,7 @@ public abstract class BRDFMaterial extends BaseMaterial {
 				Vector irradiance = light.material.color.sample(hit.textureCoordinates.x, hit.textureCoordinates.y).times(solidAngle / (2 * Math.PI));
 				
 				double cosFactor = ray.direction.dot(hit.normal);
-				sum.iadd(irradiance.imul(cosFactor).imul(BRDF(incident, ray.direction, hit.normal)));
+				sum.iadd(irradiance.imul(cosFactor).imul(BRDF(hit.ray.direction, ray.direction, hit.normal)));
 				
 			}
 			
@@ -87,19 +87,44 @@ public abstract class BRDFMaterial extends BaseMaterial {
 		return sum;
 		
 	}
+
+	public Vector sampleSun(Hit hit, Scene scene) {
+		
+		final double radius = 0.1;
+		final Vector color = new Vector(3, 3, 3);
+		final Vector direction = new Vector(5.0, 1.0, -5.0).normalize();
+		
+		// dirty, but works..
+		double dist = Math.random() * radius;
+		double angle = Math.random() * 2 * Math.PI;
+		Vector inPlane = new Vector(Math.cos(angle) * dist, 0, Math.sin(angle) * dist);
+	
+		Vector bvx = direction.getOrthagonal().normalize();
+		Vector bvz = direction.cross(bvx);
+		Vector dir = direction.plus(Vector.localToWorldCoords(inPlane, bvx, direction, bvz)).normalize();
+		
+		Ray ray = new Ray(hit.point, dir);
+		if(scene.traceSkyRay(ray)) {
+			return color.times(dir.dot(hit.normal)).imul(BRDF(hit.ray.direction, dir, hit.normal));
+		}
+		
+		return Vector.ZERO;
+		
+	}
 	
 	@Override
-	public Vector shade(Vector incident, Hit hit, int bounces, Scene scene, Pathtracer pathtracer) {
+	public Vector shade(Hit hit, int bounces, Scene scene, Pathtracer pathtracer) {
 		
 		boolean samplingLights = sampleLights();
 
-		Ray next = new Ray(hit.point, sample(incident, hit));
+		Ray next = new Ray(hit.point, sample(hit.ray.direction, hit));
 
 		Vector recursive = pathtracer.pathtraceRay(scene, next, bounces + 1, !samplingLights);
-		Vector result = recursive.times(BRDF(incident, next.direction, hit.normal)).times(next.direction.dot(hit.normal));
+		Vector result = recursive.times(BRDF(hit.ray.direction, next.direction, hit.normal)).times(next.direction.dot(hit.normal));
 
 		if(samplingLights) {
-			result.iadd(sampleLights(incident, hit, scene));
+			result.iadd(sampleLights(hit, scene));
+			result.iadd(sampleSun(hit, scene));
 		}
 		
 		Vector color = this.getColor(hit.textureCoordinates.x, hit.textureCoordinates.y);

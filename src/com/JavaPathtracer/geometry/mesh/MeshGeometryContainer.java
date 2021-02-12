@@ -61,19 +61,19 @@ public class MeshGeometryContainer implements FiniteShape {
 
 		double a = edge1.dot(h);
 		if (a > -Raytracer.EPSILON && a < Raytracer.EPSILON) {
-			return Hit.MISS;
+			return null;
 		}
 
 		double f = 1 / a;
 		Vector s = ray.origin.minus(v0);
 		double u = f * s.dot(h);
 		if (u < 0.0 || u > 1.0)
-			return Hit.MISS;
+			return null;
 
 		Vector q = s.cross(edge1);
 		double v = f * ray.direction.dot(q);
 		if (v < 0.0 || u + v > 1.0)
-			return Hit.MISS;
+			return null;
 
 		double t = f * edge2.dot(q);
 		if (t > Raytracer.EPSILON) {
@@ -101,28 +101,28 @@ public class MeshGeometryContainer implements FiniteShape {
 				normal.invert();
 			}
 		
-			return new MeshHit(ray.getPoint(t), normal, t, new Vector(u, v, 0.0), which);
+			return new MeshHit(ray, ray.getPoint(t).plus(normal.times(Raytracer.EPSILON)), normal, t, new Vector(u, v, 0.0), which);
 		} else {
-			return Hit.MISS;
+			return null;
 		}
 
 	}
 	
 	public Hit intersect(Ray ray, int[] prims) {
 		
-		Hit nearest = Hit.MISS;
+		Hit nearest = null;
 		int nearestIndex = 0;
 		for (int i: prims) {
 
 			Hit cur = intersectTri(ray, i);
-			if (cur.distance < nearest.distance) {
+			if (cur != null && (nearest == null || cur.distance < nearest.distance)) {
 				nearest = cur;
 				nearestIndex = i;
 			}
 
 		}
 
-		if (nearest.hit && textureCoordinates != null) {
+		if (nearest != null && textureCoordinates != null) {
 			Vector tex1 = textureCoordinates[faceTexCoordIndices[nearestIndex * 3]];
 			Vector tex2 = textureCoordinates[faceTexCoordIndices[nearestIndex * 3 + 1]];
 			Vector tex3 = textureCoordinates[faceTexCoordIndices[nearestIndex * 3 + 2]];

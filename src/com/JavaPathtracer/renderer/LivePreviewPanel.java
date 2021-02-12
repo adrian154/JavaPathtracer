@@ -57,7 +57,8 @@ public class LivePreviewPanel extends JPanel {
 			Hit hit = job.getRenderer().getScene().traceRay(ray);
 
 			//System.out.println(ray.origin + ", " + ray.direction);
-			System.out.println(hit.hit + ", " + hit.point + ", " + hit.normal);
+			if(hit != null)
+				System.out.println(hit.point + ", " + hit.normal);
 			
 		}
 		

@@ -66,7 +66,7 @@ public class DebugTracer extends Raytracer {
 	}
 	
 	private Vector shadeStencil(Hit hit, Ray ray) {
-		return hit.hit ? Vector.ONE : Vector.ZERO;
+		return hit != null ? Vector.ONE : Vector.ZERO;
 	}
 	
 	@Override
@@ -75,7 +75,7 @@ public class DebugTracer extends Raytracer {
 		super.traceRay(scene, ray);
 
 		Hit hit = scene.traceRay(ray);
-		if (hit.hit) {
+		if (hit != null) {
 
 			switch(mode) {
 				case ALBEDO: return shadeAlbedo(hit, ray);

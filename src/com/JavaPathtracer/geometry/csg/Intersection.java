@@ -16,11 +16,11 @@ public class Intersection extends BooleanOperation {
 		Hit h1 = A.intersect(ray);
 		Hit h2 = B.intersect(ray);
 
-		if (h1.hit && h2.hit)
+		if (h1 != null && h2 != null)
 			return h2.distance > h1.distance ? h2 : h1;
 
 		// Both rays missed
-		return Hit.MISS;
+		return null;
 
 	}
 

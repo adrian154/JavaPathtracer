@@ -26,17 +26,14 @@ public class Pathtracer extends Raytracer {
 		}
 		
 		Hit hit = scene.traceRay(ray);
-		if (hit.hit) {
-			
-			//if(bounces > 0)
-				//System.out.println("hitpoint=" + hit.point + ", normal=" + hit.normal + ", dist=" + hit.distance);
-		
+		if (hit != null) {
+
 			Material mat = hit.material;
 			if(mat instanceof EmissiveMaterial && !lights) {
 				return BLACK;
 			}
 		
-			return mat.shade(ray.direction, hit, bounces, scene, this);
+			return mat.shade(hit, bounces, scene, this);
 		
 		} else {
 			return scene.getSkyEmission(ray.direction);

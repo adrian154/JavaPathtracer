@@ -14,11 +14,11 @@ public class Square extends Plane implements FiniteShape {
 	public Hit intersect(Ray ray) {
 
 		Hit hit = super.intersect(ray);
-		if (hit.hit && Math.abs(hit.point.x - point.x) < size && Math.abs(hit.point.z - point.z) < size) {
+		if (hit != null && Math.abs(hit.point.x - point.x) < size && Math.abs(hit.point.z - point.z) < size) {
 			return hit;
 		}
 
-		return Hit.MISS;
+		return null;
 
 	}
 	

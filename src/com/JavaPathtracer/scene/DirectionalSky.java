@@ -9,7 +9,7 @@ public class DirectionalSky implements Sky {
 	protected Vector colorB;
 	
 	public DirectionalSky(Vector direction, Vector colorA, Vector colorB) {
-		this.direction = direction;
+		this.direction = direction.normalized();
 		this.colorA = colorA;
 		this.colorB = colorB;
 	}
@@ -18,8 +18,8 @@ public class DirectionalSky implements Sky {
 		this(direction, color, Vector.ZERO);
 	}
 	
-	public Vector getEmission(Vector direction) {
-		return direction.dot(this.direction) > 0 ? colorA : colorB;
+	public Vector getEmission(Vector inDir) {
+		return inDir.dot(this.direction) > 0.95 ? colorA : colorB;
 	}
 	
 }

@@ -27,7 +27,8 @@ public class SimpleObject implements WorldObject {
 	@Override
 	public Hit traceRay(Ray ray) {
 		Hit hit = shape.intersect(ray);
-		hit.material = material;
+		if(hit != null)
+			hit.material = material;
 		return hit;
 	}
 

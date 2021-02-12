@@ -88,12 +88,12 @@ public class BoundingBox implements FiniteShape {
 
 		/* Negative: AABB is behind the ray. */
 		if (tmax < Raytracer.EPSILON) {
-			return Hit.MISS;
+			return null;
 		}
 
 		/* Minimum distance greater than maximum: No intersection. */
 		if (tmin > tmax) {
-			return Hit.MISS;
+			return null;
 		}
 
 		/* Ray intersects with the box. */
@@ -114,7 +114,7 @@ public class BoundingBox implements FiniteShape {
 			normal = new Vector(0.0, 0.0, Math.signum(deltaZ));
 		}
 
-		return new Hit(point, normal, t, new Vector(0.0, 0.0, 0.0));
+		return new Hit(ray, point, normal, t, new Vector(0.0, 0.0, 0.0));
 
 	}
 	

@@ -185,19 +185,21 @@ public class BVHNode extends BoundingBox implements Shape {
 
 		// intersect self, first
 		if (!super.intersectFast(ray))
-			return Hit.MISS;
+			return null;
 
 		if (left == null && right == null) {
 			if (this.primIndexes != null) {
 				return mesh.intersect(ray, this.primIndexes);
 			} else {
-				return Hit.MISS;
+				return null;
 			}
 		} else {
 
 			Hit hl, hr;
 			hl = this.left.intersect(ray);
 			hr = this.right.intersect(ray);
+			if(hl == null) return hr;
+			if(hr == null) return hl;
 			return hl.distance < hr.distance ? hl : hr;
 
 		}

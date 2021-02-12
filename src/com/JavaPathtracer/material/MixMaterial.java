@@ -23,9 +23,9 @@ public class MixMaterial implements Material {
 	}
 
 	@Override
-	public Vector shade(Vector incident, Hit hit, int bounces, Scene scene,Pathtracer pathtracer) {
+	public Vector shade(Hit hit, int bounces, Scene scene,Pathtracer pathtracer) {
 		return (ThreadLocalRandom.current().nextDouble() < proportion.sampleScalar(hit.textureCoordinates.x, hit.textureCoordinates.y) ? A : B)
-				.shade(incident, hit, bounces, scene, pathtracer);
+				.shade(hit, bounces, scene, pathtracer);
 	}
 
 }

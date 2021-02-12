@@ -35,10 +35,6 @@ public abstract class Camera {
 		return this.lookingAt;
 	}
 	
-	public void setLook(Vector vector) {
-		this.lookingAt = vector;
-	}
-	
 	public Vector getPos() {
 		return this.position;
 	}

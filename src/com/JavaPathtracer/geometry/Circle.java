@@ -13,10 +13,10 @@ public class Circle extends Plane implements FiniteShape {
 	public Hit intersect(Ray ray) {
 
 		Hit hit = super.intersect(ray);
-		if (hit.hit && hit.point.minus(this.point).lengthSquared() < this.radius * this.radius) {
+		if (hit != null && hit.point.minus(this.point).lengthSquared() < this.radius * this.radius) {
 			return hit;
 		} else {
-			return Hit.MISS;
+			return null;
 		}
 
 	}

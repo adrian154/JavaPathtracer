@@ -60,11 +60,11 @@ public class Scene {
 	public Hit traceRay(Ray ray) {
 
 		// empty constructor Hit has infinite distance which works out for us
-		Hit nearest = Hit.MISS;
+		Hit nearest = null;
 		for (WorldObject object: objects) {
 
 			Hit hit = object.traceRay(ray);
-			if (hit.hit && hit.distance < nearest.distance && hit.distance > Raytracer.EPSILON) {
+			if (hit != null && (nearest == null || hit.distance < nearest.distance && hit.distance > Raytracer.EPSILON)) {
 				nearest = hit;
 			}
 
@@ -76,11 +76,11 @@ public class Scene {
 
 	public Hit traceLightRay(Ray ray) {
 		
-		Hit nearest = Hit.MISS;
+		Hit nearest = null;
 		for(Light light: lights) {
 			
 			Hit hit = light.intersect(ray);
-			if(hit.hit && hit.distance < hit.distance && hit.distance > Raytracer.EPSILON) {
+			if(hit != null && hit.distance < hit.distance && hit.distance > Raytracer.EPSILON) {
 				nearest = hit;
 			}
 			
@@ -93,7 +93,7 @@ public class Scene {
 	public boolean traceSkyRay(Ray ray) {
 		
 		for(WorldObject object: objects) {
-			if(object.traceRay(ray).hit) {
+			if(object.traceRay(ray) != null) {
 				return false;
 			}
 		}
@@ -103,10 +103,12 @@ public class Scene {
 	}
 	
 	public boolean traceShadowRay(Ray ray, Shape shape) {
-		double minDist = shape.intersect(ray).distance;
+		Hit hit = shape.intersect(ray);
+		if(hit == null) return true;
+		double minDist = hit.distance;
 		for(WorldObject object: objects) {
-			Hit hit = object.traceRay(ray);
-			if(hit.distance + Raytracer.EPSILON < minDist) {
+			Hit obstacle = object.traceRay(ray);
+			if(obstacle != null && obstacle.distance + Raytracer.EPSILON < minDist) {
 				return false;
 			}
 		}
