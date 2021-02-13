@@ -19,7 +19,7 @@ public class DirectionalSky implements Sky {
 	}
 	
 	public Vector getEmission(Vector inDir) {
-		return inDir.dot(this.direction) > 0.95 ? colorA : colorB;
+		return inDir.dot(this.direction) > 0 ? colorA : colorB;
 	}
 	
 }

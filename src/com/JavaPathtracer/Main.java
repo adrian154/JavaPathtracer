@@ -36,7 +36,7 @@ public class Main {
 	}
 	
 	private static void startPreview(RenderJob job) {
-		LivePreview preview = new LivePreview(job, 2);
+		LivePreview preview = new LivePreview(job, 1);
 		preview.start();
 	}
 
@@ -51,7 +51,7 @@ public class Main {
 		Camera camera = createCamera();
 		Scene scene = new TestScene3();
 		Raytracer raytracer = createRaytracer();		
-		Renderer renderer = new Renderer(scene, camera, raytracer, 16, 100, new ACESTonemapper());
+		Renderer renderer = new Renderer(scene, camera, raytracer, 16, 512, new ACESTonemapper());
 
 		// render
 		Stopwatch stopwatch = new Stopwatch("Render");

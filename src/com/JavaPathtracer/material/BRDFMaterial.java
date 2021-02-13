@@ -91,8 +91,8 @@ public abstract class BRDFMaterial extends BaseMaterial {
 	public Vector sampleSun(Hit hit, Scene scene) {
 		
 		final double radius = 0.1;
-		final Vector color = new Vector(3, 3, 3);
-		final Vector direction = new Vector(5.0, 1.0, -5.0).normalize();
+		final Vector color = new Vector(0xff/255.0, 0xfd/255.0, 0xf0/255.0).times(6.0);
+		final Vector direction = new Vector(4.0, 1.0, 2.0).normalize();
 		
 		// dirty, but works..
 		double dist = Math.random() * radius;

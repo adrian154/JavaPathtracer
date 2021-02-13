@@ -24,6 +24,7 @@ I wanted to learn about photorealistic rendering without having to grapple with 
 
 **Recent Tests**
 
+![earth](images/earth.png)
 ![statue](images/statue.png)
 
 **Older Renders**
