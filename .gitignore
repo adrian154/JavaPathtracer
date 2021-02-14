@@ -5,4 +5,6 @@ anim/
 *.classpath
 *.project
 /*.png
+*.iml
+.idea/*
 src/com/JavaPathtracer/testscenes/*

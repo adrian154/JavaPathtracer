@@ -18,6 +18,14 @@ public class Vector implements Sampleable {
 		this(0);
 	}
 	
+	public Vector(int rgb) {
+		this(
+			((rgb & 0xFF0000) >> 16) / 255.0,
+			((rgb & 0x00FF00) >> 8) / 255.0,
+			(rgb & 0xFF) / 255.0
+		);
+	}
+	
 	public Vector(double val) {
 		this.x = val;
 		this.y = val;

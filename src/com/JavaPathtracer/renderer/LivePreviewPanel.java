@@ -23,28 +23,39 @@ public class LivePreviewPanel extends JPanel {
 	private Texture output;
 	private long startTime;
 	private int scale;
+	private boolean reducedDebug;
 
-	public LivePreviewPanel(LivePreview preview, int scale) {
+	public LivePreviewPanel(LivePreview preview, int scale, boolean reducedDebug) {
 		this.output = preview.getImage();
+		this.reducedDebug = reducedDebug;
 		this.job = preview.getRenderJob();
 		this.scale = scale;
 		this.startTime = System.currentTimeMillis();
 		this.setPreferredSize(new Dimension(output.getWidth() * scale, output.getHeight() * scale));
 		this.addMouseListener(new PreviewMouseListener());
 	}
-
+	
 	@Override
 	public void paintComponent(Graphics g) {
+		
 		super.paintComponent(g);
 		g.setFont(new Font("Consolas", Font.PLAIN, 16));
 		g.setColor(new Color(0xFF00FF));
+		
+		// draw preview image
 		g.drawImage(output.asImage().getScaledInstance(output.getWidth() * scale, output.getHeight() * scale, Image.SCALE_FAST), 0, 0, this);
-		g.drawString("Raytracer: " + job.getRaytracer().toString(), 2, 16);
-		g.drawString("Tonemapper: " + job.getRenderer().getTonemapper().toString(), 2, 32);
-		g.drawString(job.getSamples() + " samples", 2, 48);
-		g.drawString(job.getRays() + " rays traced", 2, 64);
-		g.drawString(String.format("%.2f Mrays/second", (float)job.getRays() / 1000 / (System.currentTimeMillis() - startTime)), 2, 80);
-		g.drawString(String.format("%d/%d tiles (%d threads)", job.getCompletedTiles(), job.getInitTiles(), job.getThreads()), 2, 96);
+		
+		// draw debug text
+		int y = 0;
+		g.drawString("Raytracer: " + job.getRaytracer().toString(), 2, y += 16);
+		g.drawString("Tonemapper: " + job.getRenderer().getTonemapper().toString(), 2, y += 16);
+		g.drawString(job.getSamples() + " samples", 2, y += 16);
+		if(!reducedDebug) {
+			g.drawString(job.getRays() + " rays traced", 2, y += 16);
+			g.drawString(String.format("%.2f Mrays/second", (float)job.getRays() / 1000 / (System.currentTimeMillis() - startTime)), 2, y += 16);
+			g.drawString(String.format("%d/%d tiles (%d threads)", job.getCompletedTiles(), job.getInitTiles(), job.getThreads()), 2, y += 16);
+		}
+		
 	}
 	
 	private class PreviewMouseListener extends MouseAdapter {

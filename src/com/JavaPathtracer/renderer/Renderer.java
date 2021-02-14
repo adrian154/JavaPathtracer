@@ -5,7 +5,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.JavaPathtracer.Raytracer;
-import com.JavaPathtracer.Stopwatch;
 import com.JavaPathtracer.cameras.Camera;
 import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Vector;
@@ -135,7 +134,7 @@ public class Renderer {
 				}
 			}
 			
-			System.out.printf("Finished a tile (%d/%d)\n", latch.getCount(), tiles * tiles);
+			//System.out.printf("Finished a tile (%d/%d)\n", latch.getCount(), tiles * tiles);
 			latch.countDown();
 			
 		}

@@ -5,25 +5,19 @@ A pathtracer written in, of all things, Java
 
 I wanted to learn about photorealistic rendering without having to grapple with C++ or, worse, compute frameworks like OpenCL or CUDA. My choice of language makes the pathtracer slow as a dog, but nothing that can't be solved with some clever mathematical trickery and a lot of patience :)
 
-## Features
+## TODO List
 
-* Unbiased Monte Carlo rendering
-* Diffuse and specular materials
-* Multithreaded rendering (your CPU will make noises you've never heard it make before...)
-* OBJ support
-* BVH to speed up mesh raytracing
-* Live preview
-
-**Upcoming:**
-
-* Simple scripting language for scene description (I'll do it, I promise!)
-* More model loaders, OR:
-* Replace OBJ with my own format. Write converters and move those to an external project
+* Switch to quasirandom sequences for sampling
+* Normal mapping
+* More model loaders
+	* Contemplating an alternative solution: create a custom model format, move converters to an external project
+* Some form of scene description
 
 ## Gallery
 
 **Recent Tests**
 
+![reprise](images/scene_reprised.png)
 ![earth](images/earth.png)
 ![statue](images/statue.png)
 

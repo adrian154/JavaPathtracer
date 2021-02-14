@@ -8,7 +8,7 @@ public class PerspectiveCamera extends Camera {
 	private double focalLength;
 	
 	public void setFOV(double FOV) {
-		this.focalLength = 0.5 / Math.tan(FOV * Math.PI / 180);
+		this.focalLength = 0.5 / Math.tan(FOV * Math.PI / 360);
 	}
 	
 	public double getFocalLength() {

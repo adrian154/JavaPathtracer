@@ -8,62 +8,74 @@ import com.JavaPathtracer.cameras.Camera;
 import com.JavaPathtracer.cameras.PerspectiveCamera;
 import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.material.Texture;
+import com.JavaPathtracer.renderer.InteractivePreview;
 import com.JavaPathtracer.renderer.LivePreview;
 import com.JavaPathtracer.renderer.RenderJob;
 import com.JavaPathtracer.renderer.Renderer;
 import com.JavaPathtracer.scene.Scene;
-import com.JavaPathtracer.testscenes.TestScene3;
+import com.JavaPathtracer.testscenes.TestScene4;
 import com.JavaPathtracer.tonemapping.ACESTonemapper;
 
 public class Main {
 
-	public static Camera createCamera() {
-		
+	private static Camera camera;
+	private static Raytracer raytracer;
+	private static Scene scene;
+	private static Renderer renderer;
+	private static Texture output;
+	
+	private static void createCamera() {
 		PerspectiveCamera camera = new PerspectiveCamera();
 		camera.enableJitter();
-		camera.setFOV(30);
-		
-		camera.moveTo(new Vector(0, 0, 3));
-		camera.setAngles(-Math.PI / 2, Math.PI / 2);
-		
-		return camera;
-	
+		camera.moveTo(new Vector(-2.123775645702241, 2.7755575615628914E-17, -5.176095142652289)); camera.setAngles(1.310796, 1.570796); camera.setFOV(30.000000);
+		//camera.disableJitter();
+		Main.camera = camera;
 	}
 	
-	public static Raytracer createRaytracer() {
-		return new Pathtracer(5);
-		//return new DebugTracer(DebugTracer.Mode.ALBEDO);
+	private static void createRaytracer() {
+		raytracer = new Pathtracer(5);
+		//raytracer = new DebugTracer(DebugTracer.Mode.SIMPLE_SHADED);
 	}
 	
-	private static void startPreview(RenderJob job) {
-		LivePreview preview = new LivePreview(job, 1);
-		preview.start();
+	private static void render(boolean preview, String outputName) throws InterruptedException, IOException {
+		Stopwatch sw = new Stopwatch("Render");
+		RenderJob job = renderer.render(output);
+		if(preview) {
+			LivePreview previewObj = new LivePreview(job, 2);
+			previewObj.start();
+		}
+		job.await();
+		sw.stop();
+		output.saveToFile(new File(outputName));
 	}
-
+	
+	private static void interactive() throws InterruptedException {
+		InteractivePreview preview = new InteractivePreview(renderer, camera, output, 4);
+		preview.run();
+	}
+	
 	public static void main(String[] args) throws IOException, InterruptedException {
 
 		// read args
-		boolean preview = !(args.length > 0 && args[0].equals("nopreview"));
+		String mode = "render-preview";
+		if(args.length > 0) mode = args[0];
 				
-		// set up objs
-		BufferedImage outputImage = new BufferedImage(512, 512, BufferedImage.TYPE_INT_RGB);
-		Texture output = new Texture(outputImage);
-		Camera camera = createCamera();
-		Scene scene = new TestScene3();
-		Raytracer raytracer = createRaytracer();		
-		Renderer renderer = new Renderer(scene, camera, raytracer, 16, 512, new ACESTonemapper());
-
-		// render
-		Stopwatch stopwatch = new Stopwatch("Render");
-		RenderJob job = renderer.render(output);
-		if(preview) {
-			startPreview(job);
-		}
-		job.await();
-		stopwatch.stop();
+		// set up output objects
+		output = new Texture(new BufferedImage(512, 512, BufferedImage.TYPE_INT_RGB));
 		
-		// save
-		output.saveToFile(new File("output.png"));
+		// set up renderer objects
+		createCamera();
+		createRaytracer();
+		scene = new TestScene4();
+		renderer = new Renderer(scene, camera, raytracer, 16, 512, new ACESTonemapper());
+		
+		if(mode.equals("render")) {
+			render(false, "output.png");
+		} else if(mode.equals("render-preview")) {
+			render(true, "output.png");
+		} else if(mode.equals("interactive")) {
+			interactive();
+		}
 		
 	}
 

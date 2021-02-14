@@ -18,7 +18,8 @@ public class Scene {
 	private List<WorldObject> objects;
 	private List<Light> lights;
 	private Sky sky;
-
+	private Sun sun;
+	
 	public Scene() {
 		
 		objects = new ArrayList<WorldObject>();
@@ -26,13 +27,22 @@ public class Scene {
 
 		// Default = black sky
 		sky = new SimpleSky(Vector.ZERO);
+		sun = null;
 		
 	}
 
 	public void setSky(Sky sky) {
 		this.sky = sky;
 	}
+	
+	public void setSun(Sun sun) {
+		this.sun = sun;
+	}
 
+	public Sun getSun() {
+		return sun;
+	}
+	
 	public List<Light> getLights() {
 		return this.lights;
 	}

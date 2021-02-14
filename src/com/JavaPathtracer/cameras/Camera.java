@@ -21,14 +21,13 @@ public abstract class Camera {
 		this.position = vector;
 	}
 	
-	public void lookAt(Vector pos) {
-		this.lookingAt = pos.minus(this.position).normalized();
-		this.up = Vector.fromSpherical(this.lookingAt.toSpherical().minus(new Vector(0, Math.PI / 2, 0)));
+	public void move(Vector vector) {
+		this.position.iadd(vector);
 	}
 	
 	public void setAngles(double yaw, double pitch) {
 		this.lookingAt = Vector.fromSpherical(yaw, pitch);
-		this.up = Vector.fromSpherical(yaw, pitch - Math.PI / 2);
+		this.up = Vector.fromSpherical(yaw + Math.PI, Math.PI / 2 - pitch);
 	}
 	
 	public Vector getLook() {

@@ -10,6 +10,7 @@ import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Sphere;
 import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.scene.Scene;
+import com.JavaPathtracer.scene.Sun;
 
 public abstract class BRDFMaterial extends BaseMaterial {
 
@@ -90,22 +91,22 @@ public abstract class BRDFMaterial extends BaseMaterial {
 
 	public Vector sampleSun(Hit hit, Scene scene) {
 		
-		final double radius = 0.1;
-		final Vector color = new Vector(0xff/255.0, 0xfd/255.0, 0xf0/255.0).times(6.0);
-		final Vector direction = new Vector(4.0, 1.0, 2.0).normalize();
+		Sun sun = scene.getSun();
+		
+		if(sun == null) return Vector.ZERO;
 		
 		// dirty, but works..
-		double dist = Math.random() * radius;
+		double dist = Math.random() * sun.radius;
 		double angle = Math.random() * 2 * Math.PI;
 		Vector inPlane = new Vector(Math.cos(angle) * dist, 0, Math.sin(angle) * dist);
 	
-		Vector bvx = direction.getOrthagonal().normalize();
-		Vector bvz = direction.cross(bvx);
-		Vector dir = direction.plus(Vector.localToWorldCoords(inPlane, bvx, direction, bvz)).normalize();
+		Vector bvx = sun.direction.getOrthagonal().normalize();
+		Vector bvz = sun.direction.cross(bvx);
+		Vector dir = sun.direction.plus(Vector.localToWorldCoords(inPlane, bvx, sun.direction, bvz)).normalize();
 		
 		Ray ray = new Ray(hit.point, dir);
 		if(scene.traceSkyRay(ray)) {
-			return color.times(dir.dot(hit.normal)).imul(BRDF(hit.ray.direction, dir, hit.normal));
+			return sun.color.times(dir.dot(hit.normal)).imul(BRDF(hit.ray.direction, dir, hit.normal));
 		}
 		
 		return Vector.ZERO;
