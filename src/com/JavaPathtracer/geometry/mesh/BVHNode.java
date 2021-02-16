@@ -189,6 +189,10 @@ public class BVHNode extends BoundingBox implements Shape {
 
 		if (left == null && right == null) {
 			if (this.primIndexes != null) {
+				/*
+				Hit h = super.intersect(ray);
+				return new MeshHit(ray,h.point,h.normal,h.distance,h.textureCoordinates,0);
+				*/
 				return mesh.intersect(ray, this.primIndexes);
 			} else {
 				return null;

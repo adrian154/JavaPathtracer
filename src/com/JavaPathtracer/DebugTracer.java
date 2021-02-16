@@ -4,7 +4,6 @@ import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.material.BRDFMaterial;
-import com.JavaPathtracer.material.DiffuseMaterial;
 import com.JavaPathtracer.scene.Scene;
 
 public class DebugTracer extends Raytracer {
@@ -13,6 +12,7 @@ public class DebugTracer extends Raytracer {
 		ALBEDO,
 		SIMPLE_SHADED,
 		NORMAL,
+		SHADED_NORMAL,
 		DEPTH,
 		UV,
 		STENCIL,
@@ -30,7 +30,7 @@ public class DebugTracer extends Raytracer {
 	}
 	
 	private Vector shadeScalar(double depth) {
-		return new Vector(50).divBy(depth + 0.1);
+		return new Vector(255).divBy(depth + 0.1);
 	}
 	
 	// --- shaders
@@ -47,6 +47,10 @@ public class DebugTracer extends Raytracer {
 			return shading < 0 ? Vector.ZERO : ((BRDFMaterial)hit.material).getColor(hit.textureCoordinates.x, hit.textureCoordinates.y).times(shading);
 		}
 		return new Vector(1.0, 0.0, 1.0);
+	}
+	
+	private Vector shadedNormal(Hit hit, Ray ray) {
+		return shadeVector(hit.normal).times(Math.max(0, ray.direction.times(-1).dot(hit.normal)));
 	}
 	
 	private Vector shadeNormal(Hit hit, Ray ray) {
@@ -81,6 +85,7 @@ public class DebugTracer extends Raytracer {
 				case ALBEDO: return shadeAlbedo(hit, ray);
 				case SIMPLE_SHADED: return shadeSimple(hit, ray);
 				case NORMAL: return shadeNormal(hit, ray);
+				case SHADED_NORMAL: return shadedNormal(hit, ray);
 				case DEPTH: return shadeDepth(hit, ray);
 				case TEST: return shadeTest(hit, ray);
 				case STENCIL: return shadeStencil(hit, ray);

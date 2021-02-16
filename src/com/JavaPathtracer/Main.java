@@ -13,8 +13,8 @@ import com.JavaPathtracer.renderer.LivePreview;
 import com.JavaPathtracer.renderer.RenderJob;
 import com.JavaPathtracer.renderer.Renderer;
 import com.JavaPathtracer.scene.Scene;
-import com.JavaPathtracer.testscenes.TestScene4;
-import com.JavaPathtracer.tonemapping.ACESTonemapper;
+import com.JavaPathtracer.testscenes.TestScene6;
+import com.JavaPathtracer.tonemapping.FilmicTonemapper;
 
 public class Main {
 
@@ -27,8 +27,7 @@ public class Main {
 	private static void createCamera() {
 		PerspectiveCamera camera = new PerspectiveCamera();
 		camera.enableJitter();
-		camera.moveTo(new Vector(-2.123775645702241, 2.7755575615628914E-17, -5.176095142652289)); camera.setAngles(1.310796, 1.570796); camera.setFOV(30.000000);
-		//camera.disableJitter();
+		camera.moveTo(new Vector(48.29138622936734, 151.0, 196.14354252721046)); camera.setAngles(-1.039204, 1.930796); camera.setFOV(40.000000);
 		Main.camera = camera;
 	}
 	
@@ -66,8 +65,8 @@ public class Main {
 		// set up renderer objects
 		createCamera();
 		createRaytracer();
-		scene = new TestScene4();
-		renderer = new Renderer(scene, camera, raytracer, 16, 512, new ACESTonemapper());
+		scene = new TestScene6();
+		renderer = new Renderer(scene, camera, raytracer, 16, 512, new FilmicTonemapper());
 		
 		if(mode.equals("render")) {
 			render(false, "output.png");

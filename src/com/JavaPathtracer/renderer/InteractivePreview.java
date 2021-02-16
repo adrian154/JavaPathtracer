@@ -19,7 +19,7 @@ import com.JavaPathtracer.material.Texture;
 
 public class InteractivePreview {
 
-	protected static final double MOVEMENT_SCALE = 0.1;
+	protected static final double MOVEMENT_SCALE = 1;
 	
 	private Renderer renderer;
 	private Texture output;

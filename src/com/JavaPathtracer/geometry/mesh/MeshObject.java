@@ -26,11 +26,15 @@ public class MeshObject implements WorldObject {
 	protected List<Material> materials;
 	protected int[] faceMaterials;
 	
-	public MeshObject(String string, Matrix matrix, Material material) throws IOException {
-		this(new File(string), matrix, Map.of("default", material));
+	public MeshObject(String string, Map<String, Material> materials) throws IOException {
+		this(new File(string), new Matrix(), new Matrix(), materials);
 	}
 	
 	public MeshObject(File file, Matrix matrix, Map<String, Material> materials) throws IOException {
+		this(file, matrix, matrix, materials);
+	}
+	
+	public MeshObject(File file, Matrix matrix, Matrix normTransform, Map<String, Material> materials) throws IOException {
 
 		// set locals
 		this.materials = materials.values().stream().collect(Collectors.toList());
@@ -97,7 +101,7 @@ public class MeshObject implements WorldObject {
 							+ ": wrong number of components for vertex normal (expected 3)");
 				}
 
-				vertexNormals.add(matrix.transform(new Vector(Double.parseDouble(parts[1]), Double.parseDouble(parts[2]),
+				vertexNormals.add(normTransform.transform(new Vector(Double.parseDouble(parts[1]), Double.parseDouble(parts[2]),
 						Double.parseDouble(parts[3]))));
 				
 			} else if (parts[0].equals("f")) {
@@ -110,7 +114,7 @@ public class MeshObject implements WorldObject {
 				for(int i = 0; i < parts.length - 1; i++) {
 					String[] split = parts[i + 1].split("/");
 					faceVertexes[i] = Integer.parseInt(split[0]) - 1;
-					if(split.length > 1) faceTexCoords[i] = Integer.parseInt(split[1]) - 1;
+					if(split.length > 1 && split[1].length() > 0) faceTexCoords[i] = Integer.parseInt(split[1]) - 1;
 					if(split.length > 2) faceVertNormals[i] = Integer.parseInt(split[2]) - 1;
 				}
 				
@@ -119,7 +123,7 @@ public class MeshObject implements WorldObject {
 					faces.add(faceVertexes[0]);
 					faces.add(faceVertexes[i]);
 					faces.add(faceVertexes[i + 1]);
-					
+
 					texCoordIndices.add(faceTexCoords[0]);
 					texCoordIndices.add(faceTexCoords[i]);
 					texCoordIndices.add(faceTexCoords[i + 1]);

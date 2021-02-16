@@ -20,6 +20,7 @@ I wanted to learn about photorealistic rendering without having to grapple with 
 ![reprise](images/scene_reprised.png)
 ![earth](images/earth.png)
 ![statue](images/statue.png)
+![lowpoly](images/lpworld.png)
 
 **Older Renders**
 

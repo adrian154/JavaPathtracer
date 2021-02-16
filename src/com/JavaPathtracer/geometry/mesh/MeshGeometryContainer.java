@@ -126,8 +126,7 @@ public class MeshGeometryContainer implements FiniteShape {
 			Vector tex1 = textureCoordinates[faceTexCoordIndices[nearestIndex * 3]];
 			Vector tex2 = textureCoordinates[faceTexCoordIndices[nearestIndex * 3 + 1]];
 			Vector tex3 = textureCoordinates[faceTexCoordIndices[nearestIndex * 3 + 2]];
-			nearest.textureCoordinates = tex1.plus((tex2.minus(tex1).times(nearest.textureCoordinates.x))
-					.plus(tex3.minus(tex1).times(nearest.textureCoordinates.y)));
+			nearest.textureCoordinates = tex1.plus((tex2.minus(tex1).times(nearest.textureCoordinates.x)).plus(tex3.minus(tex1).times(nearest.textureCoordinates.y)));
 		}
 
 		return nearest;

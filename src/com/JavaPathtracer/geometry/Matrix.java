@@ -22,65 +22,65 @@ public class Matrix {
 		this.factors = factors;
 	}
 
-	public static Matrix Translate(double x, double y, double z) {
-		Matrix result = new Matrix();
-		result.factors[3] = x;
-		result.factors[7] = y;
-		result.factors[11] = z;
-		return result;
+	public Matrix Translate(double x, double y, double z) {
+		Matrix transform = new Matrix();
+		transform.factors[3] = x;
+		transform.factors[7] = y;
+		transform.factors[11] = z;
+		return this.multiply(transform);
 	}
 
-	public static Matrix Translate(Vector translate) {
-		return Matrix.Translate(translate.x, translate.y, translate.z);
+	public Matrix Translate(Vector translate) {
+		return this.Translate(translate.x, translate.y, translate.z);
 	}
 
-	public static Matrix Scale(double x, double y, double z) {
-		Matrix result = new Matrix();
-		result.factors[0] = x;
-		result.factors[5] = y;
-		result.factors[10] = z;
-		return result;
+	public Matrix Scale(double x, double y, double z) {
+		Matrix transform = new Matrix();
+		transform.factors[0] = x;
+		transform.factors[5] = y;
+		transform.factors[10] = z;
+		return this.multiply(transform);
 	}
 
-	public static Matrix Scale(Vector scale) {
-		return Matrix.Scale(scale.x, scale.y, scale.z);
+	public Matrix Scale(Vector scale) {
+		return this.Scale(scale.x, scale.y, scale.z);
 	}
 
-	public static Matrix Scale(double scale) {
-		return Matrix.Scale(scale, scale, scale);
+	public Matrix Scale(double scale) {
+		return this.Scale(scale, scale, scale);
 	}
 
-	public static Matrix RotateX(double angle) {
-		Matrix result = new Matrix();
+	public Matrix RotateX(double angle) {
+		Matrix transform = new Matrix();
 		double cos = Math.cos(angle);
 		double sin = Math.sin(angle);
-		result.factors[5] = cos;
-		result.factors[6] = -sin;
-		result.factors[7] = sin;
-		result.factors[8] = cos;
-		return result;
+		transform.factors[5] = cos;
+		transform.factors[6] = -sin;
+		transform.factors[7] = sin;
+		transform.factors[8] = cos;
+		return this.multiply(transform);
 	}
 
-	public static Matrix RotateY(double angle) {
-		Matrix result = new Matrix();
+	public Matrix RotateY(double angle) {
+		Matrix transform = new Matrix();
 		double cos = Math.cos(angle);
 		double sin = Math.sin(angle);
-		result.factors[0] = cos;
-		result.factors[2] = sin;
-		result.factors[8] = -sin;
-		result.factors[10] = cos;
-		return result;
+		transform.factors[0] = cos;
+		transform.factors[2] = sin;
+		transform.factors[8] = -sin;
+		transform.factors[10] = cos;
+		return this.multiply(transform);
 	}
 
-	public static Matrix RotateZ(double angle) {
-		Matrix result = new Matrix();
+	public Matrix RotateZ(double angle) {
+		Matrix transform = new Matrix();
 		double cos = Math.cos(angle);
 		double sin = Math.sin(angle);
-		result.factors[0] = cos;
-		result.factors[1] = -sin;
-		result.factors[4] = sin;
-		result.factors[5] = cos;
-		return result;
+		transform.factors[0] = cos;
+		transform.factors[1] = -sin;
+		transform.factors[4] = sin;
+		transform.factors[5] = cos;
+		return this.multiply(transform);
 	}
 
 	public Vector transform(Vector vector) {
@@ -92,38 +92,23 @@ public class Matrix {
 	// this code will make you cry
 	public Matrix multiply(Matrix other) {
 		return new Matrix(new double[] {
-				factors[0] * other.factors[0] + factors[1] * other.factors[4] + factors[2] * other.factors[8]
-						+ factors[3] * other.factors[12],
-				factors[0] * other.factors[1] + factors[1] * other.factors[5] + factors[2] * other.factors[9]
-						+ factors[3] * other.factors[13],
-				factors[0] * other.factors[2] + factors[1] * other.factors[6] + factors[2] * other.factors[10]
-						+ factors[3] * other.factors[14],
-				factors[0] * other.factors[3] + factors[1] * other.factors[7] + factors[2] * other.factors[11]
-						+ factors[3] * other.factors[15],
-				factors[4] * other.factors[0] + factors[5] * other.factors[4] + factors[6] * other.factors[8]
-						+ factors[7] * other.factors[12],
-				factors[4] * other.factors[1] + factors[5] * other.factors[5] + factors[6] * other.factors[9]
-						+ factors[7] * other.factors[13],
-				factors[4] * other.factors[2] + factors[5] * other.factors[6] + factors[6] * other.factors[10]
-						+ factors[7] * other.factors[14],
-				factors[4] * other.factors[3] + factors[5] * other.factors[7] + factors[6] * other.factors[11]
-						+ factors[7] * other.factors[15],
-				factors[8] * other.factors[0] + factors[9] * other.factors[4] + factors[10] * other.factors[8]
-						+ factors[11] * other.factors[12],
-				factors[8] * other.factors[1] + factors[9] * other.factors[5] + factors[10] * other.factors[9]
-						+ factors[11] * other.factors[13],
-				factors[8] * other.factors[2] + factors[9] * other.factors[6] + factors[10] * other.factors[10]
-						+ factors[11] * other.factors[14],
-				factors[8] * other.factors[3] + factors[9] * other.factors[7] + factors[10] * other.factors[11]
-						+ factors[11] * other.factors[15],
-				factors[12] * other.factors[0] + factors[13] * other.factors[4] + factors[14] * other.factors[8]
-						+ factors[15] * other.factors[12],
-				factors[12] * other.factors[1] + factors[13] * other.factors[5] + factors[14] * other.factors[9]
-						+ factors[15] * other.factors[13],
-				factors[12] * other.factors[2] + factors[13] * other.factors[6] + factors[14] * other.factors[10]
-						+ factors[15] * other.factors[14],
-				factors[12] * other.factors[3] + factors[13] * other.factors[7] + factors[14] * other.factors[11]
-						+ factors[15] * other.factors[15] });
+			factors[0]  * other.factors[0] +  factors[1] * other.factors[4] + factors[2]   * other.factors[8]  + factors[3]  * other.factors[12],
+			factors[0]  * other.factors[1] +  factors[1] * other.factors[5] + factors[2]   * other.factors[9]  + factors[3]  * other.factors[13],
+			factors[0]  * other.factors[2] +  factors[1] * other.factors[6] + factors[2]   * other.factors[10] + factors[3]  * other.factors[14],
+			factors[0]  * other.factors[3] +  factors[1] * other.factors[7] + factors[2]   * other.factors[11] + factors[3]  * other.factors[15],
+			factors[4]  * other.factors[0] +  factors[5] * other.factors[4] + factors[6]   * other.factors[8]  + factors[7]  * other.factors[12],
+			factors[4]  * other.factors[1] +  factors[5] * other.factors[5] + factors[6]   * other.factors[9]  + factors[7]  * other.factors[13],
+			factors[4]  * other.factors[2] +  factors[5] * other.factors[6] + factors[6]   * other.factors[10] + factors[7]  * other.factors[14],
+			factors[4]  * other.factors[3] +  factors[5] * other.factors[7] + factors[6]   * other.factors[11] + factors[7]  * other.factors[15],
+			factors[8]  * other.factors[0] +  factors[9] * other.factors[4] + factors[10]  * other.factors[8]  + factors[11] * other.factors[12],
+			factors[8]  * other.factors[1] +  factors[9] * other.factors[5] + factors[10]  * other.factors[9]  + factors[11] * other.factors[13],
+			factors[8]  * other.factors[2] +  factors[9] * other.factors[6] + factors[10]  * other.factors[10] + factors[11] * other.factors[14],
+			factors[8]  * other.factors[3] +  factors[9] * other.factors[7] + factors[10]  * other.factors[11] + factors[11] * other.factors[15],
+			factors[12] * other.factors[0] + factors[13] * other.factors[4]  + factors[14] * other.factors[8]  + factors[15] * other.factors[12],
+			factors[12] * other.factors[1] + factors[13] * other.factors[5]  + factors[14] * other.factors[9]  + factors[15] * other.factors[13],
+			factors[12] * other.factors[2] + factors[13] * other.factors[6]  + factors[14] * other.factors[10] + factors[15] * other.factors[14],
+			factors[12] * other.factors[3] + factors[13] * other.factors[7]  + factors[14] * other.factors[11] + factors[15] * other.factors[15]
+		});
 	}
 
 	public double get(int r, int c) {

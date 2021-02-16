@@ -209,6 +209,11 @@ public class Vector implements Sampleable {
 		);
 	}
 
+	// some color space bs
+	public double luminance() {
+		return 0.2126*x + 0.7152*y + 0.0722*z;
+	}
+	
 	@Override
 	public Vector sample(double u, double v) {
 		return this;
