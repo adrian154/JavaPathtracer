@@ -11,6 +11,7 @@ import com.JavaPathtracer.geometry.Vector;
 
 public class Texture implements Sampleable, SampleableScalar, Saveable {
 
+	private String path;
 	private BufferedImage texture;
 
 	public Texture(int width, int height) {
@@ -20,6 +21,7 @@ public class Texture implements Sampleable, SampleableScalar, Saveable {
 	public Texture(File imageFile) throws IOException {
 		Stopwatch stopwatch = new Stopwatch("LoadImageTexture");
 		texture = ImageIO.read(imageFile);
+		this.path = imageFile.getPath();
 		stopwatch.stop();
 	}
 
@@ -101,6 +103,11 @@ public class Texture implements Sampleable, SampleableScalar, Saveable {
 		Stopwatch stopwatch = new Stopwatch("SaveTexture");
 		ImageIO.write(texture, "png", file);
 		stopwatch.stop();
+	}
+	
+	@Override
+	public String toString() {
+		return "Texture " + path;
 	}
 
 }

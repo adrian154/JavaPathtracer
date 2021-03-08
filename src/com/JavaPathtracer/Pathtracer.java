@@ -9,6 +9,8 @@ import com.JavaPathtracer.scene.Scene;
 
 public class Pathtracer extends Raytracer {
 
+	public static final double AIR_IOR = 1.0;
+	
 	// Maximum depth of bounces
 	private int maxLightBounces;
 	private static final Vector BLACK = new Vector();
@@ -18,9 +20,8 @@ public class Pathtracer extends Raytracer {
 	}
 
 	// trace a ray
-	public Vector pathtraceRay(Scene scene, Ray ray, int bounces, boolean lights) {
+	public Vector pathtraceRay(Scene scene, Ray ray, int bounces, boolean lights, double ior) {
 
-		
 		if (bounces >= this.maxLightBounces) {
 			return Vector.ZERO;
 		}
@@ -33,7 +34,7 @@ public class Pathtracer extends Raytracer {
 				return BLACK;
 			}
 		
-			return mat.shade(hit, bounces, scene, this);
+			return mat.shade(hit, bounces, scene, this, ior);
 		
 		} else {
 			return scene.getSkyEmission(ray.direction);
@@ -44,7 +45,7 @@ public class Pathtracer extends Raytracer {
 	@Override
 	public Vector traceRay(Scene scene, Ray ray) {
 		super.traceRay(scene, ray);
-		return pathtraceRay(scene, ray, 0, true);
+		return pathtraceRay(scene, ray, 0, true, AIR_IOR);
 	}
 	
 	@Override

@@ -30,4 +30,9 @@ public class RoughMaterial extends MirrorMaterial {
 		return super.sample(incident, hit).iadd(rand).normalize();
 	}
 
+	@Override
+	public String toString() {
+		return String.format("Rough (%s)", color.toString());
+	}
+	
 }

@@ -133,8 +133,7 @@ public class Renderer {
 					
 				}
 			}
-			
-			//System.out.printf("Finished a tile (%d/%d)\n", latch.getCount(), tiles * tiles);
+
 			latch.countDown();
 			
 		}

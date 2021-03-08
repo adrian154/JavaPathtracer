@@ -34,5 +34,10 @@ public class DiffuseMaterial extends BRDFMaterial {
 	public boolean sampleLights() {
 		return true;
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("Diffuse %s", color.toString());
+	}
 
 }

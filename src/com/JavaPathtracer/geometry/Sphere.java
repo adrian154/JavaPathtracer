@@ -39,6 +39,10 @@ public class Sphere implements FiniteShape {
 		Vector point = ray.getPoint(t);
 		Vector normal = point.minus(this.center).normalized();
 
+		if(normal.dot(ray.direction) > 0) {
+			normal.invert();
+		}
+		
 		// Do texture mapping
 		Vector invDir = new Vector(0.0, 0.0, 0.0).minus(normal);
 		double u = 0.5 + Math.atan2(invDir.z, invDir.x) / (2 * Math.PI);

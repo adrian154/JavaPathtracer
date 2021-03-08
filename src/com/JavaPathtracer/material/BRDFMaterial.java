@@ -19,6 +19,7 @@ public abstract class BRDFMaterial extends BaseMaterial {
 	}
 
 	// evaluate BRDF
+	// Actually, should be BRDF / PDF  of whatever sample() is sampling. This allows for some trickery :)
 	public abstract double BRDF(Vector incident, Vector outgoing, Vector normal);
 	
 	// generate reflection vector distributed against BRDF
@@ -114,13 +115,13 @@ public abstract class BRDFMaterial extends BaseMaterial {
 	}
 	
 	@Override
-	public Vector shade(Hit hit, int bounces, Scene scene, Pathtracer pathtracer) {
+	public Vector shade(Hit hit, int bounces, Scene scene, Pathtracer pathtracer, double ior) {
 		
 		boolean samplingLights = sampleLights();
 
 		Ray next = new Ray(hit.point, sample(hit.ray.direction, hit));
 
-		Vector recursive = pathtracer.pathtraceRay(scene, next, bounces + 1, !samplingLights);
+		Vector recursive = pathtracer.pathtraceRay(scene, next, bounces + 1, !samplingLights, ior);
 		Vector result = recursive.times(BRDF(hit.ray.direction, next.direction, hit.normal)).times(next.direction.dot(hit.normal));
 
 		if(samplingLights) {

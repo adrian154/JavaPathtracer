@@ -13,11 +13,11 @@ import com.JavaPathtracer.renderer.LivePreview;
 import com.JavaPathtracer.renderer.RenderJob;
 import com.JavaPathtracer.renderer.Renderer;
 import com.JavaPathtracer.scene.Scene;
-import com.JavaPathtracer.testscenes.TestScene6;
-import com.JavaPathtracer.tonemapping.FilmicTonemapper;
+import com.JavaPathtracer.testscenes.Scene9;
+import com.JavaPathtracer.tonemapping.ACESTonemapper;
 
 public class Main {
-
+	
 	private static Camera camera;
 	private static Raytracer raytracer;
 	private static Scene scene;
@@ -27,7 +27,7 @@ public class Main {
 	private static void createCamera() {
 		PerspectiveCamera camera = new PerspectiveCamera();
 		camera.enableJitter();
-		camera.moveTo(new Vector(48.29138622936734, 151.0, 196.14354252721046)); camera.setAngles(-1.039204, 1.930796); camera.setFOV(40.000000);
+		camera.moveTo(new Vector(0.33, 1.40, 7.47)); camera.setAngles(-1.289204, 1.520796); camera.setFOV(30.000000);
 		Main.camera = camera;
 	}
 	
@@ -60,13 +60,13 @@ public class Main {
 		if(args.length > 0) mode = args[0];
 				
 		// set up output objects
-		output = new Texture(new BufferedImage(512, 512, BufferedImage.TYPE_INT_RGB));
+		output = new Texture(new BufferedImage(256, 256, BufferedImage.TYPE_INT_RGB));
 		
 		// set up renderer objects
 		createCamera();
 		createRaytracer();
-		scene = new TestScene6();
-		renderer = new Renderer(scene, camera, raytracer, 16, 512, new FilmicTonemapper());
+		scene = new Scene9();
+		renderer = new Renderer(scene, camera, raytracer, 16, 2048, new ACESTonemapper());
 		
 		if(mode.equals("render")) {
 			render(false, "output.png");

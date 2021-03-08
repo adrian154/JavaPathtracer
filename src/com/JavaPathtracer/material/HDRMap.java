@@ -10,13 +10,16 @@ import com.JavaPathtracer.geometry.Vector;
 public class HDRMap implements Sampleable, Saveable {
 
 	private HDRImageRGB image;
+	private String path;
 
 	public HDRMap(File file) {
 
+		this.path = file.getPath();
+		
 		try {
 			image = (HDRImageRGB) HDREncoder.readHDR(file, true);
 		} catch (IOException exception) {
-			System.out.println("Failedto load HDR map from \"" + file.getName() + "\": " + exception.getMessage());
+			System.out.println("Failed to load HDR map from \"" + file.getName() + "\": " + exception.getMessage());
 			exception.printStackTrace();
 		}
 
@@ -44,6 +47,11 @@ public class HDRMap implements Sampleable, Saveable {
 	@Override
 	public void saveToFile(File file) throws IOException {
 		HDREncoder.writeHDR(image, file);
+	}
+	
+	@Override
+	public String toString() {
+		return String.format("HDRMap (%s)", path);
 	}
 
 }

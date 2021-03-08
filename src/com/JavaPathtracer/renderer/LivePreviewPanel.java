@@ -5,13 +5,9 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 import javax.swing.JPanel;
 
-import com.JavaPathtracer.geometry.Hit;
-import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.material.Texture;
 
 public class LivePreviewPanel extends JPanel {
@@ -32,7 +28,6 @@ public class LivePreviewPanel extends JPanel {
 		this.scale = scale;
 		this.startTime = System.currentTimeMillis();
 		this.setPreferredSize(new Dimension(output.getWidth() * scale, output.getHeight() * scale));
-		this.addMouseListener(new PreviewMouseListener());
 	}
 	
 	@Override
@@ -47,30 +42,14 @@ public class LivePreviewPanel extends JPanel {
 		
 		// draw debug text
 		int y = 0;
-		g.drawString("Raytracer: " + job.getRaytracer().toString(), 2, y += 16);
-		g.drawString("Tonemapper: " + job.getRenderer().getTonemapper().toString(), 2, y += 16);
-		g.drawString(job.getSamples() + " samples", 2, y += 16);
+		Renderer renderer = job.getRenderer();
+		g.drawString("Raytracer: " + renderer.getRaytracer().toString(), 2, y += 16);
+		g.drawString("Tonemapper: " + renderer.getTonemapper().toString(), 2, y += 16);
+		g.drawString(renderer.getSamples() + " sample(s)", 2, y += 16);
 		if(!reducedDebug) {
-			g.drawString(job.getRays() + " rays traced", 2, y += 16);
-			g.drawString(String.format("%.2f Mrays/second", (float)job.getRays() / 1000 / (System.currentTimeMillis() - startTime)), 2, y += 16);
-			g.drawString(String.format("%d/%d tiles (%d threads)", job.getCompletedTiles(), job.getInitTiles(), job.getThreads()), 2, y += 16);
-		}
-		
-	}
-	
-	private class PreviewMouseListener extends MouseAdapter {
-
-		@Override
-		public void mouseClicked(MouseEvent event) {
-			
-			int maxdim = Math.min(output.getWidth(), output.getHeight());
-			Ray ray = job.getRenderer().getCamera().getCameraRay(event.getX() / scale, output.getHeight() - event.getY() / scale - 1, maxdim, 0, 0);
-			Hit hit = job.getRenderer().getScene().traceRay(ray);
-
-			//System.out.println(ray.origin + ", " + ray.direction);
-			if(hit != null)
-				System.out.println(hit.point + ", " + hit.normal);
-			
+			g.drawString(renderer.getRaytracer().getRays() + " rays traced", 2, y += 16);
+			g.drawString(String.format("%.2f Mrays/second", (float)renderer.getRaytracer().getRays() / 1000 / (System.currentTimeMillis() - startTime)), 2, y += 16);
+			g.drawString(String.format("%d/%d tiles (%d threads)", job.getCompletedTiles(), job.getInitTiles(), renderer.getThreads()), 2, y += 16);
 		}
 		
 	}

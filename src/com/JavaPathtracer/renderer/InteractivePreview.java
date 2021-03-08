@@ -1,6 +1,8 @@
 package com.JavaPathtracer.renderer;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.KeyAdapter;
@@ -14,12 +16,14 @@ import javax.swing.event.MouseInputAdapter;
 
 import com.JavaPathtracer.cameras.Camera;
 import com.JavaPathtracer.cameras.PerspectiveCamera;
+import com.JavaPathtracer.geometry.Hit;
+import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.material.Texture;
 
 public class InteractivePreview {
 
-	protected static final double MOVEMENT_SCALE = 1;
+	protected static final double MOVEMENT_SCALE = 0.1;
 	
 	private Renderer renderer;
 	private Texture output;
@@ -29,7 +33,7 @@ public class InteractivePreview {
 	
 	// controls
 	private int prevX, prevY;
-	private boolean forward, backward, left, right, up, down;
+	private boolean forward, backward, left, right, up, down, control;
 	private double azimuth, inclination, fov;
 	
 	public InteractivePreview(Renderer renderer, Camera camera, Texture output, int scale) {
@@ -108,8 +112,22 @@ public class InteractivePreview {
 		
 		@Override
 		public void paintComponent(Graphics g) {
+			
 			super.paintComponent(g);
+		
+			g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 16));
+			g.setColor(new Color(0xFFFFFF));
+			
+			// draw image
 			g.drawImage(output.asImage().getScaledInstance(output.getWidth() * scale, output.getHeight() * scale, Image.SCALE_FAST), 0, 0, this);
+		
+			// draw debug text
+			int y = 0;
+			g.drawString("Raytracer: " + renderer.getRaytracer().toString(), 2, y += 16);
+			g.drawString("Tonemapper: " + renderer.getTonemapper().toString(), 2, y += 16);
+			g.drawString(renderer.getSamples() + " sample(s)", 2, y += 16);
+			g.drawString("Position: " + camera.getPos(), 2, y += 16);
+			
 		}
 		
 	}
@@ -141,6 +159,25 @@ public class InteractivePreview {
 			fov += event.getWheelRotation();
 		}
 		
+		@Override
+		public void mouseClicked(MouseEvent event) {
+			
+			int maxdim = Math.min(output.getWidth(), output.getHeight());
+			Ray ray = renderer.getCamera().getCameraRay(event.getX() / scale, output.getHeight() - event.getY() / scale - 1, maxdim, 0, 0);
+			Hit hit = renderer.getScene().traceRay(ray);
+
+			if(hit != null) {
+				System.out.println("--------------------------------------------------------------------------------");
+				System.out.printf("Hit point: %s\n", hit.point);
+				System.out.printf("Hit distance: %.02f\n", hit.distance);
+				System.out.printf("Normal: %s\n", hit.normal);
+				System.out.printf("Texture coordinates: (%.02f, %.02f)\n", hit.textureCoordinates.x, hit.textureCoordinates.y);
+				System.out.printf("Material: %s\n", hit.material.toString());
+				System.out.printf("");
+			}
+			
+		}
+		
 	}
 	
 	private class KeyInput extends KeyAdapter {
@@ -155,6 +192,7 @@ public class InteractivePreview {
 				case KeyEvent.VK_D: right = state; break;
 				case KeyEvent.VK_SPACE: up = state; break;
 				case KeyEvent.VK_SHIFT: down = state; break;
+				case KeyEvent.VK_CONTROL: control = state; break;
 			}
 			
 			// oneshot triggers

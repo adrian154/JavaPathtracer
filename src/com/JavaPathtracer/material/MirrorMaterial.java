@@ -19,12 +19,21 @@ public class MirrorMaterial extends BRDFMaterial {
 		return 1 / outgoing.dot(normal);
 	}
 	
+	public static Vector reflect(Vector normal, Vector incident) {
+		return incident.minus(normal.times(2 * normal.dot(incident)));
+	}
+	
 	public Vector sample(Vector incident, Hit hit) {
-		return incident.minus(hit.normal.times(2 * hit.normal.dot(incident)));
+		return MirrorMaterial.reflect(hit.normal, incident);
 	}
 	
 	public boolean sampleLights() {
 		return false;
+	}
+	
+	@Override
+	public String toString() {
+		return String.format("Mirror %s", color.toString());
 	}
 	
 }

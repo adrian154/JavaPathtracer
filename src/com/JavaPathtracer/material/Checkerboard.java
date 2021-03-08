@@ -24,5 +24,10 @@ public class Checkerboard implements Sampleable, SampleableScalar {
 	public double sampleScalar(double u, double v) {
 		return this.sample(u, v).x;
 	}
-
+	
+	@Override
+	public String toString() {
+		return String.format("Checkerboard %s/%s", color1.toString(), color2.toString());
+	}
+	
 }

@@ -10,6 +10,11 @@ public class Square extends Plane implements FiniteShape {
 		this.size = size;
 	}
 
+	public Square(Vector normal, Vector point, double size, double tilingSize) {
+		super(normal, point, tilingSize);
+		this.size = size;
+	}
+	
 	@Override
 	public Hit intersect(Ray ray) {
 

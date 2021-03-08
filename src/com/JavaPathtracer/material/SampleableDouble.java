@@ -13,4 +13,9 @@ public class SampleableDouble implements SampleableScalar {
 		return value;
 	}
 
+	@Override
+	public String toString() {
+		return Double.toString(value);
+	}
+	
 }

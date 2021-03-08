@@ -161,7 +161,7 @@ public class Vector implements Sampleable {
 	// Convert to string for debugging
 	@Override
 	public String toString() {
-		return new String("(" + this.x + ", " + this.y + ", " + this.z + ")");
+		return String.format("(%.02f, %.02f, %.02f)", x, y, z);
 	}
 
 	// Convert spherical coordinates to vector
@@ -212,6 +212,11 @@ public class Vector implements Sampleable {
 	// some color space bs
 	public double luminance() {
 		return 0.2126*x + 0.7152*y + 0.0722*z;
+	}
+	
+	// for colors only
+	public String toHexTriplet() {
+		return String.format("#%02x%02x%02x", (int)(x * 255), (int)(y * 255), (int)(z * 255));
 	}
 	
 	@Override

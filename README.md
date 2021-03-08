@@ -17,6 +17,7 @@ I wanted to learn about photorealistic rendering without having to grapple with 
 
 **Recent Tests**
 
+![materials demo 2](images/materials2.png)
 ![reprise](images/scene_reprised.png)
 ![earth](images/earth.png)
 ![statue](images/statue.png)
