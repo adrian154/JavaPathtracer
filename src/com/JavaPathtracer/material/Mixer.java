@@ -9,12 +9,12 @@ import com.JavaPathtracer.scene.Scene;
 // The ideal way to implement this would be to pick a material randomly and use it for the rest of the pathtrace() cycle
 // However, that's not possible in the current IMaterial system. Trying to do so would be jamming a square peg into a round hole.
 // So... oh well.
-public class MixMaterial implements Material {
+public class Mixer implements Material {
 
 	public Material A, B;
 	public SampleableScalar proportion;
 
-	public MixMaterial(Material A, Material B, SampleableScalar proportion) {
+	public Mixer(Material A, Material B, SampleableScalar proportion) {
 		this.A = A;
 		this.B = B;
 		this.proportion = proportion;

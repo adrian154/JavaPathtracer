@@ -23,37 +23,41 @@ import com.JavaPathtracer.material.Texture;
 
 public class InteractivePreview {
 
-	protected static final double MOVEMENT_SCALE = 0.1;
+	protected static final double MOVEMENT_SCALE = 1;
 	
 	private Renderer renderer;
 	private Texture output;
 	private PreviewFrame frame;
 	private Camera camera;
 	private int scale;
+	private int frameCount;
 	
 	// controls
 	private int prevX, prevY;
 	private boolean forward, backward, left, right, up, down, control;
 	private double azimuth, inclination, fov;
 	
-	public InteractivePreview(Renderer renderer, Camera camera, Texture output, int scale) {
+	public InteractivePreview(Renderer renderer, Texture output, int scale) {
 		this.renderer = renderer;
 		this.output = output;
-		this.camera = camera;
+		this.camera = renderer.getScene().getCamera();
 		this.azimuth = Math.PI / 2;
 		this.inclination = Math.PI / 2;
 		fov = 30;
 		this.scale = scale;
+		this.frameCount = 0;
 	}
 	
 	public void run() throws InterruptedException {
 		this.frame = new PreviewFrame();
 		while(true) {
 			updateCamera();
+			renderer.getScene().update(frameCount);
 			RenderJob job = renderer.render(output);
 			job.await();
 			frame.repaint();
 			Thread.sleep(30 - System.currentTimeMillis() % 30);
+			frameCount++;
 		}
 	}
 	
@@ -163,7 +167,7 @@ public class InteractivePreview {
 		public void mouseClicked(MouseEvent event) {
 			
 			int maxdim = Math.min(output.getWidth(), output.getHeight());
-			Ray ray = renderer.getCamera().getCameraRay(event.getX() / scale, output.getHeight() - event.getY() / scale - 1, maxdim, 0, 0);
+			Ray ray = camera.getCameraRay(event.getX() / scale, output.getHeight() - event.getY() / scale - 1, maxdim, 0, 0);
 			Hit hit = renderer.getScene().traceRay(ray);
 
 			if(hit != null) {

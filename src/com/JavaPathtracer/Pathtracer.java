@@ -37,7 +37,7 @@ public class Pathtracer extends Raytracer {
 			return mat.shade(hit, bounces, scene, this, ior);
 		
 		} else {
-			return scene.getSkyEmission(ray.direction);
+			return scene.getSkyEmission(ray.direction, lights);
 		}
 
 	}

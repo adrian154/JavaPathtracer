@@ -17,14 +17,12 @@ public class Renderer {
 
 	// "scene, camera, raytracer" doesn't quite roll off the tongue...
 	protected Scene scene;
-	protected Camera camera;
 	protected Raytracer raytracer;
 	protected IToneMapper toneMapper;
 	protected int tiles, threads, samples;
 	
-	public Renderer(Scene scene, Camera camera, Raytracer raytracer, IToneMapper mapper, int tiles, int threads, int samples) {
+	public Renderer(Scene scene, Raytracer raytracer, IToneMapper mapper, int tiles, int threads, int samples) {
 		this.scene = scene;
-		this.camera = camera;
 		this.raytracer = raytracer;
 		this.toneMapper = mapper;
 		this.tiles = tiles;
@@ -32,12 +30,12 @@ public class Renderer {
 		this.samples = samples;
 	}
 	
-	public Renderer(Scene scene, Camera camera, Raytracer raytracer, int tiles, int samples) {
-		this(scene, camera, raytracer, new LinearTonemapper(), tiles, Runtime.getRuntime().availableProcessors(), samples);
+	public Renderer(Scene scene, Raytracer raytracer, int tiles, int samples) {
+		this(scene, raytracer, new LinearTonemapper(), tiles, Runtime.getRuntime().availableProcessors(), samples);
 	}
 	
-	public Renderer(Scene scene, Camera camera, Raytracer raytracer, int tiles, int samples, IToneMapper tonemapper) {
-		this(scene, camera, raytracer, tonemapper, tiles, Runtime.getRuntime().availableProcessors(), samples);
+	public Renderer(Scene scene,  Raytracer raytracer, int tiles, int samples, IToneMapper tonemapper) {
+		this(scene, raytracer, tonemapper, tiles, Runtime.getRuntime().availableProcessors(), samples);
 	}
 	
 	public Raytracer getRaytracer() {
@@ -58,10 +56,6 @@ public class Renderer {
 	
 	public Scene getScene() {
 		return this.scene;
-	}
-	
-	public Camera getCamera() {
-		return this.camera;
 	}
 	
 	public RenderJob render(Texture output) {
@@ -118,6 +112,7 @@ public class Renderer {
 			double pixelWidth = 2.0 / output.getWidth();
 			double pixelHeight = 2.0 / output.getHeight();
 		
+			Camera camera = scene.getCamera();
 			for(int x = startX; x < endX; x++) {
 				for(int y = startY; y < endY; y++) {
 	

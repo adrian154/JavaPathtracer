@@ -166,10 +166,11 @@ public class Vector implements Sampleable {
 
 	// Convert spherical coordinates to vector
 	public static Vector fromSpherical(double azimuth, double inclination) {
+		double sinInc = Math.sin(inclination);
 		return new Vector(
-			Math.sin(inclination) * Math.cos(azimuth),
+			sinInc * Math.cos(azimuth),
 			Math.cos(inclination),
-			Math.sin(inclination) * Math.sin(azimuth)
+			sinInc * Math.sin(azimuth)
 		);
 	}
 

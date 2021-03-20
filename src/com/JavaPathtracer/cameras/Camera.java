@@ -14,7 +14,7 @@ public abstract class Camera {
 		this.position = new Vector(0.0, 0.0, 0.0);
 		this.lookingAt = new Vector(0.0, 0.0, 1.0);
 		this.up = new Vector(0.0, 1.0, 0.0);
-		this.jitter = false;
+		this.jitter = true;
 	}
 
 	public void moveTo(Vector vector) {

@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.JavaPathtracer.Light;
 import com.JavaPathtracer.Raytracer;
+import com.JavaPathtracer.cameras.Camera;
+import com.JavaPathtracer.cameras.PerspectiveCamera;
 import com.JavaPathtracer.geometry.FiniteShape;
 import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.Ray;
@@ -15,8 +17,9 @@ import com.JavaPathtracer.material.Material;
 
 public class Scene {
 
-	private List<WorldObject> objects;
-	private List<Light> lights;
+	protected List<WorldObject> objects;
+	protected List<Light> lights;
+	protected Camera camera;
 	private Sky sky;
 	private Sun sun;
 	
@@ -29,8 +32,18 @@ public class Scene {
 		sky = new SimpleSky(Vector.ZERO);
 		sun = null;
 		
+		this.camera = new PerspectiveCamera();
+		
 	}
 
+	public void setCamera(Camera camera) {
+		this.camera = camera;
+	}
+
+	public Camera getCamera() {
+		return this.camera;
+	}
+	
 	public void setSky(Sky sky) {
 		this.sky = sky;
 	}
@@ -47,7 +60,10 @@ public class Scene {
 		return this.lights;
 	}
 	
-	public Vector getSkyEmission(Vector direction) {
+	public Vector getSkyEmission(Vector direction, boolean allowSun) {
+		if(allowSun && sun != null && direction.dot(sun.direction) > sun.cosAngularRadius) {
+			return sun.color;
+		}
 		return sky.getEmission(direction);
 	}
 
@@ -123,6 +139,10 @@ public class Scene {
 			}
 		}
 		return true;
+	}
+	
+	public void update(int frame) {
+		
 	}
 
 }

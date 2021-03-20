@@ -7,4 +7,5 @@ anim/
 /*.png
 *.iml
 .idea/*
+animation/*
 src/com/JavaPathtracer/testscenes/*

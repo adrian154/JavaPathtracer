@@ -18,12 +18,17 @@ public abstract class BRDFMaterial extends BaseMaterial {
 		super(color);
 	}
 
-	// evaluate BRDF
-	// Actually, should be BRDF / PDF  of whatever sample() is sampling. This allows for some trickery :)
+	// BRDF
 	public abstract double BRDF(Vector incident, Vector outgoing, Vector normal);
 	
-	// generate reflection vector distributed against BRDF
+	// sampler for integration
+	// does not have to necessarily sample the BRDF, hence a separate PDF() method
+	// PDF() defaults to 1 since sample() generally samples the BRDF
 	public abstract Vector sample(Vector incident, Hit hit);
+	
+	public double PDF(Vector incident, Vector outgoing, Vector normal) {
+		return 1;
+	}
 	
 	// should light sampling be used?
 	// using this in lieu of proper MIS
@@ -120,9 +125,8 @@ public abstract class BRDFMaterial extends BaseMaterial {
 		boolean samplingLights = sampleLights();
 
 		Ray next = new Ray(hit.point, sample(hit.ray.direction, hit));
-
 		Vector recursive = pathtracer.pathtraceRay(scene, next, bounces + 1, !samplingLights, ior);
-		Vector result = recursive.times(BRDF(hit.ray.direction, next.direction, hit.normal)).times(next.direction.dot(hit.normal));
+		Vector result = recursive.times(BRDF(hit.ray.direction, next.direction, hit.normal) / PDF(hit.ray.direction, next.direction, hit.normal)).times(next.direction.dot(hit.normal));
 
 		if(samplingLights) {
 			result.iadd(sampleLights(hit, scene));

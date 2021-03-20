@@ -80,7 +80,6 @@ public class DebugTracer extends Raytracer {
 
 		Hit hit = scene.traceRay(ray);
 		if (hit != null) {
-
 			switch(mode) {
 				case ALBEDO: return shadeAlbedo(hit, ray);
 				case SIMPLE_SHADED: return shadeSimple(hit, ray);
@@ -91,9 +90,8 @@ public class DebugTracer extends Raytracer {
 				case STENCIL: return shadeStencil(hit, ray);
 				case UV: default: return shadeUV(hit, ray);
 			}
-			
 		} else {
-			return scene.getSkyEmission(ray.direction);
+			return scene.getSkyEmission(ray.direction, true);
 		}
 
 	}

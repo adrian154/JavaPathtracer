@@ -19,6 +19,8 @@ I wanted to learn about photorealistic rendering without having to grapple with 
 
 ![materials demo 2](images/materials2.png)
 
+![materials demo 3](images/materials3.png)
+
 ![reprise](images/scene_reprised.png)
 
 ![earth](images/earth.png)
