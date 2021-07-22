@@ -85,7 +85,6 @@ public class Scene {
 	// do geometry + material trace into scene
 	public Hit traceRay(Ray ray) {
 
-		// empty constructor Hit has infinite distance which works out for us
 		Hit nearest = null;
 		for (WorldObject object: objects) {
 

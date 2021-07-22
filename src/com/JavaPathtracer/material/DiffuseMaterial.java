@@ -15,15 +15,14 @@ public class DiffuseMaterial extends BRDFMaterial {
 	
 	@Override
 	public double PDF(Vector incident, Vector outgoing, Vector normal) {
-		return outgoing.dot(normal);
-		//return 1;
+		return 1;
 	}
 	
 	@Override
 	public Vector sample(Vector incident, Hit hit) {
 		
-		Vector random = Vector.fromSpherical(Math.random() * 2 * Math.PI, Math.random() * Math.PI / 2);
-		//Vector random = Vector.uniformInHemisphere();
+		//Vector random = Vector.fromSpherical(Math.random() * 2 * Math.PI, Math.random() * Math.PI / 2);
+		Vector random = Vector.uniformInHemisphere();
 		Vector bvx = hit.normal.getOrthagonal();
 		Vector bvy = hit.normal;
 		Vector bvz = bvy.cross(bvx);

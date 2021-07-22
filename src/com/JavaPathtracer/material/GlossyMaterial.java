@@ -10,11 +10,11 @@ import com.JavaPathtracer.geometry.Vector;
  * Not very sophisticated, pretty unrigorous mathematically/physically
  * NEVER use (after I implement proper microfacets...)
  */
-public class RoughMaterial extends MirrorMaterial {
+public class GlossyMaterial extends MirrorMaterial {
 
 	private SampleableDouble roughness;
 
-	public RoughMaterial(Sampleable color, SampleableDouble roughness) {
+	public GlossyMaterial(Sampleable color, SampleableDouble roughness) {
 		super(color);
 		this.roughness = roughness;
 	}
