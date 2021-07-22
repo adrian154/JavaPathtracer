@@ -20,7 +20,7 @@ public class GlossyMaterial extends MirrorMaterial {
 	}
 	
 	@Override
-	public double BRDF(Vector incident, Vector outgoing, Vector normal) {
+	public double BRDF(Vector incident, Vector outgoing, Vector normal, Vector textureCoordinates) {
 		return 1 / outgoing.dot(normal);
 	}
 	

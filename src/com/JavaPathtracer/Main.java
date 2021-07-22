@@ -4,14 +4,13 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-import com.JavaPathtracer.DebugTracer.Mode;
 import com.JavaPathtracer.material.Texture;
 import com.JavaPathtracer.renderer.InteractivePreview;
 import com.JavaPathtracer.renderer.LivePreview;
 import com.JavaPathtracer.renderer.RenderJob;
 import com.JavaPathtracer.renderer.Renderer;
 import com.JavaPathtracer.scene.Scene;
-import com.JavaPathtracer.testscenes.GeometryTest;
+import com.JavaPathtracer.testscenes.MaterialsTest;
 import com.JavaPathtracer.tonemapping.FilmicTonemapper;
 
 public class Main {
@@ -22,8 +21,8 @@ public class Main {
 	private static Texture output;
 	
 	private static void createRaytracer() {
-		//raytracer = new Pathtracer(5);
-		raytracer = new DebugTracer(Mode.SIMPLE_SHADED);
+		raytracer = new Pathtracer(5);
+		//raytracer = new DebugTracer(Mode.SIMPLE_SHADED);
 	}
 	
 	private static void render(boolean preview, String outputName) throws InterruptedException, IOException {
@@ -56,16 +55,16 @@ public class Main {
 	public static void main(String[] args) throws IOException, InterruptedException {
 
 		// read args
-		String mode = "interactive";
+		String mode = "render-preview";
 		if(args.length > 0) mode = args[0];
 				
 		// set up output objects
-		output = new Texture(new BufferedImage(256, 256, BufferedImage.TYPE_INT_RGB));
+		output = new Texture(new BufferedImage(512, 512, BufferedImage.TYPE_INT_RGB));
 		
 		// set up renderer objects
 		createRaytracer();
-		scene = new GeometryTest();
-		renderer = new Renderer(scene, raytracer, 16, 1, new FilmicTonemapper());
+		scene = new MaterialsTest();
+		renderer = new Renderer(scene, raytracer, 16, 2048, new FilmicTonemapper());
 		
 		if(mode.equals("render")) {
 			render(false, "output.png");

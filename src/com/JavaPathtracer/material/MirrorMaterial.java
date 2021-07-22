@@ -15,7 +15,7 @@ public class MirrorMaterial extends BRDFMaterial {
 
 	// since the brdf is always analytically sampled..
 	// we can use a bogus BRDF even though the real BRDF is a delta func
-	public double BRDF(Vector incident, Vector outgoing, Vector normal) {
+	public double BRDF(Vector incident, Vector outgoing, Vector normal, Vector textureCoordinates) {
 		return 1 / outgoing.dot(normal);
 	}
 	

@@ -32,7 +32,7 @@ public class DiffuseMaterial extends BRDFMaterial {
 	}
 	
 	@Override
-	public double BRDF(Vector incident, Vector outgoing, Vector normal) {
+	public double BRDF(Vector incident, Vector outgoing, Vector normal, Vector textureCoordinates) {
 		return normal.dot(outgoing) < 0 ? 0 : 1;
 	}
 	

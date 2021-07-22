@@ -17,6 +17,8 @@ I wanted to learn about photorealistic rendering without having to grapple with 
 
 **Recent Tests**
 
+![materials demo 4](images/materials4.png)
+
 ![materials demo 2](images/materials2.png)
 
 ![materials demo 3](images/materials3.png)

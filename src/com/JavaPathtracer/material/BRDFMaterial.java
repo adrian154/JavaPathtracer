@@ -19,7 +19,7 @@ public abstract class BRDFMaterial extends BaseMaterial {
 	}
 
 	// BRDF
-	public abstract double BRDF(Vector incident, Vector outgoing, Vector normal);
+	public abstract double BRDF(Vector incident, Vector outgoing, Vector normal, Vector textureCoordinates);
 	
 	// sampler for integration
 	// does not have to necessarily sample the BRDF, hence a separate PDF() method
@@ -85,7 +85,7 @@ public abstract class BRDFMaterial extends BaseMaterial {
 				Vector irradiance = light.material.color.sample(hit.textureCoordinates.x, hit.textureCoordinates.y).times(solidAngle / (2 * Math.PI));
 				
 				double cosFactor = ray.direction.dot(hit.normal);
-				sum.iadd(irradiance.imul(cosFactor).imul(BRDF(hit.ray.direction, ray.direction, hit.normal)));
+				sum.iadd(irradiance.imul(cosFactor).imul(BRDF(hit.ray.direction.reversed(), ray.direction, hit.normal, hit.textureCoordinates)));
 				
 			}
 			
@@ -112,7 +112,7 @@ public abstract class BRDFMaterial extends BaseMaterial {
 		
 		Ray ray = new Ray(hit.point, dir);
 		if(scene.traceSkyRay(ray)) {
-			return sun.color.times(dir.dot(hit.normal)).imul(BRDF(hit.ray.direction, dir, hit.normal));
+			return sun.color.times(dir.dot(hit.normal)).imul(BRDF(hit.ray.direction.reversed(), dir, hit.normal, hit.textureCoordinates));
 		}
 		
 		return Vector.ZERO;
@@ -126,7 +126,7 @@ public abstract class BRDFMaterial extends BaseMaterial {
 
 		Ray next = new Ray(hit.point, sample(hit.ray.direction, hit));
 		Vector recursive = pathtracer.pathtraceRay(scene, next, bounces + 1, !samplingLights, ior);
-		Vector result = recursive.times(BRDF(hit.ray.direction, next.direction, hit.normal) / PDF(hit.ray.direction, next.direction, hit.normal)).times(next.direction.dot(hit.normal));
+		Vector result = recursive.times(BRDF(hit.ray.direction.reversed(), next.direction, hit.normal, hit.textureCoordinates) / PDF(hit.ray.direction, next.direction, hit.normal)).times(next.direction.dot(hit.normal));
 
 		if(samplingLights) {
 			result.iadd(sampleLights(hit, scene));

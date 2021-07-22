@@ -50,6 +50,10 @@ public class Vector implements Sampleable {
 		this.y = -this.y;
 		this.z = -this.z;
 	}
+	
+	public Vector reversed() {
+		return this.times(-1);
+	}
 
 	public Vector plus(Vector other) {
 		return new Vector(this.x + other.x, this.y + other.y, this.z + other.z);
