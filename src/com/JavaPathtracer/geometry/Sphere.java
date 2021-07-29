@@ -35,7 +35,6 @@ public class Sphere implements FiniteShape {
 			}
 		}
 
-		Hit result;
 		Vector point = ray.getPoint(t);
 		Vector normal = point.minus(this.center).normalized();
 
@@ -48,10 +47,8 @@ public class Sphere implements FiniteShape {
 		double u = 0.5 + Math.atan2(invDir.z, invDir.x) / (2 * Math.PI);
 		double v = 0.5 - Math.asin(invDir.y) / Math.PI;
 
-		result = new Hit(ray, point, normal, t, new Vector(u, v, 0.0));
-
-		return result;
-
+		return new Hit(ray, point, normal, t, new Vector(u, v, 0.0));
+	
 	}
 
 	public Vector getCenter() {

@@ -17,6 +17,13 @@ public abstract class Camera {
 		this.jitter = true;
 	}
 
+	// figure out other basis vector
+	// lookAt() / setAngles() both assume the camera can only tilt along azimuth/inclination
+	protected static Vector getUp(Vector look) {
+		double length = Math.sqrt(look.x * look.x + look.z * look.z);
+		return new Vector(-look.x / length * look.y, length, -look.z / length * look.y);
+	}
+	
 	public void moveTo(Vector vector) {
 		this.position = vector;
 	}
@@ -26,8 +33,12 @@ public abstract class Camera {
 	}
 	
 	public void setAngles(double yaw, double pitch) {
-		this.lookingAt = Vector.fromSpherical(yaw, pitch);
-		this.up = Vector.fromSpherical(yaw + Math.PI, Math.PI / 2 - pitch);
+		this.lookAt(Vector.fromSpherical(yaw, pitch));
+	}
+	
+	public void lookAt(Vector direction) {
+		this.lookingAt = direction;
+		this.up = getUp(direction);
 	}
 	
 	public Vector getLook() {
@@ -51,6 +62,11 @@ public abstract class Camera {
 			return getCameraRay(imageX + (Math.random() - 0.5) * jitterX, imageY + (Math.random() - 0.5) * jitterY);
 		else
 			return getCameraRay(imageX, imageY);
+	}
+	
+	@Override
+	public String toString() {
+		return String.format("position=%s, look=%s, up=%s", position.toString(), lookingAt.toString(), up.toString());
 	}
 
 }

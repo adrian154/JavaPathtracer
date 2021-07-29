@@ -15,9 +15,9 @@ public class RoughMaterial extends DiffuseMaterial {
 	public double BRDF(Vector incident, Vector outgoing, Vector normal, Vector textureCoordinates) {
 		
 		// beware: disgusting variable names
-		double ndv = normal.dot(incident);
+		double ndv = Math.max(normal.dot(incident), 0);
 		double incidentTheta = Math.acos(ndv);
-		double ndl = normal.dot(outgoing);
+		double ndl = Math.max(normal.dot(outgoing), 0);
 		double outgoingTheta = Math.acos(ndl);
 		
 		double sigma = this.roughness.sampleScalar(textureCoordinates.x, textureCoordinates.y);

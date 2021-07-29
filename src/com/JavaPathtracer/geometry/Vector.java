@@ -13,6 +13,9 @@ public class Vector implements Sampleable {
 
 	public static final Vector ZERO = new Vector(0.0, 0.0, 0.0);
 	public static final Vector ONE = new Vector(1.0, 1.0, 1.0);
+	public static final Vector X = new Vector(1.0, 0.0, 0.0);
+	public static final Vector Y = new Vector(0.0, 1.0, 0.0);
+	public static final Vector Z = new Vector(0.0, 0.0, 1.0);
 	
 	public Vector() {
 		this(0);

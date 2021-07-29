@@ -32,6 +32,7 @@ public abstract class BRDFMaterial extends BaseMaterial {
 	
 	// should light sampling be used?
 	// using this in lieu of proper MIS
+	// this value is not cached, you can use whatever heuristic here
 	public abstract boolean sampleLights();
 	
 	// ---- mathy code incoming

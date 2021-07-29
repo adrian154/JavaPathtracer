@@ -1,5 +1,7 @@
 package com.JavaPathtracer.geometry;
 
+import javax.lang.model.util.Elements.Origin;
+
 import com.JavaPathtracer.Raytracer;
 
 public class Cylinder implements Shape {
@@ -19,45 +21,53 @@ public class Cylinder implements Shape {
 	@Override
 	public Hit intersect(Ray ray) {
 		
-		// horrible homebrewed isect code
-		// featuring: poor understanding of vector geometry
+		// life is only hard if you make it hard
 		
-		Vector point = this.point.minus(ray.origin);
+		// be the chance that you want to see
+		// y basis vector = direction
+		Vector bvx = direction.getOrthagonal();
+		Vector bvz = direction.cross(bvx);
 		
-		// mysterious magic numbers ahead
-		double dcd = direction.dot(ray.direction);
-		double dcp = direction.dot(point);
-		double a = 1 - dcd;
-		double b = -2 * point.dot(ray.direction) + 2 * dcd * dcp;
-		double c = point.dot(point) - dcp * dcp - radius * radius;
+		Vector d = Vector.localToWorldCoords(ray.direction, bvx, direction, bvz);
+		Vector o = Vector.localToWorldCoords(ray.origin.minus(point), bvx, direction, bvz);
 		
-		// quadratic solving from Sphere#intersect()
+		double a = d.x * d.x + d.z * d.z;
+		double b = 2 * (o.x * d.x + o.z * d.z);
+		double c = o.x * o.x + o.z * o.z - radius * radius;
+		
 		double discrim = b * b - 4 * a * c;
-		if (discrim < 0) {
-			return null;
-		}
-
-		// im undergoing immense pain
+		if(discrim < 0) return null;
+		
 		discrim = Math.sqrt(discrim);
+		
 		double t1 = (-b - discrim) / (2 * a);
 		double t2 = (-b + discrim) / (2 * a);
-		double t = 0;
+
 		if(t1 < Raytracer.EPSILON && t2 < Raytracer.EPSILON) return null;
-		if(t2 < Raytracer.EPSILON) t = t1;
-		if(t1 < Raytracer.EPSILON) t = t2;
-		t = Math.min(t1, t2);
 		
-		Hit result;
-		Vector hitPoint = ray.getPoint(t);
-		Vector normal = new Vector(1,0,0); // DUMMY
-	
-		if(normal.dot(ray.direction) > 0) {
-			normal.invert();
+		Vector hitLocal;
+		Vector hit1 = o.plus(d.times(t1));
+		Vector hit2 = o.plus(d.times(t2));
+		
+		if(t1 < Raytracer.EPSILON) {
+			hitLocal = hit2;
+		} else if(t2 < Raytracer.EPSILON) {
+			hitLocal = hit1;
+		} else {
+			if(hit1.y > length || hit1.y < 0) hit1 = null;
+			if(hit2.y > length || hit2.y < 0) hit2 = null;
+			hitLocal = hit1 == null ? hit2 : hit1;
 		}
 		
-		// fuck you and your texture mapping
-		result = new Hit(ray, hitPoint, normal, t, Vector.ZERO);
-		return result;
+		// transform back normal
+		if(hitLocal == null) return null;
+		Vector normalLocal = new Vector(hitLocal.x, 0, hitLocal.z).normalize();
+		
+		Vector point = Vector.localToWorldCoords(hitLocal, bvx, direction, bvz);
+		Vector normal = Vector.localToWorldCoords(normalLocal, bvx, direction, bvz);
+		
+		// TODO: texture mapping for cylinder
+		return new Hit(ray, point, normal, t1, new Vector(0.5, 0.5, 0.0));
 		
 	}
 	
