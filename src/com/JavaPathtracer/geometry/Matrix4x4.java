@@ -2,12 +2,12 @@ package com.JavaPathtracer.geometry;
 
 // 3D rotation matrix
 // Fixed 4x4 size
-public class Matrix {
+public class Matrix4x4 {
 
 	public double factors[];
 
 	// No args constructor initializes the matrix as an identity matrix
-	public Matrix() {
+	public Matrix4x4() {
 		factors = new double[16];
 		for (int r = 0; r < 4; r++) {
 			for (int c = 0; c < 4; c++) {
@@ -16,42 +16,42 @@ public class Matrix {
 		}
 	}
 
-	public Matrix(double[] factors) {
+	public Matrix4x4(double[] factors) {
 		if (factors.length != 16)
 			throw new IllegalArgumentException("Matrix must have 16 factors.");
 		this.factors = factors;
 	}
 
-	public Matrix Translate(double x, double y, double z) {
-		Matrix transform = new Matrix();
+	public Matrix4x4 Translate(double x, double y, double z) {
+		Matrix4x4 transform = new Matrix4x4();
 		transform.factors[3] = x;
 		transform.factors[7] = y;
 		transform.factors[11] = z;
 		return this.multiply(transform);
 	}
 
-	public Matrix Translate(Vector translate) {
+	public Matrix4x4 Translate(Vector translate) {
 		return this.Translate(translate.x, translate.y, translate.z);
 	}
 
-	public Matrix Scale(double x, double y, double z) {
-		Matrix transform = new Matrix();
+	public Matrix4x4 Scale(double x, double y, double z) {
+		Matrix4x4 transform = new Matrix4x4();
 		transform.factors[0] = x;
 		transform.factors[5] = y;
 		transform.factors[10] = z;
 		return this.multiply(transform);
 	}
 
-	public Matrix Scale(Vector scale) {
+	public Matrix4x4 Scale(Vector scale) {
 		return this.Scale(scale.x, scale.y, scale.z);
 	}
 
-	public Matrix Scale(double scale) {
+	public Matrix4x4 Scale(double scale) {
 		return this.Scale(scale, scale, scale);
 	}
 
-	public Matrix RotateX(double angle) {
-		Matrix transform = new Matrix();
+	public Matrix4x4 RotateX(double angle) {
+		Matrix4x4 transform = new Matrix4x4();
 		double cos = Math.cos(angle);
 		double sin = Math.sin(angle);
 		transform.factors[5] = cos;
@@ -61,8 +61,8 @@ public class Matrix {
 		return this.multiply(transform);
 	}
 
-	public Matrix RotateY(double angle) {
-		Matrix transform = new Matrix();
+	public Matrix4x4 RotateY(double angle) {
+		Matrix4x4 transform = new Matrix4x4();
 		double cos = Math.cos(angle);
 		double sin = Math.sin(angle);
 		transform.factors[0] = cos;
@@ -72,8 +72,8 @@ public class Matrix {
 		return this.multiply(transform);
 	}
 
-	public Matrix RotateZ(double angle) {
-		Matrix transform = new Matrix();
+	public Matrix4x4 RotateZ(double angle) {
+		Matrix4x4 transform = new Matrix4x4();
 		double cos = Math.cos(angle);
 		double sin = Math.sin(angle);
 		transform.factors[0] = cos;
@@ -90,8 +90,8 @@ public class Matrix {
 	}
 
 	// this code will make you cry
-	public Matrix multiply(Matrix other) {
-		return new Matrix(new double[] {
+	public Matrix4x4 multiply(Matrix4x4 other) {
+		return new Matrix4x4(new double[] {
 			factors[0]  * other.factors[0] +  factors[1] * other.factors[4] + factors[2]   * other.factors[8]  + factors[3]  * other.factors[12],
 			factors[0]  * other.factors[1] +  factors[1] * other.factors[5] + factors[2]   * other.factors[9]  + factors[3]  * other.factors[13],
 			factors[0]  * other.factors[2] +  factors[1] * other.factors[6] + factors[2]   * other.factors[10] + factors[3]  * other.factors[14],

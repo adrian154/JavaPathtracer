@@ -9,13 +9,13 @@ I wanted to learn about photorealistic rendering without having to grapple with 
 
 * Switch to quasirandom sequences for sampling
 * Normal mapping
-* More model loaders
-	* Contemplating an alternative solution: create a custom model format, move converters to an external project
-* Some form of scene description
+* Implement better material model
 
 ## Gallery
 
 **Recent Tests**
+
+![spotlights](images/spotlights.png)
 
 ![materials demo 4](images/materials4.png)
 

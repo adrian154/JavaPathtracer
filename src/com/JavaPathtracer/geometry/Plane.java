@@ -7,15 +7,25 @@ public class Plane implements Shape {
 	public Vector normal;
 	public Vector point;
 	public double tilingSize;
+	public boolean oneSided;
 
 	public Plane(Vector normal, Vector point) {
 		this(normal, point, 1.0);
 	}
-
+	
 	public Plane(Vector normal, Vector point, double tilingSize) {
+		this(normal, point, tilingSize, false);
+	}
+	
+	public Plane(Vector normal, Vector point, boolean oneSided) {
+		this(normal, point, 1.0, oneSided);
+	}
+
+	public Plane(Vector normal, Vector point, double tilingSize, boolean oneSided) {
 		this.normal = normal.normalize();
 		this.point = point;
 		this.tilingSize = tilingSize;
+		this.oneSided = oneSided;
 	}
 
 	/*
@@ -25,7 +35,7 @@ public class Plane implements Shape {
 	public Hit intersect(Ray ray) {
 
 		// reject rays that are wonky (wrong side!))
-		//if(ray.direction.dot(this.normal) > 0) return Hit.MISS;
+		if(oneSided && ray.direction.dot(this.normal) > 0) return null;
 		
 		/* Check if equation has solution. */
 		double denom = ray.direction.dot(this.normal);

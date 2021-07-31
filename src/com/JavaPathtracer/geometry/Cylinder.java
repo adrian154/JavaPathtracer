@@ -5,29 +5,37 @@ import com.JavaPathtracer.Raytracer;
 public class Cylinder implements Shape {
 
 	private Vector point;
-	private Vector direction;
 	private double length;
 	private double radius;
 	
+	private Vector bvx, bvy, bvz;
+	private Matrix3x3 mat;
+	
 	public Cylinder(Vector point, Vector direction, double radius, double length) {
 		this.point = point;
-		this.direction = direction;
 		this.radius = radius;
 		this.length = length;
+		this.setDirection(direction);
+	}
+	
+	private void setDirection(Vector direction) {
+		this.bvy = direction;
+		this.bvx = this.bvy.getOrthagonal();
+		this.bvz = bvx.cross(bvy);
+		this.mat = new Matrix3x3(new double[] {
+			bvx.x, bvy.x, bvz.x,
+			bvx.y, bvy.y, bvz.y,
+			bvx.z, bvy.z, bvz.z
+		}).inverse();
 	}
 	
 	@Override
 	public Hit intersect(Ray ray) {
 		
 		// life is only hard if you make it hard
-		
-		// be the chance that you want to see
-		// y basis vector = direction
-		Vector bvx = direction.getOrthagonal();
-		Vector bvz = direction.cross(bvx);
-		
-		Vector d = Vector.localToWorldCoords(ray.direction, bvx, direction, bvz);
-		Vector o = Vector.localToWorldCoords(ray.origin.minus(point), bvx, direction, bvz);
+
+		Vector d = mat.transform(ray.direction);
+		Vector o = mat.transform(ray.origin.minus(point));
 		
 		double a = d.x * d.x + d.z * d.z;
 		double b = 2 * (o.x * d.x + o.z * d.z);
@@ -69,8 +77,13 @@ public class Cylinder implements Shape {
 		if(hitLocal == null || hitLocal.y < 0 || hitLocal.y > length) return null;
 		Vector normalLocal = new Vector(hitLocal.x, 0, hitLocal.z).normalize();
 		
-		Vector point = Vector.localToWorldCoords(hitLocal, bvx, direction, bvz);
-		Vector normal = Vector.localToWorldCoords(normalLocal, bvx, direction, bvz);
+		Vector point = Vector.localToWorldCoords(hitLocal, bvx, bvy, bvz);
+		Vector normal = Vector.localToWorldCoords(normalLocal, bvx, bvy, bvz);
+		
+		// TODO: move normal flip to common step after isect
+		if(normal.dot(ray.direction) > 0) {
+			normal.invert();
+		}
 		
 		// TODO: texture mapping for cylinder
 		return new Hit(ray, point, normal, t, new Vector(0.5, 0.5, 0.0));

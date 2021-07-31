@@ -77,16 +77,21 @@ public abstract class BRDFMaterial extends BaseMaterial {
 			
 			if(scene.traceShadowRay(ray, light)) {
 
-				// calculate solid angle
-				// solid angle = 2pi(1 - cos(alpha)) where alpha = angle between disc center, edge as seen by hitpoint
-				// avoid the need for an expensive arctangent
-				double dist = bounding.getCenter().minus(hit.point).length();
-				double hypot = Math.sqrt(dist * dist + bounding.getRadius() * bounding.getRadius());
-				double solidAngle = 2 * Math.PI * (1 - dist / hypot);
-				Vector irradiance = light.material.color.sample(hit.textureCoordinates.x, hit.textureCoordinates.y).times(solidAngle / (2 * Math.PI));
+				Hit lightHit = light.intersect(ray);
+				if(lightHit != null) {
 				
-				double cosFactor = ray.direction.dot(hit.normal);
-				sum.iadd(irradiance.imul(cosFactor).imul(BRDF(hit.ray.direction.reversed(), ray.direction, hit.normal, hit.textureCoordinates)));
+					// calculate solid angle
+					// solid angle = 2pi(1 - cos(alpha)) where alpha = angle between disc center, edge as seen by hitpoint
+					// avoid the need for an expensive arctangent
+					double dist = bounding.getCenter().minus(hit.point).length();
+					double hypot = Math.sqrt(dist * dist + bounding.getRadius() * bounding.getRadius());
+					double solidAngle = 2 * Math.PI * (1 - dist / hypot);
+					Vector irradiance = light.material.color.sample(lightHit.textureCoordinates.x, lightHit.textureCoordinates.y).times(solidAngle / (2 * Math.PI));
+					
+					double cosFactor = ray.direction.dot(hit.normal);
+					sum.iadd(irradiance.imul(cosFactor).imul(BRDF(hit.ray.direction.reversed(), ray.direction, hit.normal, hit.textureCoordinates)));
+
+				}
 				
 			}
 			

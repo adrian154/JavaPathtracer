@@ -131,6 +131,7 @@ public class InteractivePreview {
 			g.drawString("Tonemapper: " + renderer.getTonemapper().toString(), 2, y += 16);
 			g.drawString(renderer.getSamples() + " sample(s)", 2, y += 16);
 			g.drawString("Position: " + camera.getPos(), 2, y += 16);
+			g.drawString("Looking direction: " + camera.getLook(), 2, y += 16);
 			
 		}
 		
@@ -203,6 +204,9 @@ public class InteractivePreview {
 			if(state) {
 				if(keycode == KeyEvent.VK_C) {
 					System.out.printf("camera.moveTo(new Vector%s); camera.setAngles(%f, %f); camera.setFOV(%f);\n", camera.getPos().toString(), azimuth, inclination, fov);
+				}
+				if(keycode == KeyEvent.VK_V) {
+					System.out.printf("position=%s, direction=%s\n", camera.getPos().toString(), camera.getLook().toString());
 				}
 			}
 			

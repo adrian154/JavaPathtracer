@@ -30,7 +30,7 @@ public class DebugTracer extends Raytracer {
 	}
 	
 	private Vector shadeScalar(double depth) {
-		return new Vector(255).divBy(depth + 0.1);
+		return Vector.ONE.divBy(depth + 0.1);
 	}
 	
 	// --- shaders

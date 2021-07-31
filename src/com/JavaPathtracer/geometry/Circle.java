@@ -5,7 +5,11 @@ public class Circle extends Plane implements FiniteShape {
 	public double radius;
 
 	public Circle(Vector normal, Vector point, double radius) {
-		super(normal, point);
+		this(normal, point, radius, false);
+	}
+	
+	public Circle(Vector normal, Vector point, double radius, boolean oneSided) {
+		super(normal, point, oneSided);
 		this.radius = radius;
 	}
 

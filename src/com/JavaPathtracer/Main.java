@@ -11,8 +11,8 @@ import com.JavaPathtracer.renderer.LivePreview;
 import com.JavaPathtracer.renderer.RenderJob;
 import com.JavaPathtracer.renderer.Renderer;
 import com.JavaPathtracer.scene.Scene;
-import com.JavaPathtracer.testscenes.GeometryTest;
-import com.JavaPathtracer.tonemapping.LinearTonemapper;
+import com.JavaPathtracer.testscenes.Scene9;
+import com.JavaPathtracer.tonemapping.ACESTonemapper;
 
 public class Main {
 	
@@ -22,15 +22,15 @@ public class Main {
 	private static Texture output;
 	
 	private static void createRaytracer() {
-		//raytracer = new Pathtracer(5);
-		raytracer = new DebugTracer(Mode.NORMAL);
+		raytracer = new Pathtracer(5);
+		//raytracer = new DebugTracer(Mode.SIMPLE_SHADED);
 	}
 	
 	private static void render(boolean preview, String outputName) throws InterruptedException, IOException {
 		Stopwatch sw = new Stopwatch("Render");
 		RenderJob job = renderer.render(output);
 		if(preview) {
-			LivePreview previewObj = new LivePreview(job, 2);
+			LivePreview previewObj = new LivePreview(job, 1);
 			previewObj.start();
 		}
 		job.await();
@@ -54,21 +54,20 @@ public class Main {
 	}
 	
 	public static void main(String[] args) throws IOException, InterruptedException {
-
+		
 		// read args
-		String mode = "interactive";
+		String mode = "render-preview";
 		if(args.length > 0) mode = args[0];
 				
 		// set up output objects
-		output = new Texture(new BufferedImage(128, 128, BufferedImage.TYPE_INT_RGB));
+		output = new Texture(new BufferedImage(720, 720, BufferedImage.TYPE_INT_RGB));
 		
 		// set up renderer objects
 		createRaytracer();
-		scene = new GeometryTest();
-		renderer = new Renderer(scene, raytracer, 16, 1, new LinearTonemapper());
+		scene = new Scene9();
+		renderer = new Renderer(scene, raytracer, 16, 1024, new ACESTonemapper());
 		scene.update(0);
-		System.out.println(scene.getCamera());
-		
+
 		if(mode.equals("render")) {
 			render(false, "output.png");
 		} else if(mode.equals("render-preview")) {

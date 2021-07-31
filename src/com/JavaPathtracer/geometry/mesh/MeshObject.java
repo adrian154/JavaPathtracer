@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 import com.JavaPathtracer.Stopwatch;
 import com.JavaPathtracer.geometry.Hit;
-import com.JavaPathtracer.geometry.Matrix;
+import com.JavaPathtracer.geometry.Matrix4x4;
 import com.JavaPathtracer.geometry.MeshHit;
 import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Vector;
@@ -27,14 +27,14 @@ public class MeshObject implements WorldObject {
 	protected int[] faceMaterials;
 	
 	public MeshObject(String string, Map<String, Material> materials) throws IOException {
-		this(new File(string), new Matrix(), new Matrix(), materials);
+		this(new File(string), new Matrix4x4(), new Matrix4x4(), materials);
 	}
 	
-	public MeshObject(File file, Matrix matrix, Map<String, Material> materials) throws IOException {
+	public MeshObject(File file, Matrix4x4 matrix, Map<String, Material> materials) throws IOException {
 		this(file, matrix, matrix, materials);
 	}
 	
-	public MeshObject(File file, Matrix matrix, Matrix normTransform, Map<String, Material> materials) throws IOException {
+	public MeshObject(File file, Matrix4x4 matrix, Matrix4x4 normTransform, Map<String, Material> materials) throws IOException {
 
 		// set locals
 		this.materials = materials.values().stream().collect(Collectors.toList());
@@ -86,23 +86,19 @@ public class MeshObject implements WorldObject {
 
 				if (parts.length != 4) {
 					reader.close();
-					throw new RuntimeException("File \"" + file.getName() + "\", line " + lineNum
-							+ ": wrong number of components for vertex (expected 3)");
+					throw new RuntimeException("File \"" + file.getName() + "\", line " + lineNum + ": wrong number of components for vertex (expected 3)");
 				}
 
-				vertexes.add(matrix.transform(new Vector(Double.parseDouble(parts[1]), Double.parseDouble(parts[2]),
-						Double.parseDouble(parts[3]))));
+				vertexes.add(matrix.transform(new Vector(Double.parseDouble(parts[1]), Double.parseDouble(parts[2]), Double.parseDouble(parts[3]))));
 
 			} else if(parts[0].equals("vn")) {
 				
 				if (parts.length != 4) {
 					reader.close();
-					throw new RuntimeException("File \"" + file.getName() + "\", line " + lineNum
-							+ ": wrong number of components for vertex normal (expected 3)");
+					throw new RuntimeException("File \"" + file.getName() + "\", line " + lineNum + ": wrong number of components for vertex normal (expected 3)");
 				}
 
-				vertexNormals.add(normTransform.transform(new Vector(Double.parseDouble(parts[1]), Double.parseDouble(parts[2]),
-						Double.parseDouble(parts[3]))));
+				vertexNormals.add(normTransform.transform(new Vector(Double.parseDouble(parts[1]), Double.parseDouble(parts[2]), Double.parseDouble(parts[3]))));
 				
 			} else if (parts[0].equals("f")) {
 

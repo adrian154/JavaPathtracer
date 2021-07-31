@@ -6,12 +6,19 @@ public class Square extends Plane implements FiniteShape {
 	private double size;
 	
 	public Square(Vector normal, Vector point, double size) {
-		super(normal, point);
-		this.size = size;
+		this(normal, point, size, false);
 	}
 
+	public Square(Vector normal, Vector point, double size, boolean oneSided) {
+		this(normal, point, size, 1.0, oneSided);
+	}
+	
 	public Square(Vector normal, Vector point, double size, double tilingSize) {
-		super(normal, point, tilingSize);
+		this(normal, point, size, tilingSize, false);
+	}
+	
+	public Square(Vector normal, Vector point, double size, double tilingSize, boolean oneSided) {
+		super(normal, point, tilingSize, oneSided);
 		this.size = size;
 	}
 	
