@@ -16,26 +16,18 @@ I wanted to learn about photorealistic rendering without having to grapple with 
 **Recent Tests**
 
 ![spotlights](images/spotlights.png)
-
 ![materials demo 4](images/materials4.png)
-
 ![materials demo 2](images/materials2.png)
-
 ![materials demo 3](images/materials3.png)
-
 ![reprise](images/scene_reprised.png)
-
 ![earth](images/earth.png)
-
 ![statue](images/statue.png)
-
 ![lowpoly](images/lpworld.png)
 
 **Older Renders**
 
 ![diamond floor](images/dirtydiamond.png)
 ![materials demo](images/materials.png)
-![scene](images/scene.png)
 
 ## Dark Past
 
