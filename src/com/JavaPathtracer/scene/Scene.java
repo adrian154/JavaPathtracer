@@ -32,8 +32,12 @@ public class Scene {
 		sky = new SimpleSky(Vector.ZERO);
 		sun = null;
 		
-		this.camera = new PerspectiveCamera();
+		this.camera = this.createCamera();
 		
+	}
+	
+	public Camera createCamera() {
+		return new PerspectiveCamera();
 	}
 
 	public void setCamera(Camera camera) {
