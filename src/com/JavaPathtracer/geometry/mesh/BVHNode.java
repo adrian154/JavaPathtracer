@@ -11,7 +11,7 @@ import com.JavaPathtracer.geometry.Vector;
 
 public class BVHNode extends BoundingBox implements Shape {
 
-	public MeshGeometryContainer mesh;
+	public Mesh mesh;
 	public BVHNode left;
 	public BVHNode right;
 	public int[] primIndexes;
@@ -31,7 +31,7 @@ public class BVHNode extends BoundingBox implements Shape {
 		return Math.max(a, Math.max(b, c));
 	}
 
-	public BVHNode(MeshGeometryContainer mesh) {
+	public BVHNode(Mesh mesh) {
 
 		// Appease the compiler...
 		super(null, null);
@@ -57,7 +57,7 @@ public class BVHNode extends BoundingBox implements Shape {
 
 	}
 
-	public BVHNode(MeshGeometryContainer mesh, BoundingBox box, List<PrimAssociatedBBox> boxes) {
+	public BVHNode(Mesh mesh, BoundingBox box, List<PrimAssociatedBBox> boxes) {
 		super(box.min, box.max);
 		this.mesh = mesh;
 		this.children = boxes;

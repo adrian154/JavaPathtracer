@@ -11,7 +11,7 @@ import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Sphere;
 import com.JavaPathtracer.geometry.Vector;
 
-public class MeshGeometryContainer implements FiniteShape {
+public class Mesh implements FiniteShape {
 
 	public int[] faces;
 	public int[] faceNormIndices;
@@ -22,7 +22,7 @@ public class MeshGeometryContainer implements FiniteShape {
 	
 	protected BVHNode BVHRoot;
 	
-	public MeshGeometryContainer(
+	public Mesh(
 		List<Vector> vertexes,
 		List<Vector> vertexNormals,
 		List<Vector> textureCoordinates,

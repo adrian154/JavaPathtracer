@@ -6,8 +6,11 @@ import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.material.BRDFMaterial;
 import com.JavaPathtracer.scene.Scene;
 
-public class DebugTracer extends Raytracer {
+public class RayTracer {
 
+	public static final double EPSILON = 0.00001;
+	protected int raysTraced;
+	
 	public enum Mode {
 		ALBEDO,
 		SIMPLE_SHADED,
@@ -21,8 +24,9 @@ public class DebugTracer extends Raytracer {
 	
 	private Mode mode;
 
-	public DebugTracer(Mode mode) {
+	public RayTracer(Mode mode) {
 		this.mode = mode;
+		this.raysTraced = 0;
 	}
 	
 	private Vector shadeVector(Vector hit) {
@@ -73,10 +77,9 @@ public class DebugTracer extends Raytracer {
 		return hit != null ? Vector.ONE : Vector.ZERO;
 	}
 	
-	@Override
 	public Vector traceRay(Scene scene, Ray ray) {
 		
-		super.traceRay(scene, ray);
+		this.raysTraced++;
 
 		Hit hit = scene.traceRay(ray);
 		if (hit != null) {
@@ -91,7 +94,7 @@ public class DebugTracer extends Raytracer {
 				case UV: default: return shadeUV(hit, ray);
 			}
 		} else {
-			return scene.getSkyEmission(ray.direction, true);
+			return Vector.ZERO;
 		}
 
 	}
