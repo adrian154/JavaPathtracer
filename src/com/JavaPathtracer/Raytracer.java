@@ -6,7 +6,7 @@ import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.material.BRDFMaterial;
 import com.JavaPathtracer.scene.Scene;
 
-public class RayTracer {
+public class Raytracer {
 
 	public static final double EPSILON = 0.00001;
 	protected int raysTraced;
@@ -24,7 +24,7 @@ public class RayTracer {
 	
 	private Mode mode;
 
-	public RayTracer(Mode mode) {
+	public Raytracer(Mode mode) {
 		this.mode = mode;
 		this.raysTraced = 0;
 	}
