@@ -2,9 +2,31 @@ package com.JavaPathtracer.scene;
 
 import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.Ray;
+import com.JavaPathtracer.geometry.Shape;
+import com.JavaPathtracer.material.Material;
 
-// Q: How is this different from Shape?
-// A: The Hit's returned from this thing should have material data
-public interface WorldObject {
-	public Hit traceRay(Ray ray);
+public class WorldObject {
+
+	protected Shape shape;
+	protected Material material;
+
+	public WorldObject(Shape shape, Material material) {
+		this.shape = shape;
+		this.material = material;
+	}
+
+	public Shape getShape() {
+		return shape;
+	}
+
+	public Material getMaterial() {
+		return material;
+	}
+
+	public Hit traceRay(Ray ray) {
+		Hit hit = shape.intersect(ray);
+		if(hit != null) hit.material = material;
+		return hit;
+	}
+
 }

@@ -43,8 +43,6 @@ public class LivePreviewPanel extends JPanel {
 		// draw debug text
 		int y = 0;
 		Renderer renderer = job.getRenderer();
-		g.drawString("Raytracer: " + renderer.getRaytracer().toString(), 2, y += 16);
-		g.drawString("Tonemapper: " + renderer.getTonemapper().toString(), 2, y += 16);
 		g.drawString(renderer.getSamples() + " sample(s)", 2, y += 16);
 		if(!reducedDebug) {
 			g.drawString(renderer.getRaytracer().getRays() + " rays traced", 2, y += 16);
