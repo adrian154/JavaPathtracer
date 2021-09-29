@@ -42,12 +42,7 @@ public class Sphere implements FiniteShape {
 			normal.invert();
 		}
 		
-		// Do texture mapping
-		Vector invDir = new Vector(0.0, 0.0, 0.0).minus(normal);
-		double u = 0.5 + Math.atan2(invDir.z, invDir.x) / (2 * Math.PI);
-		double v = 0.5 - Math.asin(invDir.y) / Math.PI;
-
-		return new Hit(ray, point, normal, t, new Vector(u, v, 0.0));
+		return new Hit(ray, point, normal, t);
 	
 	}
 

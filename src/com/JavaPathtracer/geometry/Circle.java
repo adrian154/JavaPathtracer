@@ -3,13 +3,9 @@ package com.JavaPathtracer.geometry;
 public class Circle extends Plane implements FiniteShape {
 
 	public double radius;
-
-	public Circle(Vector normal, Vector point, double radius) {
-		this(normal, point, radius, false);
-	}
 	
-	public Circle(Vector normal, Vector point, double radius, boolean oneSided) {
-		super(normal, point, oneSided);
+	public Circle(Vector normal, Vector point, double radius) {
+		super(normal, point);
 		this.radius = radius;
 	}
 

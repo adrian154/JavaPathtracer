@@ -114,7 +114,7 @@ public class BoundingBox implements FiniteShape {
 			normal = new Vector(0.0, 0.0, Math.signum(deltaZ));
 		}
 
-		return new Hit(ray, point, normal, t, new Vector(0.0, 0.0, 0.0));
+		return new Hit(ray, point, normal, t);
 
 	}
 	

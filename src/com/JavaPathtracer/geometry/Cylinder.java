@@ -86,7 +86,7 @@ public class Cylinder implements Shape {
 		}
 		
 		// TODO: texture mapping for cylinder
-		return new Hit(ray, point, normal, t, new Vector(0.5, 0.5, 0.0));
+		return new Hit(ray, point, normal, t);
 		
 	}
 	
