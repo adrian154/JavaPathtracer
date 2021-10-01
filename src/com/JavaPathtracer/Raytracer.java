@@ -9,7 +9,7 @@ import com.JavaPathtracer.scene.Scene;
 public class Raytracer {
 
 	public static final double EPSILON = 0.00001;
-	protected int raysTraced;
+	public int raysTraced;
 	
 	public enum Mode {
 		ALBEDO,
@@ -24,6 +24,10 @@ public class Raytracer {
 	
 	private Mode mode;
 
+	public Raytracer() {
+		this(Mode.SIMPLE_SHADED);
+	}
+	
 	public Raytracer(Mode mode) {
 		this.mode = mode;
 		this.raysTraced = 0;

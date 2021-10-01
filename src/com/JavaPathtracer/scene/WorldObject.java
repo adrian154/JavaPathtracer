@@ -25,7 +25,7 @@ public class WorldObject {
 
 	public Hit traceRay(Ray ray) {
 		Hit hit = shape.intersect(ray);
-		if(hit != null) hit.material = material;
+		// TODO
 		return hit;
 	}
 

@@ -45,8 +45,8 @@ public class LivePreviewPanel extends JPanel {
 		Renderer renderer = job.getRenderer();
 		g.drawString(renderer.getSamples() + " sample(s)", 2, y += 16);
 		if(!reducedDebug) {
-			g.drawString(renderer.getRaytracer().getRays() + " rays traced", 2, y += 16);
-			g.drawString(String.format("%.2f Mrays/second", (float)renderer.getRaytracer().getRays() / 1000 / (System.currentTimeMillis() - startTime)), 2, y += 16);
+			g.drawString(renderer.getRaytracer().raysTraced + " rays traced", 2, y += 16);
+			g.drawString(String.format("%.2f Mrays/second", (float)renderer.getRaytracer().raysTraced / 1000 / (System.currentTimeMillis() - startTime)), 2, y += 16);
 			g.drawString(String.format("%d/%d tiles (%d threads)", job.getCompletedTiles(), job.getInitTiles(), renderer.getThreads()), 2, y += 16);
 		}
 		

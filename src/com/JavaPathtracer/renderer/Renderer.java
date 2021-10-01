@@ -10,32 +10,24 @@ import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.material.Texture;
 import com.JavaPathtracer.scene.Scene;
-import com.JavaPathtracer.tonemapping.IToneMapper;
-import com.JavaPathtracer.tonemapping.LinearTonemapper;
 
 public class Renderer {
 
 	// "scene, camera, raytracer" doesn't quite roll off the tongue...
 	protected Scene scene;
 	protected Raytracer raytracer;
-	protected IToneMapper toneMapper;
 	protected int tiles, threads, samples;
 	
-	public Renderer(Scene scene, Raytracer raytracer, IToneMapper mapper, int tiles, int threads, int samples) {
+	public Renderer(Scene scene, Raytracer raytracer, int tiles, int threads, int samples) {
 		this.scene = scene;
 		this.raytracer = raytracer;
-		this.toneMapper = mapper;
 		this.tiles = tiles;
 		this.threads = threads;
 		this.samples = samples;
 	}
 	
-	public Renderer(Scene scene, Raytracer raytracer, int tiles, int samples) {
-		this(scene, raytracer, new LinearTonemapper(), tiles, Runtime.getRuntime().availableProcessors(), samples);
-	}
-	
-	public Renderer(Scene scene,  Raytracer raytracer, int tiles, int samples, IToneMapper tonemapper) {
-		this(scene, raytracer, tonemapper, tiles, Runtime.getRuntime().availableProcessors(), samples);
+	public Renderer(Scene scene,  Raytracer raytracer, int samples) {
+		this(scene, raytracer, 16, Runtime.getRuntime().availableProcessors(), samples);
 	}
 	
 	public Raytracer getRaytracer() {
@@ -48,10 +40,6 @@ public class Renderer {
 	
 	public int getSamples() {
 		return this.samples;
-	}
-	
-	public IToneMapper getTonemapper() {
-		return this.toneMapper;
 	}
 	
 	public Scene getScene() {
@@ -124,7 +112,7 @@ public class Renderer {
 						result.iadd(raytracer.traceRay(scene, ray));
 					}
 					
-					output.set(x, output.getHeight() - y - 1, toneMapper.map(result.idiv(samples)));
+					output.set(x, output.getHeight() - y - 1, result.idiv(samples));
 					
 				}
 			}

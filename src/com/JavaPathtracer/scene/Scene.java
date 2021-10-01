@@ -31,6 +31,10 @@ public class Scene {
 	public void setCamera(Camera camera) {
 		this.camera = camera;
 	}
+	
+	public Camera getCamera() {
+		return this.camera;
+	}
 
 	public void add(WorldObject object) {
 		objects.add(object);

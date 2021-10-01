@@ -128,7 +128,6 @@ public class InteractivePreview {
 			// draw debug text
 			int y = 0;
 			g.drawString("Raytracer: " + renderer.getRaytracer().toString(), 2, y += 16);
-			g.drawString("Tonemapper: " + renderer.getTonemapper().toString(), 2, y += 16);
 			g.drawString(renderer.getSamples() + " sample(s)", 2, y += 16);
 			g.drawString("Position: " + camera.getPos(), 2, y += 16);
 			g.drawString("Looking direction: " + camera.getLook(), 2, y += 16);
@@ -176,8 +175,6 @@ public class InteractivePreview {
 				System.out.printf("Hit point: %s\n", hit.point);
 				System.out.printf("Hit distance: %.02f\n", hit.distance);
 				System.out.printf("Normal: %s\n", hit.normal);
-				System.out.printf("Texture coordinates: (%.02f, %.02f)\n", hit.textureCoordinates.x, hit.textureCoordinates.y);
-				System.out.printf("Material: %s\n", hit.material.toString());
 				System.out.printf("");
 			}
 			

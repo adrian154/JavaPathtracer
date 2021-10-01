@@ -20,11 +20,6 @@ public class Main {
 	private static Renderer renderer;
 	private static Texture output;
 	
-	private static void createRaytracer() {
-		raytracer = new Pathtracer(5);
-		//raytracer = new DebugTracer(Mode.SIMPLE_SHADED);
-	}
-	
 	private static void render(boolean preview, String outputName) throws InterruptedException, IOException {
 		Stopwatch sw = new Stopwatch("Render");
 		RenderJob job = renderer.render(output);
@@ -62,9 +57,9 @@ public class Main {
 		output = new Texture(new BufferedImage(256, 256, BufferedImage.TYPE_INT_RGB));
 		
 		// set up renderer objects
-		createRaytracer();
+		Raytracer raytracer = new Raytracer();
 		scene = new TestScene();
-		renderer = new Renderer(scene, raytracer, 16, 256, new ACESTonemapper());
+		renderer = new Renderer(scene, raytracer, 256);
 		scene.update(0);
 
 		if(mode.equals("render")) {
