@@ -32,7 +32,7 @@ public class Plane implements Shape {
 	 * Ray-plane intersection.
 	 */
 	@Override
-	public Hit intersect(Ray ray) {
+	public Hit raytrace(Ray ray) {
 
 		// reject rays that are wonky (wrong side!))
 		if(oneSided && ray.direction.dot(this.normal) > 0) return null;

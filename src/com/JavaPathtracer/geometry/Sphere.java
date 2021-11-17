@@ -13,7 +13,7 @@ public class Sphere implements FiniteShape {
 	}
 	
 	@Override
-	public Hit intersect(Ray ray) {
+	public Hit raytrace(Ray ray) {
 
 		Vector center = this.center.minus(ray.origin);
 

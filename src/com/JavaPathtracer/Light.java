@@ -22,8 +22,8 @@ public class Light extends SimpleObject implements FiniteShape {
 	}
 
 	@Override
-	public Hit intersect(Ray ray) {
-		Hit hit = shape.intersect(ray);
+	public Hit raytrace(Ray ray) {
+		Hit hit = shape.raytrace(ray);
 		if(hit != null) hit.material = material;
 		return hit;
 	}

@@ -184,7 +184,7 @@ public class BVHNode extends BoundingBox implements Shape {
 	}
 
 	@Override
-	public Hit intersect(Ray ray) {
+	public Hit raytrace(Ray ray) {
 
 		// intersect self, first
 		if (!super.intersectFast(ray))
@@ -203,8 +203,8 @@ public class BVHNode extends BoundingBox implements Shape {
 		} else {
 
 			Hit hl, hr;
-			hl = this.left.intersect(ray);
-			hr = this.right.intersect(ray);
+			hl = this.left.raytrace(ray);
+			hr = this.right.raytrace(ray);
 			if(hl == null) return hr;
 			if(hr == null) return hl;
 			return hl.distance < hr.distance ? hl : hr;

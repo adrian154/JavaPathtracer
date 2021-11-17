@@ -23,9 +23,9 @@ public class Square extends Plane implements FiniteShape {
 	}
 	
 	@Override
-	public Hit intersect(Ray ray) {
+	public Hit raytrace(Ray ray) {
 
-		Hit hit = super.intersect(ray);
+		Hit hit = super.raytrace(ray);
 		if (hit != null && Math.abs(hit.point.x - point.x) < size && Math.abs(hit.point.z - point.z) < size) {
 			return hit;
 		}

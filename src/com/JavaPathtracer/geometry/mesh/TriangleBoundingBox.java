@@ -11,18 +11,19 @@ public class TriangleBoundingBox extends BoundingBox {
 	public static double minOf3(double a, double b, double c) { return Math.min(a, Math.min(b, c)); }
 	public static double maxOf3(double a, double b, double c) { return Math.max(a, Math.max(b, c)); }
 	
-	private TriangleBoundingBox(Vector min, Vector max, int face) {
+	public TriangleBoundingBox(Vector min, Vector max, int face) {
 		super(min, max);
 		this.face = face;
 	}
 	
-	public TriangleBoundingBox(Mesh mesh, int face) {
+	// use a static method because Java doesn't support *any* computation before super()
+	public static TriangleBoundingBox create(Mesh mesh, int face) {
 		
-		Vector v0 = mesh.vertexes[mesh.faces[faceIndex * 3]];
-		Vector v1 = mesh.vertexes[mesh.faces[faceIndex * 3 + 1]];
-		Vector v2 = mesh.vertexes[mesh.faces[faceIndex * 3 + 2]];
+		Vector v0 = mesh.vertexes[mesh.faces[face * 3]];
+		Vector v1 = mesh.vertexes[mesh.faces[face * 3 + 1]];
+		Vector v2 = mesh.vertexes[mesh.faces[face * 3 + 2]];
 		
-		this(
+		return new TriangleBoundingBox(
 			new Vector(
 				minOf3(v0.x, v1.x, v2.x),
 				minOf3(v0.y, v1.y, v2.y),

@@ -163,7 +163,7 @@ public class MeshObject implements WorldObject {
 	@Override
 	public Hit traceRay(Ray ray) {
 		
-		Hit hit = geometry.intersect(ray);
+		Hit hit = geometry.raytrace(ray);
 		
 		if(hit != null) {
 			MeshHit meshHit = (MeshHit)hit;

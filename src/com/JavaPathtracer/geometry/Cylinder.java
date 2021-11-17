@@ -34,7 +34,7 @@ public class Cylinder implements Shape {
 	}
 	
 	@Override
-	public Hit intersect(Ray ray) {
+	public Hit raytrace(Ray ray) {
 		
 		// life is only hard if you make it hard
 

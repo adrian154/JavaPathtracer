@@ -12,9 +12,9 @@ public class TestSquare extends Square {
 	}
 	
 	@Override
-	public Hit intersect(Ray ray) {
+	public Hit raytrace(Ray ray) {
 		
-		Hit hit = super.intersect(ray);
+		Hit hit = super.raytrace(ray);
 		if(hit != null) {
 			Vector color = normalMap.sample(hit.textureCoordinates.x, hit.textureCoordinates.y);
 			hit.normal = new Vector((color.x - 0.5) * 2, (color.z - 0.5) * 2, (color.y - 0.5) * 2);

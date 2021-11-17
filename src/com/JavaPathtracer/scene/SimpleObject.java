@@ -26,7 +26,7 @@ public class SimpleObject implements WorldObject {
 	// do geometry+material raytrace
 	@Override
 	public Hit traceRay(Ray ray) {
-		Hit hit = shape.intersect(ray);
+		Hit hit = shape.raytrace(ray);
 		if(hit != null)
 			hit.material = material;
 		return hit;

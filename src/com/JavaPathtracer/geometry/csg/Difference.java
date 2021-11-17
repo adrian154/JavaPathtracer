@@ -11,14 +11,14 @@ public class Difference extends BooleanOperation {
 	}
 
 	@Override
-	public Hit intersect(Ray ray) {
+	public Hit raytrace(Ray ray) {
 
 		boolean inA = false, inB = false;
 
 		while (true) {
 
-			Hit h1 = A.intersect(ray);
-			Hit h2 = B.intersect(ray);
+			Hit h1 = A.raytrace(ray);
+			Hit h2 = B.raytrace(ray);
 
 			if (h1 != null && h1.distance < h2.distance) {
 				inA = !inA;

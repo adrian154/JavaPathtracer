@@ -14,9 +14,9 @@ public class Circle extends Plane implements FiniteShape {
 	}
 
 	@Override
-	public Hit intersect(Ray ray) {
+	public Hit raytrace(Ray ray) {
 
-		Hit hit = super.intersect(ray);
+		Hit hit = super.raytrace(ray);
 		if (hit != null && hit.point.minus(this.point).lengthSquared() < this.radius * this.radius) {
 			return hit;
 		} else {

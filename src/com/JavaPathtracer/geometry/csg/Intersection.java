@@ -11,10 +11,10 @@ public class Intersection extends BooleanOperation {
 	}
 
 	@Override
-	public Hit intersect(Ray ray) {
+	public Hit raytrace(Ray ray) {
 
-		Hit h1 = A.intersect(ray);
-		Hit h2 = B.intersect(ray);
+		Hit h1 = A.raytrace(ray);
+		Hit h2 = B.raytrace(ray);
 
 		if (h1 != null && h2 != null)
 			return h2.distance > h1.distance ? h2 : h1;

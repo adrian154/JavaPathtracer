@@ -12,9 +12,9 @@ public class Can implements FiniteShape {
 	}
 
 	@Override
-	public Hit intersect(Ray ray) {
-		if(can.intersect(ray) != null) return null;
-		return circle.intersect(ray);
+	public Hit raytrace(Ray ray) {
+		if(can.raytrace(ray) != null) return null;
+		return circle.raytrace(ray);
 	}
 
 	public Sphere getBoundingSphere() {
