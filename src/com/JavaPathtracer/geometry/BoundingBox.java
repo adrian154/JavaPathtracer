@@ -19,6 +19,10 @@ public class BoundingBox {
 		this(box.min, box.max);
 	}
 
+	public BoundingBox(List<? extends BoundingBox> boxes) {
+		
+	}
+	
 	public static final Vector min(Vector A, Vector B) {
 		return new Vector(
 			Math.min(A.x, B.x),

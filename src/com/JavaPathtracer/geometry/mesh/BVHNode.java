@@ -27,7 +27,7 @@ public class BVHNode extends BoundingBox implements Shape {
 	public int[] triangleIndexes;
 
 	// list of children, used during BVH construction (should be null afterwards)
-	public List<TriangleBoundingBox> children;
+	public List<TriangleBoundingBox> primitives;
 	
 	private static final double minOf3(double a, double b, double c) {
 		return Math.min(a, Math.min(b, c));
@@ -37,7 +37,7 @@ public class BVHNode extends BoundingBox implements Shape {
 		return Math.max(a, Math.max(b, c));
 	}
 
-	public BVHNode(Mesh mesh) {
+	/* public BVHNode(Mesh mesh) {
 
 		// Appease the compiler...
 		super(null, null);
@@ -61,10 +61,10 @@ public class BVHNode extends BoundingBox implements Shape {
 		// Ready to build, finally!
 		split(0);
 
-	}
+	} */
 
-	public BVHNode(Mesh mesh, BoundingBox box, List<TriangleBoundingBox> boxes) {
-		super(box.min, box.max);
+	public BVHNode(Mesh mesh, List<TriangleBoundingBox> primitives) {
+		super(primitives);
 		this.mesh = mesh;
 		this.children = boxes;
 	}
