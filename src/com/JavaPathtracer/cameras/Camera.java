@@ -41,6 +41,10 @@ public abstract class Camera {
 		this.up = getUp(direction);
 	}
 	
+	public void lookAtPoint(Vector point) {
+		this.lookAt(point.minus(position).normalize());
+	}
+	
 	public Vector getLook() {
 		return this.lookingAt;
 	}

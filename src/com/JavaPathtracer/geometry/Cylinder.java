@@ -18,7 +18,11 @@ public class Cylinder implements Shape {
 		this.setDirection(direction);
 	}
 	
-	private void setDirection(Vector direction) {
+	public void setPosition(Vector vector) {
+		this.setDirection(vector);
+	}
+	
+	public void setDirection(Vector direction) {
 		this.bvy = direction;
 		this.bvx = this.bvy.getOrthagonal();
 		this.bvz = bvx.cross(bvy);

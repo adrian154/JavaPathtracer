@@ -4,15 +4,14 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-import com.JavaPathtracer.DebugTracer.Mode;
 import com.JavaPathtracer.material.Texture;
 import com.JavaPathtracer.renderer.InteractivePreview;
 import com.JavaPathtracer.renderer.LivePreview;
 import com.JavaPathtracer.renderer.RenderJob;
 import com.JavaPathtracer.renderer.Renderer;
 import com.JavaPathtracer.scene.Scene;
-import com.JavaPathtracer.testscenes.Scene9;
-import com.JavaPathtracer.tonemapping.ACESTonemapper;
+import com.JavaPathtracer.testscenes.Scene6;
+import com.JavaPathtracer.tonemapping.LinearTonemapper;
 
 public class Main {
 	
@@ -64,15 +63,15 @@ public class Main {
 		
 		// set up renderer objects
 		createRaytracer();
-		scene = new Scene9();
-		renderer = new Renderer(scene, raytracer, 16, 1024, new ACESTonemapper());
+		scene = new Scene6();
+		renderer = new Renderer(scene, raytracer, 16, 256, new LinearTonemapper());
 		scene.update(0);
 
 		if(mode.equals("render")) {
 			render(false, "output.png");
 		} else if(mode.equals("render-preview")) {
 			render(true, "output.png");
-		} else if(mode.equals("test-animate")) {
+		} else if(mode.equals("animate")) {
 			animate();
 		} else if(mode.equals("interactive")) {
 			interactive();

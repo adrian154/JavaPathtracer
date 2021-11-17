@@ -40,7 +40,7 @@ public class HDRMap implements Sampleable, Saveable {
 		float g = image.getPixelValue(x, y, 1);
 		float b = image.getPixelValue(x, y, 2);
 
-		return new Vector(r, g, b);
+		return new Vector(r*1.5, g*1.5, b*1.5);
 
 	}
 	

@@ -7,6 +7,10 @@ public class PerspectiveCamera extends Camera {
 
 	private double focalLength;
 	
+	public PerspectiveCamera() {
+		this.setFOV(20);
+	}
+	
 	public void setFOV(double FOV) {
 		this.focalLength = 0.5 / Math.tan(FOV * Math.PI / 360);
 	}
@@ -20,7 +24,7 @@ public class PerspectiveCamera extends Camera {
 		Vector direction = new Vector(imagePlaneX, imagePlaneY, focalLength);
 		Vector basis = up.cross(lookingAt);
 		direction = Vector.localToWorldCoords(direction, basis, up, lookingAt);
-		Ray result = new Ray(this.position, direction.normalized());
+		Ray result = new Ray(this.position, direction.normalize());
 		return result;
 	}
 	

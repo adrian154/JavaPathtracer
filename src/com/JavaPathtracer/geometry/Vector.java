@@ -5,11 +5,14 @@ import java.util.concurrent.ThreadLocalRandom;
 import com.JavaPathtracer.material.Sampleable;
 
 // 3D vector class
-// Implements Sampleable so you can use Vectors as colors, kind of janky but oh well
+// All methods are immutable. After much thinking I have decided that mutable methods...
+// * tend to pollute the code with poorly-mixing syntaxes
+// * probably don't actually increase performance because the garbage collector is smart enough to eliminate unnecessary allocations
+
 public class Vector implements Sampleable {
 
 	// Components
-	public double x, y, z;
+	public final double x, y, z;
 
 	public static final Vector ZERO = new Vector(0.0, 0.0, 0.0);
 	public static final Vector ONE = new Vector(1.0, 1.0, 1.0);
@@ -17,16 +20,22 @@ public class Vector implements Sampleable {
 	public static final Vector Y = new Vector(0.0, 1.0, 0.0);
 	public static final Vector Z = new Vector(0.0, 0.0, 1.0);
 	
-	public Vector() {
-		this(0);
-	}
+	// rgb components since we also store colors as vectors
+	public static final Vector R = X;
+	public static final Vector G = Y;
+	public static final Vector B = Z;
 	
+	// rgb values are normalized to [0..1]
 	public Vector(int rgb) {
 		this(
 			((rgb & 0xFF0000) >> 16) / 255.0,
 			((rgb & 0x00FF00) >> 8) / 255.0,
 			(rgb & 0xFF) / 255.0
 		);
+	}
+	
+	public Vector() {
+		this(0);
 	}
 	
 	public Vector(double val) {
@@ -41,21 +50,20 @@ public class Vector implements Sampleable {
 		this.z = z;
 	}
 
-	// This could be useful, I guess
+	// allows iteration over components
 	public double get(int component) {
-		return component == 0 ? x : (component == 1 ? y : z);
-	}
-
-	// MUTABLE INVERT
-	// In case, you know...
-	public void invert() {
-		this.x = -this.x;
-		this.y = -this.y;
-		this.z = -this.z;
+		return component == 0 ? x :
+			   component == 1 ? y :
+			                    z;
 	}
 	
-	public Vector reversed() {
+	public Vector reverse() {
 		return this.times(-1);
+	}
+	
+	// reverse vectors not facing the input
+	public Vector facing(Vector vec) {
+		return this.dot(vec) > 0 ? this.reverse() : this;
 	}
 
 	public Vector plus(Vector other) {
@@ -65,113 +73,70 @@ public class Vector implements Sampleable {
 	public Vector plus(double scalar) {
 		return new Vector(this.x + scalar, this.y + scalar, this.z + scalar);
 	}
-	
-	public Vector iadd(Vector other) {
-		this.x += other.x;
-		this.y += other.y;
-		this.z += other.z;
-		return this;
-	}
 
 	public Vector minus(Vector other) {
 		return new Vector(this.x - other.x, this.y - other.y, this.z - other.z);
 	}
 
-	public Vector isub(Vector other) {
-		this.x -= other.x;
-		this.y -= other.y;
-		this.z -= other.z;
-		return this;
-	}
-
-	// Direct multiplication, should only be used on colors
+	// directly multiply the components of the vector, used to do things like applying albedo to incoming light
+	// the fancy term is a "Hadamard product"
 	public Vector times(Vector other) {
 		return new Vector(this.x * other.x, this.y * other.y, this.z * other.z);
 	}
 
-	public Vector imul(Vector other) {
-		this.x *= other.x;
-		this.y *= other.y;
-		this.z *= other.z;
-		return this;
-	}
-
-	// Scalar multiplication
+	// scalar multiplication
 	public Vector times(double scalar) {
 		return new Vector(this.x * scalar, this.y * scalar, this.z * scalar);
 	}
 
-	public Vector imul(double scalar) {
-		this.x *= scalar;
-		this.y *= scalar;
-		this.z *= scalar;
-		return this;
-	}
-
-	// Scalar division
+	// scalar division
 	public Vector divBy(double scalar) {
 		return new Vector(this.x / scalar, this.y / scalar, this.z / scalar);
 	}
 
-	public Vector idiv(double scalar) {
-		this.x /= scalar;
-		this.y /= scalar;
-		this.z /= scalar;
-		return this;
-	}
-
-	// Faster than length()
+	// avoid an expensive sqrt() call when unnecessary
 	public double lengthSquared() {
 		return this.x * this.x + this.y * this.y + this.z * this.z;
 	}
 
-	// Returns exact length
+	// euclidena length
 	public double length() {
 		return Math.sqrt(this.lengthSquared());
 	}
 
-	// Normalize vector
-	public Vector normalized() {
+	// normalize vector
+	public Vector normalize() {
 		return this.times(1 / this.length());
 	}
 
-	public Vector normalize() {
-		double length = this.length();
-		this.x /= length;
-		this.y /= length;
-		this.z /= length;
-		return this;
-	}
-
-	// Cross product
+	// cross product
 	public Vector cross(Vector other) {
-		return new Vector(this.y * other.z - this.z * other.y, this.z * other.x - this.x * other.z,
-				this.x * other.y - this.y * other.x);
+		return new Vector(
+			this.y * other.z - this.z * other.y,
+			this.z * other.x - this.x * other.z,
+			this.x * other.y - this.y * other.x
+		);
 	}
 
-	// Dot product
+	// dot product
 	public double dot(Vector other) {
 		return this.x * other.x + this.y * other.y + this.z * other.z;
 	}
 
-	// Get orthagonal vector
+	// get an arbitrary orthagonal vector
+	// this is done by simply finding the cross product with another suitable vector
 	public Vector getOrthagonal() {
-		Vector other;
-		if (this.y != 0 || this.z != 0) {
-			other = new Vector(1, 0, 0);
-		} else {
-			other = new Vector(0, 1, 0);
-		}
-		return this.cross(other);
+		Vector other = (this.y != 0 || this.z != 0) ? new Vector(1, 0, 0) : new Vector(0, 1, 0);
+		return this.cross(other).normalize();
 	}
 
-	// Convert to string for debugging
+	// convert to string for debugging
 	@Override
 	public String toString() {
 		return String.format("(%.02f, %.02f, %.02f)", x, y, z);
 	}
 
-	// Convert spherical coordinates to vector
+	// convert spherical coordinates to vector
 	public static Vector fromSpherical(double azimuth, double inclination) {
 		double sinInc = Math.sin(inclination);
 		return new Vector(
@@ -185,20 +150,13 @@ public class Vector implements Sampleable {
 		return Vector.fromSpherical(in.x, in.y);
 	}
 
-	// this is kind of scuffed...
+	// this method is really slow (inverse trig is even slower than regular trig)
+	// avoid unless necessary!
 	public Vector toSpherical() {
 		return new Vector(
 			Math.atan2(this.z, this.x),
 			Math.acos(this.y / Math.sqrt(this.x * this.x + this.z * this.z)),
 			0.0
-		);
-	}
-
-	// Generate uniformly distributed vector in unit sphere
-	public static Vector uniformInSphere() {
-		return Vector.fromSpherical(
-			ThreadLocalRandom.current().nextDouble() * 2 * Math.PI,
-			Math.acos(1 - 2 * ThreadLocalRandom.current().nextDouble())
 		);
 	}
 	
@@ -210,33 +168,32 @@ public class Vector implements Sampleable {
 	}
 
 	// Generate uniformly distributed vector in unit hemisphere
+	// naively picking a random inclination results in points clumping at the poles
 	public static Vector uniformInHemisphere() {
 		return Vector.fromSpherical(
 			Math.random() * 2 * Math.PI,
 			Math.acos(Math.random())
 		);
 	}
-
-	// some color space bs
-	public double luminance() {
-		return 0.2126*x + 0.7152*y + 0.0722*z;
-	}
 	
-	// for colors only
+	// for use with RGB colors
 	public String toHexTriplet() {
 		return String.format("#%02x%02x%02x", (int)(x * 255), (int)(y * 255), (int)(z * 255));
 	}
 	
+	// vectors can be used in place of Textures
 	@Override
 	public Vector sample(double u, double v) {
 		return this;
 	}
 
-	public static Vector localToWorldCoords(Vector vector, Vector bvx, Vector bvy, Vector bvz) {
+	// convert vector in a local space to world space
+	// multiply each component by its corresponding basis vector and sum up the result
+	public Vector fromCoordinateSpace(Vector bvx, Vector bvy, Vector bvz) {
 		return new Vector(
-			vector.x * bvx.x + vector.y * bvy.x + vector.z * bvz.x,
-			vector.x * bvx.y + vector.y * bvy.y + vector.z * bvz.y,
-			vector.x * bvx.z + vector.y * bvy.z + vector.z * bvz.z
+			this.x * bvx.x + this.y * bvy.x + this.z * bvz.x,
+			this.x * bvx.y + this.y * bvy.y + this.z * bvz.y,
+			this.x * bvx.z + this.y * bvy.z + this.z * bvz.z
 		);
 	}
 

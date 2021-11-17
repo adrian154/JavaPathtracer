@@ -11,17 +11,20 @@ import com.JavaPathtracer.geometry.Vector;
 
 public class BVHNode extends BoundingBox implements Shape {
 
-	public MeshGeometryContainer mesh;
-	public BVHNode left;
-	public BVHNode right;
-	public int[] primIndexes;
-	public List<PrimAssociatedBBox> children; // USED DURING CONSTRUCTION. NULL AFTER BVH DONE BUILDING SO IT CAN BE
-
-	// More bins = higher quality BVH at the cost of slower construction
-	public static final int NUM_BINS = 10;
-	public static final double COST_TRAVERSE = 1; // greater intersect cost = more splits
+	// construction constants
+	public static final int NUM_BINS = 10; // more bins = potentially better splits but greater construction time
+	public static final double COST_TRAVERSE = 1;
 	public static final double COST_INTERSECT = 12;
 	public static final int MAX_DEPTH = 12;
+	
+	public Mesh mesh;
+	
+	// children
+	public BVHNode left;
+	public BVHNode right;
+	
+	// list of primitives (for leaf nodes)
+	public int[] triangleIndexes;
 
 	private static final double minOf3(double a, double b, double c) {
 		return Math.min(a, Math.min(b, c));
@@ -31,13 +34,13 @@ public class BVHNode extends BoundingBox implements Shape {
 		return Math.max(a, Math.max(b, c));
 	}
 
-	public BVHNode(MeshGeometryContainer mesh) {
+	public BVHNode(Mesh mesh) {
 
 		// Appease the compiler...
 		super(null, null);
 
 		this.mesh = mesh;
-		this.children = new ArrayList<PrimAssociatedBBox>();
+		this.children = new ArrayList<TriangleBoundingBox>();
 
 		for (int face = 0; face < mesh.faces.length / 3; face++) {
 
@@ -57,7 +60,7 @@ public class BVHNode extends BoundingBox implements Shape {
 
 	}
 
-	public BVHNode(MeshGeometryContainer mesh, BoundingBox box, List<PrimAssociatedBBox> boxes) {
+	public BVHNode(Mesh mesh, BoundingBox box, List<TriangleBoundingBox> boxes) {
 		super(box.min, box.max);
 		this.mesh = mesh;
 		this.children = boxes;
@@ -83,7 +86,7 @@ public class BVHNode extends BoundingBox implements Shape {
 
 	}
 
-	public static PrimAssociatedBBox getBoxOfTri(int face, Vector v0, Vector v1, Vector v2) {
+	public static TriangleBoundingBox getBoxOfTri(int face, Vector v0, Vector v1, Vector v2) {
 
 		Vector min = new Vector();
 		Vector max = new Vector();
@@ -96,7 +99,7 @@ public class BVHNode extends BoundingBox implements Shape {
 		max.y = maxOf3(v0.y, v1.y, v2.y);
 		max.z = maxOf3(v0.z, v1.z, v2.z);
 
-		return new PrimAssociatedBBox(min, max, face);
+		return new TriangleBoundingBox(min, max, face);
 
 	}
 
@@ -114,8 +117,8 @@ public class BVHNode extends BoundingBox implements Shape {
 		double minSplitCost = Double.POSITIVE_INFINITY;
 		BoundingBox minSplitLeftBox = null;
 		BoundingBox minSplitRightBox = null;
-		List<PrimAssociatedBBox> minSplitLeftChildren = null;
-		List<PrimAssociatedBBox> minSplitRightChildren = null;
+		List<TriangleBoundingBox> minSplitLeftChildren = null;
+		List<TriangleBoundingBox> minSplitRightChildren = null;
 
 		double noSplitCost = children.size() * COST_INTERSECT;
 
@@ -126,10 +129,10 @@ public class BVHNode extends BoundingBox implements Shape {
 				double splitPos = this.min.get(axis)
 						+ ((double) split / NUM_BINS) * (this.max.get(axis) - this.min.get(axis));
 
-				List<PrimAssociatedBBox> left = new ArrayList<PrimAssociatedBBox>();
-				List<PrimAssociatedBBox> right = new ArrayList<PrimAssociatedBBox>();
+				List<TriangleBoundingBox> left = new ArrayList<TriangleBoundingBox>();
+				List<TriangleBoundingBox> right = new ArrayList<TriangleBoundingBox>();
 
-				for (PrimAssociatedBBox box : this.children) {
+				for (TriangleBoundingBox box : this.children) {
 
 					double centroid = (box.min.get(axis) + box.max.get(axis)) / 2;
 					if (centroid < splitPos) {

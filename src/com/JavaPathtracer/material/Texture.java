@@ -37,19 +37,16 @@ public class Texture implements Sampleable, SampleableScalar, Saveable {
 	public Vector sample(double u, double v) {
 
 		// TODO: Configurable interpolation
-		int x = (int) Math.round(u * texture.getWidth());
-		int y = (int) Math.round(v * texture.getHeight());
-
-		// Clamp
-		x = Math.max(Math.min(x, texture.getWidth() - 1), 0);
-		y = texture.getHeight() - Math.max(Math.min(y, texture.getHeight() - 1), 0) - 1;
+		// TODO: texture wrap modes
+		int x = (int) Math.floor(u % 1 * texture.getWidth());
+		int y = (int) Math.floor((1 - v) % 1 * texture.getHeight());
 
 		int rgb = texture.getRGB(x, y);
 		int r = (rgb >> 16) & 0xFF;
 		int g = (rgb >> 8) & 0xFF;
 		int b = rgb & 0xFF;
 
-		return new Vector(r / 255.0, g / 255.0, b / 255.0);
+		return new Vector(Math.pow(2.1, r / 255.0) - 1, Math.pow(2.1, g / 255.0) - 1, Math.pow(2.1, b / 255.0) - 1);
 
 	}
 
@@ -62,8 +59,8 @@ public class Texture implements Sampleable, SampleableScalar, Saveable {
 
 		// TODO: Configurable interpolation
 		int x = (int) Math.round(u * texture.getWidth());
-		int y = (int) Math.round(v * texture.getHeight());
-
+		int y = (int) Math.floor((1 - v) % 1 * texture.getHeight());
+		
 		// Clamp
 		x = Math.max(Math.min(x, texture.getWidth() - 1), 0);
 		y = texture.getHeight() - Math.max(Math.min(y, texture.getHeight() - 1), 0) - 1;

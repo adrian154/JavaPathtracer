@@ -1,12 +1,11 @@
 package com.JavaPathtracer.geometry;
 
-// 3D rotation matrix
-// Fixed 4x4 size
+// Fixed-size 4x4 matrix
 public class Matrix4x4 {
 
-	public double factors[];
+	public final double factors[];
 
-	// No args constructor initializes the matrix as an identity matrix
+	// when constructed with no arguments, create an identity matrix
 	public Matrix4x4() {
 		factors = new double[16];
 		for (int r = 0; r < 4; r++) {
@@ -84,9 +83,11 @@ public class Matrix4x4 {
 	}
 
 	public Vector transform(Vector vector) {
-		return new Vector(vector.x * factors[0] + vector.y * factors[1] + vector.z * factors[2] + factors[3],
-				vector.x * factors[4] + vector.y * factors[5] + vector.z * factors[6] + factors[7],
-				vector.x * factors[8] + vector.y * factors[9] + vector.z * factors[10] + factors[11]);
+		return new Vector(
+			vector.x * factors[0] + vector.y * factors[1] + vector.z * factors[2] + factors[3],
+			vector.x * factors[4] + vector.y * factors[5] + vector.z * factors[6] + factors[7],
+			vector.x * factors[8] + vector.y * factors[9] + vector.z * factors[10] + factors[11]
+		);
 	}
 
 	// this code will make you cry

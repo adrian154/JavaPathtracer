@@ -8,5 +8,6 @@ import com.JavaPathtracer.scene.Scene;
 public interface Material {
 
 	public Vector shade(Hit hit, int bounces, Scene scene, Pathtracer pathtracer, double ior);
-
+	public Vector getDebugColor();
+	
 }

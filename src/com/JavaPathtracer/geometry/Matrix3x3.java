@@ -2,7 +2,7 @@ package com.JavaPathtracer.geometry;
 
 public class Matrix3x3 {
 
-	public double factors[];
+	public final double factors[];
 	
 	public Matrix3x3() {
 		factors = new double[9];

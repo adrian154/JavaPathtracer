@@ -32,10 +32,14 @@ public class Scene {
 		sky = new SimpleSky(Vector.ZERO);
 		sun = null;
 		
-		this.camera = new PerspectiveCamera();
+		this.camera = this.createCamera();
 		
 	}
 
+	public Camera createCamera() {
+		return new PerspectiveCamera();
+	}
+	
 	public void setCamera(Camera camera) {
 		this.camera = camera;
 	}
@@ -74,7 +78,7 @@ public class Scene {
 	public void add(SimpleObject object) {
 		this.add((WorldObject)object);
 		if(object.getMaterial() instanceof EmissiveMaterial) {
-			this.lights.add(new Light((FiniteShape)object.getShape(), (EmissiveMaterial)object.getMaterial()));
+			this.lights.add(new Light((FiniteShape)object.getShape(), (EmissiveMaterial)object.getMaterial(), object));
 		}
 	}
 
@@ -83,38 +87,31 @@ public class Scene {
 	}
 
 	// do geometry + material trace into scene
-	public Hit traceRay(Ray ray) {
+	// `target` is useful for shadow ray type stuff
+	public Hit traceRay(Ray ray, WorldObject target) {
 
 		Hit nearest = null;
+		WorldObject nearestObj = null;
+		
 		for (WorldObject object: objects) {
-
+			
 			Hit hit = object.traceRay(ray);
 			if (hit != null && (nearest == null || hit.distance < nearest.distance && hit.distance > Raytracer.EPSILON)) {
 				nearest = hit;
+				nearestObj = object;
 			}
 
 		}
 
+		if(target != null && target != nearestObj) return null;
 		return nearest;
 
 	}
 
-	public Hit traceLightRay(Ray ray) {
-		
-		Hit nearest = null;
-		for(Light light: lights) {
-			
-			Hit hit = light.intersect(ray);
-			if(hit != null && hit.distance < hit.distance && hit.distance > Raytracer.EPSILON) {
-				nearest = hit;
-			}
-			
-		}
-		
-		return nearest;
-		
+	public Hit traceRay(Ray ray) {
+		return this.traceRay(ray, null);
 	}
-	
+
 	public boolean traceSkyRay(Ray ray) {
 		
 		for(WorldObject object: objects) {
@@ -126,20 +123,7 @@ public class Scene {
 		return true;
 		
 	}
-	
-	public boolean traceShadowRay(Ray ray, Shape shape) {
-		Hit hit = shape.intersect(ray);
-		if(hit == null) return true;
-		double minDist = hit.distance;
-		for(WorldObject object: objects) {
-			Hit obstacle = object.traceRay(ray);
-			if(obstacle != null && obstacle.distance + Raytracer.EPSILON < minDist) {
-				return false;
-			}
-		}
-		return true;
-	}
-	
+
 	public void update(int frame) {
 		
 	}

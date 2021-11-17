@@ -38,6 +38,7 @@ public class ACESTonemapper implements IToneMapper {
 			z * (A * z + B) / (z * (C * z + D) + E)
 		);
 		*/
+		// TODO: fix fucked up independent mapping
 		double r = func(in.x), g = func(in.y), b = func(in.z);
 		if(independent) {
 			return new Vector(r, g, b);

@@ -6,7 +6,10 @@
 * More configurable texture mapping for parametric shapes
   * Azimuth/inclination offset for spheres
   * Texture rotation for planes (allow user to specify basis vector rather than getOrthagonal or at least a rotation)
-* BVH for meshes
-* Texture mapping for meshes
-  * Should be easy now that I actually understand barycentric coordinates...
 * Transform system w/ matrices
+
+* texture mapping for cylinders
+* various optimizations
+* normal mapping
+* texture wrap mode
+* scene-wide BVH

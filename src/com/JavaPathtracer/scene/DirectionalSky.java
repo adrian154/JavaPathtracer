@@ -9,7 +9,7 @@ public class DirectionalSky implements Sky {
 	protected Vector colorB;
 	
 	public DirectionalSky(Vector direction, Vector colorA, Vector colorB) {
-		this.direction = direction.normalized();
+		this.direction = direction.normalize();
 		this.colorA = colorA;
 		this.colorB = colorB;
 	}

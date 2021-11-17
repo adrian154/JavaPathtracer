@@ -12,10 +12,8 @@ public class DebugTracer extends Raytracer {
 		ALBEDO,
 		SIMPLE_SHADED,
 		NORMAL,
-		SHADED_NORMAL,
 		DEPTH,
 		UV,
-		STENCIL,
 		TEST
 	}
 	
@@ -23,14 +21,6 @@ public class DebugTracer extends Raytracer {
 
 	public DebugTracer(Mode mode) {
 		this.mode = mode;
-	}
-	
-	private Vector shadeVector(Vector hit) {
-		return hit.plus(Vector.ONE).idiv(2);
-	}
-	
-	private Vector shadeScalar(double depth) {
-		return Vector.ONE.divBy(depth + 0.1);
 	}
 	
 	// --- shaders

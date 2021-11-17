@@ -4,14 +4,14 @@ import com.JavaPathtracer.Raytracer;
 
 public class Sphere implements FiniteShape {
 
-	private Vector center;
-	private double radius;
-
+	public Vector center;
+	public double radius;
+	
 	public Sphere(Vector center, double radius) {
 		this.center = center;
 		this.radius = radius;
 	}
-
+	
 	@Override
 	public Hit intersect(Ray ray) {
 
@@ -36,7 +36,7 @@ public class Sphere implements FiniteShape {
 		}
 
 		Vector point = ray.getPoint(t);
-		Vector normal = point.minus(this.center).normalized();
+		Vector normal = point.minus(this.center).normalize();
 
 		if(normal.dot(ray.direction) > 0) {
 			normal.invert();
@@ -45,20 +45,12 @@ public class Sphere implements FiniteShape {
 		// Do texture mapping
 		Vector invDir = new Vector(0.0, 0.0, 0.0).minus(normal);
 		double u = 0.5 + Math.atan2(invDir.z, invDir.x) / (2 * Math.PI);
-		double v = 0.5 - Math.asin(invDir.y) / Math.PI;
+		double v = 0.5 + Math.asin(invDir.y) / Math.PI;
 
 		return new Hit(ray, point, normal, t, new Vector(u, v, 0.0));
 	
 	}
 
-	public Vector getCenter() {
-		return this.center;
-	}
-	
-	public double getRadius() {
-		return this.radius;
-	}
-	
 	public Sphere getBoundingSphere() {
 		return this;
 	}

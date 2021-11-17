@@ -11,7 +11,7 @@ public class ReinhardTonemapper implements IToneMapper {
 	
 	@Override
 	public String toString() {
-		return "Inverse";
+		return "Reinhard";
 	}
 
 }

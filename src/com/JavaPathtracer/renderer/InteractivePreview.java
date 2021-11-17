@@ -23,7 +23,7 @@ import com.JavaPathtracer.material.Texture;
 
 public class InteractivePreview {
 
-	protected static final double MOVEMENT_SCALE = 0.1;
+	protected static final double MOVEMENT_SCALE = 1;
 	
 	private Renderer renderer;
 	private Texture output;
@@ -206,7 +206,7 @@ public class InteractivePreview {
 					System.out.printf("camera.moveTo(new Vector%s); camera.setAngles(%f, %f); camera.setFOV(%f);\n", camera.getPos().toString(), azimuth, inclination, fov);
 				}
 				if(keycode == KeyEvent.VK_V) {
-					System.out.printf("position=%s, direction=%s\n", camera.getPos().toString(), camera.getLook().toString());
+					System.out.printf("new Can(new Vector%s, new Vector%s, x, y)\n", camera.getLook().toString(), camera.getPos().toString());
 				}
 			}
 			

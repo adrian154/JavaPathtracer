@@ -42,13 +42,13 @@ public abstract class BRDFMaterial extends BaseMaterial {
 		Sphere bounding = light.getBoundingSphere();
 		
 		// get direction towards light
-		Vector toLight = bounding.getCenter().minus(hit.point).normalize();
+		Vector toLight = bounding.center.minus(hit.point).normalize();
 		
 		// pick random angle
 		double angle = ThreadLocalRandom.current().nextDouble() * 2 * Math.PI;
 		
 		// generate a random vector on the disc
-		Vector randomOnDisc = new Vector(Math.cos(angle), 0, Math.sin(angle)).imul(ThreadLocalRandom.current().nextDouble() * bounding.getRadius());
+		Vector randomOnDisc = new Vector(Math.cos(angle), 0, Math.sin(angle)).imul(ThreadLocalRandom.current().nextDouble() * bounding.radius);
 		
 		// transform that random disc vector into a coordinate space whose XZ plane is in the plane of the disc
 		Vector bvx = toLight.getOrthagonal();
@@ -56,10 +56,10 @@ public abstract class BRDFMaterial extends BaseMaterial {
 		Vector bvz = bvx.cross(bvy);
 		
 		// get world position
-		Vector worldPos = bounding.getCenter().plus(Vector.localToWorldCoords(randomOnDisc, bvx, bvy, bvz));
+		Vector worldPos = bounding.center.plus(Vector.localToWorldCoords(randomOnDisc, bvx, bvy, bvz));
 
 		// return ray
-		return new Ray(hit.point, worldPos.minus(hit.point).normalized());
+		return new Ray(hit.point, worldPos.minus(hit.point).normalize());
 		
 	}
 	
@@ -75,24 +75,20 @@ public abstract class BRDFMaterial extends BaseMaterial {
 			Sphere bounding = light.getBoundingSphere();
 			Ray ray = getISRay(hit, light);
 			
-			if(scene.traceShadowRay(ray, light)) {
-
-				Hit lightHit = light.intersect(ray);
-				if(lightHit != null) {
+			Hit lightHit = scene.traceRay(ray, light.object);
+			if(lightHit != null) {
+			
+				// calculate solid angle
+				// solid angle = 2pi(1 - cos(alpha)) where alpha = angle between disc center, edge as seen by hitpoint
+				// avoid the need for an expensive arctangent
+				double dist = bounding.center.minus(hit.point).length();
+				double hypot = Math.sqrt(dist * dist + bounding.radius * bounding.radius);
+				double solidAngle = 2 * Math.PI * (1 - dist / hypot);
+				Vector irradiance = light.material.color.sample(lightHit.textureCoordinates.x, lightHit.textureCoordinates.y).times(solidAngle / (2 * Math.PI));
 				
-					// calculate solid angle
-					// solid angle = 2pi(1 - cos(alpha)) where alpha = angle between disc center, edge as seen by hitpoint
-					// avoid the need for an expensive arctangent
-					double dist = bounding.getCenter().minus(hit.point).length();
-					double hypot = Math.sqrt(dist * dist + bounding.getRadius() * bounding.getRadius());
-					double solidAngle = 2 * Math.PI * (1 - dist / hypot);
-					Vector irradiance = light.material.color.sample(lightHit.textureCoordinates.x, lightHit.textureCoordinates.y).times(solidAngle / (2 * Math.PI));
-					
-					double cosFactor = ray.direction.dot(hit.normal);
-					sum.iadd(irradiance.imul(cosFactor).imul(BRDF(hit.ray.direction.reversed(), ray.direction, hit.normal, hit.textureCoordinates)));
-
-				}
-				
+				double cosFactor = ray.direction.dot(hit.normal);
+				sum.iadd(irradiance.imul(cosFactor).imul(BRDF(hit.ray.direction.reversed(), ray.direction, hit.normal, hit.textureCoordinates)));
+			
 			}
 			
 		}

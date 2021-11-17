@@ -22,7 +22,7 @@ import com.JavaPathtracer.scene.WorldObject;
 // This class has a few glaring flaws that make it unusable even if you forcibly trace rays against every poly
 public class MeshObject implements WorldObject {
 
-	protected MeshGeometryContainer geometry;
+	protected Mesh geometry;
 	protected List<Material> materials;
 	protected int[] faceMaterials;
 	
@@ -143,7 +143,7 @@ public class MeshObject implements WorldObject {
 		stopwatch.lap("parseFile");
 		
 		// Convert arraylists to arrays
-		this.geometry = new MeshGeometryContainer(
+		this.geometry = new Mesh(
 			vertexes,
 			vertexNormals,
 			textureCoordinates,

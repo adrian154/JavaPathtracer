@@ -27,7 +27,7 @@ public class Plane implements Shape {
 		this.tilingSize = tilingSize;
 		this.oneSided = oneSided;
 	}
-
+	
 	/*
 	 * Ray-plane intersection.
 	 */

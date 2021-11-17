@@ -7,8 +7,9 @@ import com.JavaPathtracer.material.EmissiveMaterial;
 import com.JavaPathtracer.material.Material;
 import com.JavaPathtracer.scene.Scene;
 
-public class Pathtracer extends Raytracer {
+public class Pathtracer implements Raytracer {
 
+	public static final double EPSILON = 0.000001;
 	public static final double AIR_IOR = 1.0;
 	
 	// Maximum depth of bounces
