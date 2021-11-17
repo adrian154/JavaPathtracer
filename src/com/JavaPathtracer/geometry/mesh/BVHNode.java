@@ -22,10 +22,13 @@ public class BVHNode extends BoundingBox implements Shape {
 	// children
 	public BVHNode left;
 	public BVHNode right;
-	
+
 	// list of primitives (for leaf nodes)
 	public int[] triangleIndexes;
 
+	// list of children, used during BVH construction (should be null afterwards)
+	public List<TriangleBoundingBox> children;
+	
 	private static final double minOf3(double a, double b, double c) {
 		return Math.min(a, Math.min(b, c));
 	}
@@ -146,8 +149,8 @@ public class BVHNode extends BoundingBox implements Shape {
 				BoundingBox leftBox = getBoundingBoxOfBoxes(left);
 				BoundingBox rightBox = getBoundingBoxOfBoxes(right);
 
-				double splitCost = COST_TRAVERSE + (leftBox.area() / this.area() * left.size() * COST_INTERSECT)
-						+ (rightBox.area() / this.area() * right.size() * COST_INTERSECT);
+				double splitCost = COST_TRAVERSE + (leftBox.surfaceArea() / this.surfaceArea() * left.size() * COST_INTERSECT)
+						+ (rightBox.surfaceArea() / this.surfaceArea() * right.size() * COST_INTERSECT);
 
 				if (splitCost < minSplitCost) {
 					minSplitCost = splitCost;

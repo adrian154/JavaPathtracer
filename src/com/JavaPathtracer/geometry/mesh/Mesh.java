@@ -9,6 +9,7 @@ import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.material.Material;
 
+// A container for triangle geometry. Mesh itself does not implement Shape, raytracing is deferred to acceleration structures.
 public class Mesh {
 
 	public int[] faces;
