@@ -18,19 +18,17 @@ import com.JavaPathtracer.material.Material;
 public class Scene {
 
 	protected List<WorldObject> objects;
-	protected List<Light> lights;
+	protected List<WorldObject> lights;
 	protected Camera camera;
 	private Sky sky;
-	private Sun sun;
 	
 	public Scene() {
 		
 		objects = new ArrayList<WorldObject>();
-		lights = new ArrayList<Light>();
+		lights = new ArrayList<WorldObject>();
 
 		// Default = black sky
 		sky = new SimpleSky(Vector.ZERO);
-		sun = null;
 		
 		this.camera = this.createCamera();
 		
@@ -52,33 +50,18 @@ public class Scene {
 		this.sky = sky;
 	}
 	
-	public void setSun(Sun sun) {
-		this.sun = sun;
-	}
-
-	public Sun getSun() {
-		return sun;
-	}
-	
-	public List<Light> getLights() {
+	public List<WorldObject> getLights() {
 		return this.lights;
 	}
 	
-	public Vector getSkyEmission(Vector direction, boolean allowSun) {
-		if(allowSun && sun != null && direction.dot(sun.direction) > sun.cosAngularRadius) {
-			return sun.color;
-		}
-		return sky.getEmission(direction);
-	}
-
 	public void add(WorldObject object) {
 		objects.add(object);
 	}
 	
 	public void add(SimpleObject object) {
-		this.add((WorldObject)object);
-		if(object.getMaterial() instanceof EmissiveMaterial) {
-			this.lights.add(new Light((FiniteShape)object.getShape(), (EmissiveMaterial)object.getMaterial(), object));
+		this.add(object);
+		if(object.getMaterial().shouldImportanceSample()) {
+			this.lights.add(object);
 		}
 	}
 
