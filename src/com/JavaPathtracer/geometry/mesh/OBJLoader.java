@@ -37,7 +37,7 @@ public class OBJLoader {
 		
 		// iterate over lines of the model
 		String line;
-		Material currentMaterial;
+		Material currentMaterial = materials.get("default");
 		
 		while ((line = reader.readLine().trim()) != null) {
 
@@ -71,7 +71,7 @@ public class OBJLoader {
 
 				if (parts.length != 4) {
 					reader.close();
-					throw new RuntimeException("Unexpected vertex with number of components unequal to 3 at line " + line);
+					throw new RuntimeException("Unexpected vertex with number of components unequal to 3 at line " + lineNum);
 				}
 
 				vertexes.add(new Vector(Double.parseDouble(parts[1]), Double.parseDouble(parts[2]), Double.parseDouble(parts[3])));
@@ -80,7 +80,7 @@ public class OBJLoader {
 				
 				if (parts.length != 4) {
 					reader.close();
-					throw new RuntimeException("Unexpected vertex normal with number of components unequal to 3 at line " + line);
+					throw new RuntimeException("Unexpected vertex normal with number of components unequal to 3 at line " + lineNum);
 				}
 
 				vertexNormals.add(new Vector(Double.parseDouble(parts[1]), Double.parseDouble(parts[2]), Double.parseDouble(parts[3])));
@@ -89,7 +89,8 @@ public class OBJLoader {
 
 				int components = parts.length - 1;
 				if(components < 3) {
-					throw new RuntimeException("Unexpected polygon with fewer than three vertexes at line " + line);
+					reader.close();
+					throw new RuntimeException("Unexpected polygon with fewer than three vertexes at line " + lineNum);
 				}
 				
 				// collect vertex, texture coordinate, and normal indices and add to the list
@@ -118,10 +119,19 @@ public class OBJLoader {
 					normalIndices.add(faceVertNormals[i]);
 					normalIndices.add(faceVertNormals[i + 1]);
 					
+					materialsList.add(currentMaterial);
+					
 				}
 
 			} else if (parts[0].equals("vt")) {
+				
+				if(parts.length < 2) {
+					reader.close();
+					throw new RuntimeException("Unexpected texture coordinate with fewer than three components at line " + lineNum);
+				}
+				
 				textureCoordinates.add(new Vector(Double.parseDouble(parts[1]), Double.parseDouble(parts[2]), 0.0));
+			
 			}
 
 		}

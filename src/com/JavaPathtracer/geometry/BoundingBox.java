@@ -5,7 +5,7 @@ import java.util.List;
 import com.JavaPathtracer.Pathtracer;
 
 // Axis-aligned bounding box
-public class BoundingBox {
+public class BoundingBox implements Shape {
 
 	public final Vector min;
 	public final Vector max;
@@ -19,8 +19,9 @@ public class BoundingBox {
 		this(box.min, box.max);
 	}
 
-	public BoundingBox(List<? extends BoundingBox> boxes) {
-		
+	// see BoundingBox#bound
+	public BoundingBox(List<? extends Shape> shapes) {
+		this(BoundingBox.bound(shapes));
 	}
 	
 	public static final Vector min(Vector A, Vector B) {
@@ -40,7 +41,7 @@ public class BoundingBox {
 	}
 	
 	// static method because Java doesn't support *any* code before a constructor call
-	public static BoundingBox bound(List<? extends Shape> shapes) {
+	private static BoundingBox bound(List<? extends Shape> shapes) {
 		
 		Vector min = new Vector();
 		Vector max = new Vector();
@@ -98,17 +99,27 @@ public class BoundingBox {
 		double tmin = Math.max(Math.max(Math.min(t1, t2), Math.min(t3, t4)), Math.min(t5, t6));
 		double tmax = Math.min(Math.min(Math.max(t1, t2), Math.max(t3, t4)), Math.max(t5, t6));
 
-		/* Negative: AABB is behind the ray. */
+		// Negative: AABB is behind the ray.
 		if (tmax < Pathtracer.EPSILON) {
 			return false;
 		}
 
-		/* Minimum distance greater than maximum: No intersection. */
+		// Minimum distance greater than maximum: No intersection.
 		if (tmin > tmax) {
 			return false;
 		}
 
 		return true;
+	}
+	
+	@Override
+	public Hit raytrace(Ray ray) {
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public BoundingBox getBoundingBox() {
+		return this;
 	}
 
 	public boolean contains(BoundingBox other) {

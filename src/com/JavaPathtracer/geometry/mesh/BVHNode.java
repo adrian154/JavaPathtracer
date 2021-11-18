@@ -2,14 +2,14 @@ package com.JavaPathtracer.geometry.mesh;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.JavaPathtracer.geometry.BoundingBox;
-import com.JavaPathtracer.geometry.Hit;
+import com.JavaPathtracer.geometry.ObjectHit;
 import com.JavaPathtracer.geometry.Ray;
-import com.JavaPathtracer.geometry.Shape;
-import com.JavaPathtracer.geometry.Vector;
+import com.JavaPathtracer.scene.WorldObject;
 
-public class BVHNode extends BoundingBox implements Shape {
+public class BVHNode extends BoundingBox implements WorldObject {
 
 	// construction constants
 	public static final int NUM_BINS = 10; // more bins = potentially better splits but greater construction time
@@ -24,18 +24,10 @@ public class BVHNode extends BoundingBox implements Shape {
 	public BVHNode right;
 
 	// list of primitives (for leaf nodes)
-	public int[] triangleIndexes;
+	private int[] triangleIndexes;
 
 	// list of children, used during BVH construction (should be null afterwards)
-	public List<TriangleBoundingBox> primitives;
-	
-	private static final double minOf3(double a, double b, double c) {
-		return Math.min(a, Math.min(b, c));
-	}
-
-	private static final double maxOf3(double a, double b, double c) {
-		return Math.max(a, Math.max(b, c));
-	}
+	private List<TriangleBoundingBox> primitives;
 
 	/* public BVHNode(Mesh mesh) {
 
@@ -66,152 +58,106 @@ public class BVHNode extends BoundingBox implements Shape {
 	public BVHNode(Mesh mesh, List<TriangleBoundingBox> primitives) {
 		super(primitives);
 		this.mesh = mesh;
-		this.children = boxes;
+		this.primitives = primitives;
+	}
+	
+	private void makeLeafNode() {
+		this.triangleIndexes = this.primitives.stream().mapToInt(child -> Integer.valueOf(child.face)).toArray();
+		this.primitives = null;
+		return;
 	}
 
-	public static BoundingBox getBoundingBoxOfBoxes(List<? extends BoundingBox> boxes) {
-
-		Vector min = new Vector(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
-		Vector max = new Vector(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY);
-
-		for (BoundingBox box : boxes) {
-			min.x = Math.min(min.x, box.min.x);
-			min.y = Math.min(min.y, box.min.y);
-			min.z = Math.min(min.z, box.min.z);
-
-			max.x = Math.max(max.x, box.max.x);
-			max.y = Math.max(max.y, box.max.y);
-			max.z = Math.max(max.z, box.max.z);
-		}
-
-		BoundingBox result = new BoundingBox(min, max);
-		return result;
-
+	public int numPrimitives() {
+		return this.primitives.size();
 	}
-
-	public static TriangleBoundingBox getBoxOfTri(int face, Vector v0, Vector v1, Vector v2) {
-
-		Vector min = new Vector();
-		Vector max = new Vector();
-
-		min.x = minOf3(v0.x, v1.x, v2.x);
-		min.y = minOf3(v0.y, v1.y, v2.y);
-		min.z = minOf3(v0.z, v1.z, v2.z);
-
-		max.x = maxOf3(v0.x, v1.x, v2.x);
-		max.y = maxOf3(v0.y, v1.y, v2.y);
-		max.z = maxOf3(v0.z, v1.z, v2.z);
-
-		return new TriangleBoundingBox(min, max, face);
-
-	}
-
+	
 	public void split(int depth) {
-
-		System.out.println(" ".repeat(depth) + "Splitting at depth " + depth);
 		
 		if (depth >= MAX_DEPTH) {
-			primIndexes = children.stream().mapToInt(child -> Integer.valueOf(child.faceIndex)).toArray();
-			children = null;
+			this.makeLeafNode();
 			return;
 		}
 
-		// Find optimal split
-		double minSplitCost = Double.POSITIVE_INFINITY;
-		BoundingBox minSplitLeftBox = null;
-		BoundingBox minSplitRightBox = null;
-		List<TriangleBoundingBox> minSplitLeftChildren = null;
-		List<TriangleBoundingBox> minSplitRightChildren = null;
+		// Use the surface-area heuristic to determine the optimal split.
+		// Place the primitives into a certain number of evenly spaced bins and evaluate each split.
+		
+		double bestSplitCost = Double.POSITIVE_INFINITY; 
+		BVHNode bestSplitLeft = null, bestSplitRight = null;
+		double noSplitCost = primitives.size() * COST_INTERSECT;
 
-		double noSplitCost = children.size() * COST_INTERSECT;
-
+		// TODO: use some kind of heuristic to avoid checking splits along all three axes
+		// TODO: figure out if binning primitives by the TRIANGLE centroid rather than the bounding box centroid results in better BVHs
 		for (int axis = 0; axis < 3; axis++) {
 
-			for (int split = 1; split < NUM_BINS - 1; split++) {
+			List<List<TriangleBoundingBox>> bins = new ArrayList<>();
+			for(int i = 0; i < NUM_BINS; i++) {
+				bins.add(new ArrayList<>());
+			}
 
-				double splitPos = this.min.get(axis)
-						+ ((double) split / NUM_BINS) * (this.max.get(axis) - this.min.get(axis));
+			// place primitives into bins based on centroid 
+			for(TriangleBoundingBox box: this.primitives) {
+				double centroid = box.centroid().get(axis);
+				int bin = (int)Math.floor((centroid - this.min.get(axis)) / NUM_BINS);
+				bins.get(bin).add(box);
+			}
+			
+			// iterate over potential splits and figure out which one's the best
+			for(int split = 1; split < NUM_BINS; split++) {
 
-				List<TriangleBoundingBox> left = new ArrayList<TriangleBoundingBox>();
-				List<TriangleBoundingBox> right = new ArrayList<TriangleBoundingBox>();
+				BVHNode left = new BVHNode(mesh, bins.subList(0, split).stream().flatMap(List::stream).collect(Collectors.toList()));
+				BVHNode right = new BVHNode(mesh, bins.subList(split, NUM_BINS).stream().flatMap(List::stream).collect(Collectors.toList()));
+				
+				double splitCost = COST_TRAVERSE +
+					(left.surfaceArea() / this.surfaceArea() * left.numPrimitives() * COST_INTERSECT) +
+					(right.surfaceArea() / this.surfaceArea() * right.numPrimitives() * COST_INTERSECT);
 
-				for (TriangleBoundingBox box : this.children) {
-
-					double centroid = (box.min.get(axis) + box.max.get(axis)) / 2;
-					if (centroid < splitPos) {
-						left.add(box);
-					} else {
-						right.add(box);
-					}
-
-				}
-
-				BoundingBox leftBox = getBoundingBoxOfBoxes(left);
-				BoundingBox rightBox = getBoundingBoxOfBoxes(right);
-
-				double splitCost = COST_TRAVERSE + (leftBox.surfaceArea() / this.surfaceArea() * left.size() * COST_INTERSECT)
-						+ (rightBox.surfaceArea() / this.surfaceArea() * right.size() * COST_INTERSECT);
-
-				if (splitCost < minSplitCost) {
-					minSplitCost = splitCost;
-					minSplitLeftBox = leftBox;
-					minSplitRightBox = rightBox;
-					minSplitLeftChildren = left;
-					minSplitRightChildren = right;
+				if (splitCost < bestSplitCost) {
+					bestSplitCost = splitCost;
+					bestSplitLeft = left;
+					bestSplitRight = right;
 				}
 
 			}
 
 		}
 
-		if (minSplitCost < noSplitCost) {
+		if (bestSplitCost < noSplitCost) {
 
-			// Split!
-			this.left = new BVHNode(this.mesh, minSplitLeftBox, minSplitLeftChildren);
-			this.right = new BVHNode(this.mesh, minSplitRightBox, minSplitRightChildren);
+			// only keep the best children, destroy all others
+			this.left = bestSplitLeft;
+			this.right = bestSplitRight;
 
-			// Recurse
+			// recurse
 			this.left.split(depth + 1);
 			this.right.split(depth + 1);
 
+			primitives = null;
+			
 		} else {
-
-			// Attach children
-			primIndexes = children.stream().mapToInt(child -> Integer.valueOf(child.faceIndex)).toArray();
-
+			this.makeLeafNode();
 		}
-
-		// In any case, children array is no longer needed
-		children = null;
 
 	}
 
 	@Override
-	public Hit raytrace(Ray ray) {
+	public ObjectHit traceRay(Ray ray) {
 
-		// intersect self, first
-		if (!super.intersectFast(ray))
+		// check if the ray intersects the bounding box
+		if (!super.intersects(ray))
 			return null;
 
-		if (left == null && right == null) {
-			if (this.primIndexes != null) {
-				/*
-				Hit h = super.intersect(ray);
-				return new MeshHit(ray,h.point,h.normal,h.distance,h.textureCoordinates,0);
-				*/
-				return mesh.intersect(ray, this.primIndexes);
-			} else {
-				return null;
-			}
+		// leaf node
+		if (triangleIndexes == null) {
+			
+			ObjectHit left = this.left.traceRay(ray);
+			ObjectHit right = this.right.traceRay(ray);
+			if(left == null) return right;
+			if(right == null) return left;
+			
+			return left.hit.distance < right.hit.distance ? left : right;
+			
 		} else {
-
-			Hit hl, hr;
-			hl = this.left.raytrace(ray);
-			hr = this.right.raytrace(ray);
-			if(hl == null) return hr;
-			if(hr == null) return hl;
-			return hl.distance < hr.distance ? hl : hr;
-
+			return mesh.intersect(ray, this.triangleIndexes);
 		}
 
 	}

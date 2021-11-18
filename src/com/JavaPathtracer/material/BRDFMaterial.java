@@ -21,23 +21,25 @@ public abstract class BRDFMaterial extends BaseMaterial {
 	// BRDF
 	public abstract double BRDF(Vector incident, Vector outgoing, Vector normal, Vector textureCoordinates);
 	
-	// sampler for integration
-	// does not have to necessarily sample the BRDF, hence a separate PDF() method
-	// PDF() defaults to 1 since sample() generally samples the BRDF
-	public abstract Vector sample(Vector incident, Hit hit);
+	// sampler
+	public Vector sample(Vector incident, Hit hit) {
+		return Vector.uniformInHemisphere();
+	}
 	
-	public double PDF(Vector incident, Vector outgoing, Vector normal) {
+	// PDF of the sampler (which does not necessarily draw from the BRDF - by default, do fully random sampling)
+	// TODO: change to cosine weighted as default
+	public double samplerPDF(Vector incident, Vector outgoing, Vector normal) {
 		return 1;
 	}
 	
-	// should light sampling be used?
-	// using this in lieu of proper MIS
-	// this value is not cached, you can use whatever heuristic here
+	// should light sampling be attempted with this material?
+	// TODO: more fine grained control (i.e. MIS)
 	public abstract boolean sampleLights();
 	
 	// ---- mathy code incoming
 	
-	public Ray getISRay(Hit hit, Light light) {
+	// generate a ray towards the light sample
+	public Ray getLightSampleRay(Hit hit, Light light) {
 		
 		Sphere bounding = light.getBoundingSphere();
 		

@@ -43,6 +43,8 @@ public class Mesh {
 	}
 	
 	// Moller-Trumbore triangle intersection algorithm
+	// The barycentric coordinates of the hit within the triangle is returned in Hit.textureCoordinates for convenience
+	// If texture mapping data is available, it is used to create the actual texture coordinate in .intersect()
 	public Hit intersectTri(Ray ray, int face) {
 
 		Vector v0 = vertexes[faces[face * 3]];
@@ -55,19 +57,19 @@ public class Mesh {
 
 		double a = edge1.dot(h);
 		if (a > -Pathtracer.EPSILON && a < Pathtracer.EPSILON) {
-			return null;
+			return Hit.MISS;
 		}
 
 		double f = 1 / a;
 		Vector s = ray.origin.minus(v0);
 		double u = f * s.dot(h);
 		if (u < 0.0 || u > 1.0)
-			return null;
+			return Hit.MISS;
 
 		Vector q = s.cross(edge1);
 		double v = f * ray.direction.dot(q);
 		if (v < 0.0 || u + v > 1.0)
-			return null;
+			return Hit.MISS;
 
 		double t = f * edge2.dot(q);
 		if (t > Pathtracer.EPSILON) {
@@ -92,39 +94,45 @@ public class Mesh {
 		
 			// TODO: actually calculate tangent vector instead of just using a null vector
 			normal = normal.normalize().facing(ray.direction);
-			return new ObjectHit(new Hit(ray, ray.getPoint(t), normal, null, t, new Vector(u, v, 0.0)), materials[face]);
+			return new Hit(ray, ray.getPoint(t), normal, null, t, new Vector(u, v, 0.0));
 			
 		} else {
-			return null;
+			return Hit.MISS;
 		}
 
 	}
 	
-	/*
-	public Hit intersect(Ray ray, int[] prims) {
+	public ObjectHit intersect(Ray ray, int[] prims) {
 		
 		Hit nearest = null;
-		int nearestIndex = 0;
+		int nearestTri = 0;
+		
 		for (int i: prims) {
 
 			Hit cur = intersectTri(ray, i);
 			if (cur != null && (nearest == null || cur.distance < nearest.distance)) {
 				nearest = cur;
-				nearestIndex = i;
+				nearestTri = i;
 			}
 
 		}
 
-		if (nearest != null && textureCoordinates != null) {
-			Vector tex1 = textureCoordinates[texCoordIndices[nearestIndex * 3]];
-			Vector tex2 = textureCoordinates[texCoordIndices[nearestIndex * 3 + 1]];
-			Vector tex3 = textureCoordinates[texCoordIndices[nearestIndex * 3 + 2]];
-			nearest.textureCoordinates = tex1.plus((tex2.minus(tex1).times(nearest.textureCoordinates.x)).plus(tex3.minus(tex1).times(nearest.textureCoordinates.y)));
-		}
+		// apply texture coordinates
+		if (nearest.hit) {
 
-		return nearest;
+			if(textureCoordinates != null) {
+				Vector tex0 = textureCoordinates[texCoordIndices[nearestTri * 3]];
+				Vector tex1 = textureCoordinates[texCoordIndices[nearestTri * 3 + 1]];
+				Vector tex2 = textureCoordinates[texCoordIndices[nearestTri * 3 + 2]];
+				nearest.textureCoord = tex1.plus((tex1.minus(tex0).times(nearest.textureCoord.x)).plus(tex2.minus(tex0).times(nearest.textureCoord.y)));
+			}
+			
+			return new ObjectHit(nearest, materials[nearestTri]);
+			
+		}
+		
+		return ObjectHit.MISS;
 		
 	}
-	*/
 	
 }
