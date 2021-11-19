@@ -15,11 +15,10 @@ import com.JavaPathtracer.tonemapping.LinearTonemapper;
 
 public class Renderer {
 
-	protected Scene scene;
-	protected Camera camera;
-	protected Raytracer raytracer;
-	protected IToneMapper toneMapper;
-	protected int tiles, threads, samples;
+	public final Scene scene;
+	public final Raytracer raytracer;
+	public final IToneMapper toneMapper;
+	public final int tiles, threads, samples;
 	
 	public Renderer(Scene scene, Raytracer raytracer, IToneMapper mapper, int tiles, int threads, int samples) {
 		this.scene = scene;
