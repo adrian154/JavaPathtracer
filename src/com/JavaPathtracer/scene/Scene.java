@@ -69,7 +69,7 @@ public class Scene {
 	public void add(Shape shape, Material material) {
 		this.add(new SimpleObject(shape, material));
 	}
-
+	
 	// trace ray into the scene
 	public ObjectHit traceRay(Ray ray, boolean excludeLights) {
 	

@@ -29,7 +29,7 @@ public abstract class Camera {
 	}
 	
 	public void move(Vector vector) {
-		this.position.iadd(vector);
+		this.position = this.position.plus(vector);
 	}
 	
 	public void setAngles(double yaw, double pitch) {

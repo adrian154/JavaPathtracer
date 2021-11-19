@@ -1,6 +1,6 @@
 package com.JavaPathtracer.geometry;
 
-import com.JavaPathtracer.Raytracer;
+import com.JavaPathtracer.Pathtracer;
 
 public class Cylinder implements Shape {
 
@@ -34,6 +34,11 @@ public class Cylinder implements Shape {
 	}
 	
 	@Override
+	public BoundingBox getBoundingBox() {
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
 	public Hit raytrace(Ray ray) {
 		
 		// life is only hard if you make it hard
@@ -54,18 +59,18 @@ public class Cylinder implements Shape {
 		double t2 = (-b + discrim) / (2 * a);
 
 		// both behind
-		if(t1 < Raytracer.EPSILON && t2 < Raytracer.EPSILON) return null;
+		if(t1 < Pathtracer.EPSILON && t2 < Pathtracer.EPSILON) return null;
 		
 		Vector hitLocal;
 		double t;
 		Vector hit1 = o.plus(d.times(t1));
 		Vector hit2 = o.plus(d.times(t2));
 		
-		if(t1 < Raytracer.EPSILON && t2 < Raytracer.EPSILON) return null;
+		if(t1 < Pathtracer.EPSILON && t2 < Pathtracer.EPSILON) return null;
 		
-		if(t1 < Raytracer.EPSILON) {
+		if(t1 < Pathtracer.EPSILON) {
 			hitLocal = hit2; t = t2;
-		} else if(t2 < Raytracer.EPSILON) {
+		} else if(t2 < Pathtracer.EPSILON) {
 			hitLocal = hit1; t = t1;
 		} else {
 			if(hit1.y > length || hit1.y < 0) hit1 = null;
@@ -81,16 +86,17 @@ public class Cylinder implements Shape {
 		if(hitLocal == null || hitLocal.y < 0 || hitLocal.y > length) return null;
 		Vector normalLocal = new Vector(hitLocal.x, 0, hitLocal.z).normalize();
 		
-		Vector point = Vector.localToWorldCoords(hitLocal, bvx, bvy, bvz);
-		Vector normal = Vector.localToWorldCoords(normalLocal, bvx, bvy, bvz);
+		Vector point = hitLocal.fromCoordinateSpace(bvx, bvy, bvz);
+		Vector normal = normalLocal.fromCoordinateSpace(bvx, bvy, bvz);
 		
 		// TODO: move normal flip to common step after isect
 		if(normal.dot(ray.direction) > 0) {
-			normal.invert();
+			normal.reverse();
 		}
 		
 		// TODO: texture mapping for cylinder
-		return new Hit(ray, point, normal, t, new Vector(0.5, 0.5, 0.0));
+		// TODO: tangent vector
+		return new Hit(ray, point, normal, null, t, new Vector(0.5, 0.5, 0.0));
 		
 	}
 	

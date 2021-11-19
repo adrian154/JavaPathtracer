@@ -21,6 +21,10 @@ public class Plane implements Shape {
 	public Plane(Vector normal, Vector point, Vector tangent) {
 		this(normal, point, 1.0, false, tangent);
 	}
+	
+	public Plane(Vector normal, Vector point, boolean oneSided) {
+		this(normal, point, 1.0, oneSided, normal.getOrthagonal());
+	}
 
 	public Plane(Vector normal, Vector point, double tilingSize, boolean oneSided, Vector tangent) {
 		this.normal = normal.normalize();

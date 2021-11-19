@@ -23,7 +23,7 @@ public class PerspectiveCamera extends Camera {
 	public Ray getCameraRay(double imagePlaneX, double imagePlaneY)  {
 		Vector direction = new Vector(imagePlaneX, imagePlaneY, focalLength);
 		Vector basis = up.cross(lookingAt);
-		direction = Vector.localToWorldCoords(direction, basis, up, lookingAt);
+		direction = direction.fromCoordinateSpace(basis, up, lookingAt);
 		Ray result = new Ray(this.position, direction.normalize());
 		return result;
 	}

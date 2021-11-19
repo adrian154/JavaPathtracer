@@ -15,8 +15,7 @@ public class LivePreviewPanel extends JPanel {
 	// Appease the serialization gods
 	public static final long serialVersionUID = 1;
 
-	private RenderJob job;
-	private Texture output;
+	private BufferedImage output;
 	private long startTime;
 	private int scale;
 	private boolean reducedDebug;
@@ -24,7 +23,6 @@ public class LivePreviewPanel extends JPanel {
 	public LivePreviewPanel(LivePreview preview, int scale, boolean reducedDebug) {
 		this.output = preview.getImage();
 		this.reducedDebug = reducedDebug;
-		this.job = preview.getRenderJob();
 		this.scale = scale;
 		this.startTime = System.currentTimeMillis();
 		this.setPreferredSize(new Dimension(output.getWidth() * scale, output.getHeight() * scale));
@@ -38,7 +36,7 @@ public class LivePreviewPanel extends JPanel {
 		g.setColor(new Color(0xFF00FF));
 		
 		// draw preview image
-		g.drawImage(output.asImage().getScaledInstance(output.getWidth() * scale, output.getHeight() * scale, Image.SCALE_FAST), 0, 0, this);
+		g.drawImage(output.getScaledInstance(output.getWidth() * scale, output.getHeight() * scale, Image.SCALE_FAST), 0, 0, this);
 		
 		// draw debug text
 		int y = 0;

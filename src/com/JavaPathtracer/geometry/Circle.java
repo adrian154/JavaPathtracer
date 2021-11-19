@@ -1,6 +1,6 @@
 package com.JavaPathtracer.geometry;
 
-public class Circle extends Plane implements FiniteShape {
+public class Circle extends Plane {
 
 	public double radius;
 
@@ -17,10 +17,10 @@ public class Circle extends Plane implements FiniteShape {
 	public Hit raytrace(Ray ray) {
 
 		Hit hit = super.raytrace(ray);
-		if (hit != null && hit.point.minus(this.point).lengthSquared() < this.radius * this.radius) {
+		if (hit.hit && hit.point.minus(this.point).lengthSquared() < this.radius * this.radius) {
 			return hit;
 		} else {
-			return null;
+			return Hit.MISS;
 		}
 
 	}

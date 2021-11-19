@@ -1,12 +1,11 @@
 package com.JavaPathtracer;
 
-import com.JavaPathtracer.geometry.Hit;
+import com.JavaPathtracer.geometry.ObjectHit;
 import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Vector;
-import com.JavaPathtracer.material.BRDFMaterial;
 import com.JavaPathtracer.scene.Scene;
 
-public class DebugTracer extends Raytracer {
+public class DebugTracer implements Raytracer {
 
 	public enum Mode {
 		ALBEDO,
@@ -24,64 +23,42 @@ public class DebugTracer extends Raytracer {
 	}
 	
 	// --- shaders
-	private Vector shadeAlbedo(Hit hit, Ray ray) {
-		if(hit.material instanceof BRDFMaterial) {
-			return ((BRDFMaterial)hit.material).getColor(hit.textureCoordinates.x, hit.textureCoordinates.y);
+	private Vector shadeSimple(ObjectHit hit) {
+		
+		if(hit.hit) {
+			double shading = Vector.ZERO.minus(hit.ray.direction).dot(hit.normal);
+			return shading < 0 ? Vector.ZERO : hit.material.getDebugColor(hit.textureCoord).times(shading);
 		}
-		return new Vector(1.0, 0.0, 1.0);
+		
+		return Vector.ZERO;
+		
 	}
 	
-	private Vector shadeSimple(Hit hit, Ray ray) {
-		if(hit.material instanceof BRDFMaterial) {
-			double shading = Vector.ZERO.minus(ray.direction).dot(hit.normal);
-			return shading < 0 ? Vector.ZERO : ((BRDFMaterial)hit.material).getColor(hit.textureCoordinates.x, hit.textureCoordinates.y).times(shading);
-		}
-		return new Vector(1.0, 0.0, 1.0);
+	private Vector shadeNormal(ObjectHit hit) {
+		return hit.normal.plus(1).divBy(2);
 	}
 	
-	private Vector shadedNormal(Hit hit, Ray ray) {
-		return shadeVector(hit.normal).times(Math.max(0, ray.direction.times(-1).dot(hit.normal)));
+	private Vector shadeDepth(ObjectHit hit) {
+		return new Vector(hit.distance + 0.1);
 	}
 	
-	private Vector shadeNormal(Hit hit, Ray ray) {
-		return shadeVector(hit.normal);
+	private Vector shadeUV(ObjectHit hit) {
+		return hit.textureCoord;
 	}
-	
-	private Vector shadeDepth(Hit hit, Ray ray) {
-		return shadeScalar(hit.distance);
-	}
-	
-	private Vector shadeUV(Hit hit, Ray ray) {
-		return hit.textureCoordinates;
-	}
-	
-	private Vector shadeTest(Hit hit, Ray ray) {
-		return shadeVector(hit.normal.getOrthagonal().cross(hit.normal));
-	}
-	
-	private Vector shadeStencil(Hit hit, Ray ray) {
-		return hit != null ? Vector.ONE : Vector.ZERO;
-	}
-	
+
 	@Override
 	public Vector traceRay(Scene scene, Ray ray) {
-		
-		super.traceRay(scene, ray);
 
-		Hit hit = scene.traceRay(ray);
+		ObjectHit hit = scene.traceRay(ray, false);
 		if (hit != null) {
 			switch(mode) {
-				case ALBEDO: return shadeAlbedo(hit, ray);
-				case SIMPLE_SHADED: return shadeSimple(hit, ray);
-				case NORMAL: return shadeNormal(hit, ray);
-				case SHADED_NORMAL: return shadedNormal(hit, ray);
-				case DEPTH: return shadeDepth(hit, ray);
-				case TEST: return shadeTest(hit, ray);
-				case STENCIL: return shadeStencil(hit, ray);
-				case UV: default: return shadeUV(hit, ray);
+				case SIMPLE_SHADED: return shadeSimple(hit);
+				case NORMAL: return shadeNormal(hit);
+				case DEPTH: return shadeDepth(hit);
+				case UV: default: return shadeUV(hit);
 			}
 		} else {
-			return scene.getSkyEmission(ray.direction, true);
+			return scene.getSky().getEmission(ray.direction);
 		}
 
 	}

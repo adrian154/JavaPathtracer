@@ -14,7 +14,7 @@ public class OrthoCamera extends Camera {
 	@Override
 	public Ray getCameraRay(double imagePlaneX, double imagePlaneY) {
 		Vector right = up.cross(lookingAt);
-		return new Ray(this.position.plus(right.imul(imagePlaneX * scale)).iadd(up.times(imagePlaneY * scale)), this.lookingAt);
+		return new Ray(this.position.plus(right.times(imagePlaneX * scale)).plus(up.times(imagePlaneY * scale)), this.lookingAt);
 	}
 	
 }

@@ -182,6 +182,14 @@ public class Vector implements Sampleable {
 		);
 	}
 	
+	private int clamp(double value) {
+		return (int)Math.min(Math.max(value, 255), 0);
+	}
+	
+	public int toRGB() {
+		return (int)clamp(x) << 16 | (int)clamp(y) << 8 | (int)clamp(z);
+	}
+	
 	// for use with RGB colors
 	public String toHexTriplet() {
 		return String.format("#%02x%02x%02x", (int)(x * 255), (int)(y * 255), (int)(z * 255));
