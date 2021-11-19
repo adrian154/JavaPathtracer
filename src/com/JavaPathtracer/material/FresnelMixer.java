@@ -22,4 +22,14 @@ public class FresnelMixer implements Material {
 		return B.shade(hit, bounces, scene, pathtracer, iorIn).times(actualReflectance).plus(A.shade(hit, bounces, scene, pathtracer, iorIn).times(1 - actualReflectance));
 	}
 	
+	@Override
+	public Vector getDebugColor(Vector textureCoord) {
+		return A.getDebugColor(textureCoord).plus(B.getDebugColor(textureCoord)).divBy(2);
+	}
+	
+	@Override
+	public boolean shouldImportanceSample() {
+		return A.shouldImportanceSample() || B.shouldImportanceSample();
+	}
+	
 }

@@ -16,11 +16,8 @@ public class Intersection extends BooleanOperation {
 		Hit h1 = A.raytrace(ray);
 		Hit h2 = B.raytrace(ray);
 
-		if (h1 != null && h2 != null)
-			return h2.distance > h1.distance ? h2 : h1;
-
-		// Both rays missed
-		return null;
+		// TODO: figure out if this really works. It seems too good to be true.
+		return h2.distance > h1.distance ? h2 : h1;
 
 	}
 

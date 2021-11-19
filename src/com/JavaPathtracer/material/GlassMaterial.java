@@ -14,6 +14,16 @@ public class GlassMaterial implements Material {
 		this.IOR = IOR;
 	}
 	
+	@Override
+	public boolean shouldImportanceSample() {
+		return false;
+	}
+	
+	@Override
+	public Vector getDebugColor(Vector textureCoord) {
+		return new Vector(0x9e7fff);
+	}
+	
 	public Vector shade(Hit hit, int bounces, Scene scene, Pathtracer pathtracer, double iorIn) {
 		
 		// see GLSL's refract() for explanation on the following terms
@@ -38,17 +48,17 @@ public class GlassMaterial implements Material {
 		
 			Vector reflect = MirrorMaterial.reflect(normal, incident);
 			Ray next = new Ray(hit.point, reflect);
-			return pathtracer.pathtraceRay(scene, next, bounces + 1, true, IOR);
+			return pathtracer.pathtraceRay(scene, next, bounces + 1, IOR);
 		
 		} else {
 			
 			// good ol refraction
 			Vector refracted = incident.times(eta).minus(normal.times(eta * NdotI + Math.sqrt(k)));
 			Ray refractRay = new Ray(hit.point, refracted);
-			Vector refract = pathtracer.pathtraceRay(scene, refractRay, bounces + 1, true, IOR);
+			Vector refract = pathtracer.pathtraceRay(scene, refractRay, bounces + 1, IOR);
 		
 			Ray reflectRay = new Ray(hit.point, reflectVector);
-			Vector reflect = pathtracer.pathtraceRay(scene, reflectRay, bounces + 1, true, iorIn);
+			Vector reflect = pathtracer.pathtraceRay(scene, reflectRay, bounces + 1, iorIn);
 			
 			return reflect.times(reflectance).plus(refract.times(1 - reflectance));
 			
