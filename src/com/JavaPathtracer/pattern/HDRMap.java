@@ -1,4 +1,4 @@
-package com.JavaPathtracer.material;
+package com.JavaPathtracer.pattern;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,9 +6,8 @@ import java.io.IOException;
 import com.JavaHDR.HDREncoder;
 import com.JavaHDR.HDRImageRGB;
 import com.JavaPathtracer.geometry.Vector;
-import com.JavaPathtracer.pattern.Sampleable;
 
-public class HDRMap implements Sampleable, Saveable {
+public class HDRMap implements Sampleable {
 
 	private HDRImageRGB image;
 	private String path;
@@ -27,11 +26,11 @@ public class HDRMap implements Sampleable, Saveable {
 	}
 
 	@Override
-	public Vector sample(double u, double v) {
+	public Vector sample(Vector textureCoord) {
 
 		// TODO: Configurable interpolation
-		int x = (int) Math.round(u * image.getWidth());
-		int y = (int) Math.round(v * image.getHeight());
+		int x = (int) Math.round(textureCoord.x * image.getWidth());
+		int y = (int) Math.round(textureCoord.y * image.getHeight());
 
 		// Clamp
 		x = Math.max(Math.min(x, image.getWidth() - 1), 0);
@@ -43,11 +42,6 @@ public class HDRMap implements Sampleable, Saveable {
 
 		return new Vector(r*1.5, g*1.5, b*1.5);
 
-	}
-	
-	@Override
-	public void saveToFile(File file) throws IOException {
-		HDREncoder.writeHDR(image, file);
 	}
 	
 	@Override

@@ -8,6 +8,7 @@ import com.JavaPathtracer.geometry.ObjectHit;
 import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.material.Material;
+import com.JavaPathtracer.scene.WorldObject;
 
 // A container for triangle geometry. Mesh itself does not implement Shape, raytracing is deferred to acceleration structures.
 public class Mesh {
@@ -102,7 +103,7 @@ public class Mesh {
 
 	}
 	
-	public ObjectHit intersect(Ray ray, int[] prims) {
+	public ObjectHit intersect(Ray ray, WorldObject object, int[] prims) {
 		
 		Hit nearest = null;
 		int nearestTri = 0;
@@ -127,7 +128,7 @@ public class Mesh {
 				nearest.textureCoord = tex1.plus((tex1.minus(tex0).times(nearest.textureCoord.x)).plus(tex2.minus(tex0).times(nearest.textureCoord.y)));
 			}
 			
-			return new ObjectHit(nearest, materials[nearestTri]);
+			return new ObjectHit(nearest, object, materials[nearestTri]);
 			
 		}
 		

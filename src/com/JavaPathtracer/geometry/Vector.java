@@ -38,10 +38,16 @@ public class Vector implements Sampleable {
 		this(0);
 	}
 	
-	public Vector(double val) {
-		this.x = val;
-		this.y = val;
-		this.z = val;
+	public Vector(double value) {
+		this.x = value;
+		this.y = value;
+		this.z = value;
+	}
+	
+	public Vector(double x, double y) {
+		this.x = x;
+		this.y = y;
+		this.z = 0;
 	}
 	
 	public Vector(double x, double y, double z) {
@@ -181,9 +187,9 @@ public class Vector implements Sampleable {
 		return String.format("#%02x%02x%02x", (int)(x * 255), (int)(y * 255), (int)(z * 255));
 	}
 	
-	// vectors can be used in place of Textures
+	// vectors can be used as flat textures
 	@Override
-	public Vector sample(double u, double v) {
+	public Vector sample(Vector textureCoord) {
 		return this;
 	}
 

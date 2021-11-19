@@ -18,7 +18,7 @@ public class TexturedSky implements Sky {
 		double inclination = Math.asin(invDir.y);
 		double u = 0.5 + azimuth / (2 * Math.PI);
 		double v = 0.5 - inclination / Math.PI;
-		return emission.sample(u, v);
+		return emission.sample(new Vector(u, v));
 	}
 	
 }

@@ -1,5 +1,7 @@
 package com.JavaPathtracer.pattern;
 
+import com.JavaPathtracer.geometry.Vector;
+
 public class SampleableDouble implements SampleableScalar {
 
 	private double value;
@@ -9,7 +11,7 @@ public class SampleableDouble implements SampleableScalar {
 	}
 
 	@Override
-	public double sampleScalar(double u, double v) {
+	public double sampleScalar(Vector textureCoords) {
 		return value;
 	}
 

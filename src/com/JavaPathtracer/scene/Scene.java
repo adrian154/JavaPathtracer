@@ -6,7 +6,6 @@ import java.util.List;
 import com.JavaPathtracer.Pathtracer;
 import com.JavaPathtracer.cameras.Camera;
 import com.JavaPathtracer.cameras.PerspectiveCamera;
-import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.ObjectHit;
 import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Shape;
@@ -44,6 +43,10 @@ public class Scene {
 		return this.camera;
 	}
 	
+	public Sky getSky() {
+		return sky;
+	}
+	
 	public void setSky(Sky sky) {
 		this.sky = sky;
 	}
@@ -68,7 +71,7 @@ public class Scene {
 	}
 
 	// trace ray into the scene
-	public ObjectHit traceRay(Ray ray) {
+	public ObjectHit traceRay(Ray ray, boolean excludeLights) {
 	
 		ObjectHit nearest = ObjectHit.MISS;
 		
@@ -84,6 +87,7 @@ public class Scene {
 		return nearest;
 		
 	}
+	
 	
 	// visibility test (null for sky)
 	public ObjectHit traceRay(Ray ray, WorldObject target) {

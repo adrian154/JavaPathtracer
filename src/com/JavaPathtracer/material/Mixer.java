@@ -23,14 +23,23 @@ public class Mixer implements Material {
 
 	@Override
 	public Vector shade(Hit hit, int bounces, Scene scene,Pathtracer pathtracer, double ior) {
-		//return (ThreadLocalRandom.current().nextDouble() < proportion.sampleScalar(hit.textureCoordinates.x, hit.textureCoordinates.y) ? A : B).shade(hit, bounces, scene, pathtracer, ior);
-		double val = proportion.sampleScalar(hit.textureCoordinates.x, hit.textureCoordinates.y);
+		double val = proportion.sampleScalar(hit.textureCoord);
 		return A.shade(hit, bounces, scene, pathtracer, ior).times(val).plus(B.shade(hit, bounces, scene, pathtracer, ior).times(1 - val));
 	}
 	
 	@Override
 	public String toString() {
 		return String.format("Mix (%s/%s) using %s", A.toString(), B.toString(), proportion.toString());
+	}
+	
+	@Override
+	public boolean shouldImportanceSample() {
+		return A.shouldImportanceSample() || B.shouldImportanceSample();
+	}
+	
+	@Override
+	public Vector getDebugColor(Vector textureCoord) {
+		return A.getDebugColor(textureCoord).plus(B.getDebugColor(textureCoord)).divBy(2);
 	}
 
 }

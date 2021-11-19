@@ -6,11 +6,6 @@ import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.pattern.Sampleable;
 import com.JavaPathtracer.scene.Scene;
 
-/*
- * NOTE: Use a Light instead of an emissive material for simple lights!
- * This should only really be used if you are blending emissive materials with non-emissive 
- * (...or something really funky)
- */
 public class EmissiveMaterial extends BaseMaterial {
 
 	public EmissiveMaterial(Sampleable emission) {
@@ -19,7 +14,12 @@ public class EmissiveMaterial extends BaseMaterial {
 	
 	@Override
 	public Vector shade(Hit hit, int bounces, Scene scene, Pathtracer pathtracer, double ior) {
-		return this.getColor(hit.textureCoordinates.x, hit.textureCoordinates.y);
+		return this.getColor(hit.textureCoord);
+	}
+	
+	@Override
+	public boolean shouldImportanceSample() {
+		return true; // direct light samples towards emissive materials
 	}
 	
 	@Override

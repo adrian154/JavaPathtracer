@@ -5,14 +5,19 @@ import com.JavaPathtracer.pattern.Sampleable;
 
 public abstract class BaseMaterial implements Material {
 
-	private Sampleable color;
+	protected Sampleable color;
 	
 	public BaseMaterial(Sampleable color) {
 		this.color = color;
 	}
 	
-	public Vector getColor(double u, double v) {
-		return color.sample(u, v);
+	public Vector getColor(Vector textureCoords) {
+		return color.sample(textureCoords);
+	}
+	
+	@Override
+	public Vector getDebugColor(Vector textureCoords) {
+		return this.getColor(textureCoords);
 	}
 	
 }

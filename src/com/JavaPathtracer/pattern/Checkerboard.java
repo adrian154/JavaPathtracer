@@ -2,7 +2,7 @@ package com.JavaPathtracer.pattern;
 
 import com.JavaPathtracer.geometry.Vector;
 
-public class Checkerboard implements Sampleable, SampleableScalar {
+public class Checkerboard implements Sampleable {
 
 	private Vector color1, color2;
 
@@ -16,13 +16,8 @@ public class Checkerboard implements Sampleable, SampleableScalar {
 	}
 
 	@Override
-	public Vector sample(double u, double v) {
-		return (u > 0.5 ^ v > 0.5) ? color1 : color2;
-	}
-
-	@Override
-	public double sampleScalar(double u, double v) {
-		return this.sample(u, v).x;
+	public Vector sample(Vector textureCoord) {
+		return (textureCoord.x > 0.5 ^ textureCoord.y > 0.5) ? color1 : color2;
 	}
 	
 	@Override

@@ -14,39 +14,39 @@ public class Pathtracer implements Raytracer {
 	
 	// Maximum depth of bounces
 	private int maxLightBounces;
-	private static final Vector BLACK = new Vector();
 	
 	public Pathtracer(int maxLightBounces) {
 		this.maxLightBounces = maxLightBounces;
 	}
 
 	// trace a ray
-	public Vector pathtraceRay(Scene scene, Ray ray, int bounces, double ior) {
+	public Vector pathtraceRay(Scene scene, Ray ray, int bounces, double ior, boolean excludeLights) {
 
 		if (bounces >= this.maxLightBounces) {
 			return Vector.ZERO;
 		}
 		
-		ObjectHit hit = scene.traceRay(ray);
+		ObjectHit hit = scene.traceRay(ray, excludeLights);
 		if (hit.hit) {
 
 			Material mat = hit.material;
-			/*if(mat instanceof EmissiveMaterial && !lights) {
-				return BLACK;
-			}*/
-		
+			if(scene.getLights().contains(hit.object) && excludeLights) return Vector.ZERO;
+			
 			return mat.shade(hit, bounces, scene, this, ior);
 		
 		} else {
-			return scene.getSkyEmission(ray.direction);
+			return scene.getSky().getEmission(ray.direction);
 		}
 
+	}
+	
+	public Vector pathtraceRay(Scene scene, Ray ray, int bounces, double ior) {
+		return this.pathtraceRay(scene, ray, bounces, ior, false);
 	}
 
 	@Override
 	public Vector traceRay(Scene scene, Ray ray) {
-		super.traceRay(scene, ray);
-		return pathtraceRay(scene, ray, 0, true, AIR_IOR);
+		return this.pathtraceRay(scene, ray, 0, AIR_IOR);
 	}
 	
 	@Override

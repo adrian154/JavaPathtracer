@@ -8,9 +8,8 @@ import javax.imageio.ImageIO;
 
 import com.JavaPathtracer.Stopwatch;
 import com.JavaPathtracer.geometry.Vector;
-import com.JavaPathtracer.material.Saveable;
 
-public class Texture implements Sampleable, SampleableScalar, Saveable {
+public class Texture implements Sampleable {
 
 	private String path;
 	private BufferedImage texture;
@@ -30,17 +29,17 @@ public class Texture implements Sampleable, SampleableScalar, Saveable {
 		this.texture = image;
 	}
 
-	public BufferedImage asImage() {
-		return texture;
+	public Channel getChannel(int channel) {
+		return new Channel(this, channel);
 	}
-
+	
 	@Override
-	public Vector sample(double u, double v) {
+	public Vector sample(Vector textureCoords) {
 
 		// TODO: Configurable interpolation
 		// TODO: texture wrap modes
-		int x = (int) Math.floor(u % 1 * texture.getWidth());
-		int y = (int) Math.floor((1 - v) % 1 * texture.getHeight());
+		int x = (int) Math.floor(textureCoords.x % 1 * texture.getWidth());
+		int y = (int) Math.floor((1 - textureCoords.y) % 1 * texture.getHeight());
 
 		int rgb = texture.getRGB(x, y);
 		int r = (rgb >> 16) & 0xFF;
@@ -51,56 +50,12 @@ public class Texture implements Sampleable, SampleableScalar, Saveable {
 
 	}
 
-	// When sampled as a scalar texture, only an arbitrary channel is sampled.
-	// In an actual grayscale texture, it doesn't matter which channel
-	// However, if you try to sample a colored texture as grayscale, weird behavior
-	// results!
-	@Override
-	public double sampleScalar(double u, double v) {
-
-		// TODO: Configurable interpolation
-		int x = (int) Math.round(u * texture.getWidth());
-		int y = (int) Math.floor((1 - v) % 1 * texture.getHeight());
-		
-		// Clamp
-		x = Math.max(Math.min(x, texture.getWidth() - 1), 0);
-		y = texture.getHeight() - Math.max(Math.min(y, texture.getHeight() - 1), 0) - 1;
-
-		int rgb = texture.getRGB(x, y);
-		int r = (rgb >> 16) & 0xFF;
-
-		return r / 255.0;
-
-	}
-
-	public void set(int x, int y, Vector color) {
-
-		if (color.x < 0 || color.y < 0 || color.z < 0) {
-			System.out.println("Warning: One or more color components were negative! " + color.toString());
-		}
-
-		int r = (int) Math.max(0, Math.min(color.x * 255, 255));
-		int g = (int) Math.max(0, Math.min(color.y * 255, 255));
-		int b = (int) Math.max(0, Math.min(color.z * 255, 255));
-		int rgb = (r << 16) | (g << 8) | b;
-
-		texture.setRGB(x, y, rgb);
-
-	}
-
 	public int getWidth() {
 		return texture.getWidth();
 	}
 
 	public int getHeight() {
 		return texture.getHeight();
-	}
-
-	@Override
-	public void saveToFile(File file) throws IOException {
-		Stopwatch stopwatch = new Stopwatch("SaveTexture");
-		ImageIO.write(texture, "png", file);
-		stopwatch.stop();
 	}
 	
 	@Override

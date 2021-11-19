@@ -1,5 +1,6 @@
 package com.JavaPathtracer.scene;
 
+import com.JavaPathtracer.geometry.BoundingBox;
 import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.ObjectHit;
 import com.JavaPathtracer.geometry.Ray;
@@ -24,11 +25,15 @@ public class SimpleObject implements WorldObject {
 		return material;
 	}
 
+	public BoundingBox getBoundingBox() {
+		return shape.getBoundingBox();
+	}
+	
 	// do geometry+material raytrace
 	@Override
 	public ObjectHit traceRay(Ray ray) {
 		Hit hit = shape.raytrace(ray);
-		return new ObjectHit(hit, material);
+		return new ObjectHit(hit, this, material);
 	}
 
 }
