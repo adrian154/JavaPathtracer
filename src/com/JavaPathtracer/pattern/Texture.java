@@ -6,7 +6,6 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import com.JavaPathtracer.Stopwatch;
 import com.JavaPathtracer.geometry.Vector;
 
 public class Texture implements Sampleable {
@@ -19,10 +18,8 @@ public class Texture implements Sampleable {
 	}
 
 	public Texture(File imageFile) throws IOException {
-		Stopwatch stopwatch = new Stopwatch("LoadImageTexture");
 		texture = ImageIO.read(imageFile);
 		this.path = imageFile.getPath();
-		stopwatch.stop();
 	}
 
 	public Texture(BufferedImage image) {

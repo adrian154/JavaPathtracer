@@ -35,7 +35,7 @@ public class LivePreview implements ActionListener {
 		public LivePreviewFrame(RenderJob job, int scale) {
 		
 			super();
-			this.add(new LivePreviewPanel(job, scale));
+			this.add(new PreviewPanel(job, scale));
 			this.pack();
 			this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			this.setTitle("Java Raytracer");

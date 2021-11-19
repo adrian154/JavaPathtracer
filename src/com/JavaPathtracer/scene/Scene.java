@@ -28,6 +28,7 @@ public class Scene {
 		sky = new SimpleSky(Vector.ZERO);
 		
 		this.camera = this.createCamera();
+		this.update(0);
 		
 	}
 

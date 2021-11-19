@@ -10,7 +10,7 @@ import javax.swing.JPanel;
 
 import com.JavaPathtracer.renderer.Renderer.RenderJob;
 
-public class LivePreviewPanel extends JPanel {
+public class PreviewPanel extends JPanel {
 
 	// Appease the serialization gods
 	public static final long serialVersionUID = 1;
@@ -18,7 +18,7 @@ public class LivePreviewPanel extends JPanel {
 	private RenderJob job;
 	private int scale;
 
-	public LivePreviewPanel(RenderJob job, int scale) {
+	public PreviewPanel(RenderJob job, int scale) {
 		this.scale = scale;
 		this.setPreferredSize(new Dimension(job.output.getWidth() * scale, job.output.getHeight() * scale));
 	}
@@ -38,6 +38,8 @@ public class LivePreviewPanel extends JPanel {
 		g.drawString("Raytracer: " + job.renderer.raytracer.toString(), 2, y += 16);
 		g.drawString("Tonemapper: " + job.renderer.toneMapper.toString(), 2, y += 16);
 		g.drawString(job.renderer.samples + " sample(s)", 2, y += 16);
+		g.drawString("Position: " + job.renderer.scene.getCamera().getPos(), 2, y += 16);
+		g.drawString("Looking direction: " + job.renderer.scene.getCamera().getLook(), 2, y += 16);
 		
 		/*
 		if(!reducedDebug) {
