@@ -1,8 +1,8 @@
 package com.JavaPathtracer.geometry;
 
-import com.JavaPathtracer.Raytracer;
+import com.JavaPathtracer.Pathtracer;
 
-public class Sphere implements FiniteShape {
+public class Sphere implements Shape {
 
 	public Vector center;
 	public double radius;
@@ -10,6 +10,10 @@ public class Sphere implements FiniteShape {
 	public Sphere(Vector center, double radius) {
 		this.center = center;
 		this.radius = radius;
+	}
+	
+	public BoundingBox getBoundingBox() {
+		return new BoundingBox(center.plus(-radius), center.plus(radius));
 	}
 	
 	@Override
@@ -23,14 +27,14 @@ public class Sphere implements FiniteShape {
 		double discrim = b * b - 4 * c;
 
 		if (discrim < 0) {
-			return null;
+			return Hit.MISS;
 		}
 
 		discrim = Math.sqrt(discrim);
 		double t = (-b - discrim) / 2;
-		if (t < Raytracer.EPSILON) {
+		if (t < Pathtracer.EPSILON) {
 			t = (-b + discrim) / 2;
-			if (t < Raytracer.EPSILON) {
+			if (t < Pathtracer.EPSILON) {
 				return null;
 			}
 		}
@@ -39,7 +43,7 @@ public class Sphere implements FiniteShape {
 		Vector normal = point.minus(this.center).normalize();
 
 		if(normal.dot(ray.direction) > 0) {
-			normal.invert();
+			normal = normal.reverse();
 		}
 		
 		// Do texture mapping
@@ -47,7 +51,8 @@ public class Sphere implements FiniteShape {
 		double u = 0.5 + Math.atan2(invDir.z, invDir.x) / (2 * Math.PI);
 		double v = 0.5 + Math.asin(invDir.y) / Math.PI;
 
-		return new Hit(ray, point, normal, t, new Vector(u, v, 0.0));
+		// TODO: tangent vector
+		return new Hit(ray, point, normal, null, t, new Vector(u, v, 0.0));
 	
 	}
 
