@@ -4,6 +4,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.Vector;
+import com.JavaPathtracer.pattern.Sampleable;
+import com.JavaPathtracer.pattern.SampleableDouble;
 
 /*
  * A rudimentary "rough" material.

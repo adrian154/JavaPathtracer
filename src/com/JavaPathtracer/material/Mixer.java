@@ -3,6 +3,7 @@ package com.JavaPathtracer.material;
 import com.JavaPathtracer.Pathtracer;
 import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.Vector;
+import com.JavaPathtracer.pattern.SampleableScalar;
 import com.JavaPathtracer.scene.Scene;
 
 // This class is kind of terrible and reflects the flawed nature of the abstractions I have chosen for materials

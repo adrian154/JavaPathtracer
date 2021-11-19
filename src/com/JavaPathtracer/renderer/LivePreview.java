@@ -5,7 +5,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.Timer;
 
-import com.JavaPathtracer.material.Texture;
+import com.JavaPathtracer.pattern.Texture;
 
 public class LivePreview implements ActionListener {
 

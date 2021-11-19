@@ -17,7 +17,8 @@ public class Hit {
 		this.distance = Double.POSITIVE_INFINITY;
 	}
 	
-	public Hit(Ray ray, Vector point, Vector normal, Vector tangent, double distance, Vector textureCoord) {
+	public Hit(boolean hit, Ray ray, Vector point, Vector normal, Vector tangent, double distance, Vector textureCoord) {
+		this.hit = hit;
 		this.ray = ray;
 		this.point = point;
 		this.normal = normal;
@@ -25,5 +26,13 @@ public class Hit {
 		this.distance = distance;
 		this.textureCoord = textureCoord;
 	}
+	
+	public Hit(Ray ray, Vector point, Vector normal, Vector tangent, double distance, Vector textureCoord) {
+		this(true, ray, point, normal, tangent, distance, textureCoord);
+	}
 
+	public Hit(Hit hit) {
+		this(hit.hit, hit.ray, hit.point, hit.normal, hit.tangent, hit.distance, hit.textureCoord);
+	}
+	
 }

@@ -1,10 +1,11 @@
 package com.JavaPathtracer.material;
 
 import com.JavaPathtracer.geometry.Vector;
+import com.JavaPathtracer.pattern.Sampleable;
 
 public abstract class BaseMaterial implements Material {
 
-	protected Sampleable color;
+	private Sampleable color;
 	
 	public BaseMaterial(Sampleable color) {
 		this.color = color;

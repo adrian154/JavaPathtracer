@@ -19,7 +19,7 @@ import com.JavaPathtracer.cameras.PerspectiveCamera;
 import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Vector;
-import com.JavaPathtracer.material.Texture;
+import com.JavaPathtracer.pattern.Texture;
 
 public class InteractivePreview {
 

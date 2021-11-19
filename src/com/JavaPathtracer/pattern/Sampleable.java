@@ -1,4 +1,4 @@
-package com.JavaPathtracer.material;
+package com.JavaPathtracer.pattern;
 
 import com.JavaPathtracer.geometry.Vector;
 

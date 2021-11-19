@@ -2,6 +2,7 @@ package com.JavaPathtracer.material;
 
 import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.Vector;
+import com.JavaPathtracer.pattern.Sampleable;
 
 public class MirrorMaterial extends BRDFMaterial {
 

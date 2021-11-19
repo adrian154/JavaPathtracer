@@ -2,7 +2,7 @@ package com.JavaPathtracer.geometry;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import com.JavaPathtracer.material.Sampleable;
+import com.JavaPathtracer.pattern.Sampleable;
 
 // 3D vector class
 // All methods are immutable. After much thinking I have decided that mutable methods...

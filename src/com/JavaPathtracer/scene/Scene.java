@@ -3,16 +3,14 @@ package com.JavaPathtracer.scene;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.JavaPathtracer.Light;
-import com.JavaPathtracer.Raytracer;
+import com.JavaPathtracer.Pathtracer;
 import com.JavaPathtracer.cameras.Camera;
 import com.JavaPathtracer.cameras.PerspectiveCamera;
-import com.JavaPathtracer.geometry.FiniteShape;
 import com.JavaPathtracer.geometry.Hit;
+import com.JavaPathtracer.geometry.ObjectHit;
 import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Shape;
 import com.JavaPathtracer.geometry.Vector;
-import com.JavaPathtracer.material.EmissiveMaterial;
 import com.JavaPathtracer.material.Material;
 
 public class Scene {
@@ -69,41 +67,45 @@ public class Scene {
 		this.add(new SimpleObject(shape, material));
 	}
 
-	// do geometry + material trace into scene
-	// `target` is useful for shadow ray type stuff
-	public Hit traceRay(Ray ray, WorldObject target) {
+	// trace ray into the scene
+	public ObjectHit traceRay(Ray ray) {
+	
+		ObjectHit nearest = ObjectHit.MISS;
+		
+		for(WorldObject object: objects) {
+			
+			ObjectHit hit = object.traceRay(ray);
+			if(hit.distance < nearest.distance && hit.distance > Pathtracer.EPSILON) {
+				nearest = hit;
+			}
+			
+		}
+		
+		return nearest;
+		
+	}
+	
+	// visibility test (null for sky)
+	public ObjectHit traceRay(Ray ray, WorldObject target) {
 
-		Hit nearest = null;
-		WorldObject nearestObj = null;
+		ObjectHit desiredHit = target == null ? ObjectHit.MISS : target.traceRay(ray);
+		if(!desiredHit.hit) {
+			return ObjectHit.MISS;
+		}
 		
 		for (WorldObject object: objects) {
 			
-			Hit hit = object.traceRay(ray);
-			if (hit != null && (nearest == null || hit.distance < nearest.distance && hit.distance > Raytracer.EPSILON)) {
-				nearest = hit;
-				nearestObj = object;
+			if(object == target) continue;
+			
+			ObjectHit hit = object.traceRay(ray);
+			if (hit.distance > Pathtracer.EPSILON && hit.distance < desiredHit.distance) {
+				return ObjectHit.MISS;
 			}
 
 		}
 
-		if(target != null && target != nearestObj) return null;
-		return nearest;
-
-	}
-
-	public Hit traceRay(Ray ray) {
-		return this.traceRay(ray, null);
-	}
-
-	public boolean traceSkyRay(Ray ray) {
-		
-		for(WorldObject object: objects) {
-			if(object.traceRay(ray) != null) {
-				return false;
-			}
-		}
-		
-		return true;
+		// There's nothing in the way.
+		return desiredHit;
 		
 	}
 

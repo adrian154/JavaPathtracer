@@ -1,4 +1,4 @@
-package com.JavaPathtracer.material;
+package com.JavaPathtracer.pattern;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -8,6 +8,7 @@ import javax.imageio.ImageIO;
 
 import com.JavaPathtracer.Stopwatch;
 import com.JavaPathtracer.geometry.Vector;
+import com.JavaPathtracer.material.Saveable;
 
 public class Texture implements Sampleable, SampleableScalar, Saveable {
 

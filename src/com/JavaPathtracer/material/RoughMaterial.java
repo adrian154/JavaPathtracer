@@ -1,6 +1,8 @@
 package com.JavaPathtracer.material;
 
 import com.JavaPathtracer.geometry.Vector;
+import com.JavaPathtracer.pattern.Sampleable;
+import com.JavaPathtracer.pattern.SampleableScalar;
 
 public class RoughMaterial extends DiffuseMaterial {
 

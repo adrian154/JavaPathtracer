@@ -154,7 +154,7 @@ public class BVHNode extends BoundingBox implements WorldObject {
 			if(left == null) return right;
 			if(right == null) return left;
 			
-			return left.hit.distance < right.hit.distance ? left : right;
+			return left.distance < right.distance ? left : right;
 			
 		} else {
 			return mesh.intersect(ray, this.triangleIndexes);

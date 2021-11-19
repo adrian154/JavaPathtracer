@@ -1,4 +1,4 @@
-package com.JavaPathtracer.material;
+package com.JavaPathtracer.pattern;
 
 public class SampleableDouble implements SampleableScalar {
 

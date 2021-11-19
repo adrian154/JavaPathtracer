@@ -1,7 +1,7 @@
 package com.JavaPathtracer.scene;
 
 import com.JavaPathtracer.geometry.Vector;
-import com.JavaPathtracer.material.Sampleable;
+import com.JavaPathtracer.pattern.Sampleable;
 
 public class TexturedSky implements Sky {
 

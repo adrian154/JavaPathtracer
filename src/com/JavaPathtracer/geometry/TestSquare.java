@@ -1,6 +1,6 @@
 package com.JavaPathtracer.geometry;
 
-import com.JavaPathtracer.material.Sampleable;
+import com.JavaPathtracer.pattern.Sampleable;
 
 public class TestSquare extends Square {
 

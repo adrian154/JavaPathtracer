@@ -8,7 +8,7 @@ import java.awt.Image;
 
 import javax.swing.JPanel;
 
-import com.JavaPathtracer.material.Texture;
+import com.JavaPathtracer.pattern.Texture;
 
 public class LivePreviewPanel extends JPanel {
 

@@ -1,6 +1,6 @@
 package com.JavaPathtracer;
 
-import com.JavaPathtracer.geometry.Hit;
+import com.JavaPathtracer.geometry.ObjectHit;
 import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.material.EmissiveMaterial;
@@ -21,24 +21,24 @@ public class Pathtracer implements Raytracer {
 	}
 
 	// trace a ray
-	public Vector pathtraceRay(Scene scene, Ray ray, int bounces, boolean lights, double ior) {
+	public Vector pathtraceRay(Scene scene, Ray ray, int bounces, double ior) {
 
 		if (bounces >= this.maxLightBounces) {
 			return Vector.ZERO;
 		}
 		
-		Hit hit = scene.traceRay(ray);
-		if (hit != null) {
+		ObjectHit hit = scene.traceRay(ray);
+		if (hit.hit) {
 
 			Material mat = hit.material;
-			if(mat instanceof EmissiveMaterial && !lights) {
+			/*if(mat instanceof EmissiveMaterial && !lights) {
 				return BLACK;
-			}
+			}*/
 		
 			return mat.shade(hit, bounces, scene, this, ior);
 		
 		} else {
-			return scene.getSkyEmission(ray.direction, lights);
+			return scene.getSkyEmission(ray.direction);
 		}
 
 	}

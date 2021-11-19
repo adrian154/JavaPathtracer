@@ -6,6 +6,7 @@ import java.io.IOException;
 import com.JavaHDR.HDREncoder;
 import com.JavaHDR.HDRImageRGB;
 import com.JavaPathtracer.geometry.Vector;
+import com.JavaPathtracer.pattern.Sampleable;
 
 public class HDRMap implements Sampleable, Saveable {
 
