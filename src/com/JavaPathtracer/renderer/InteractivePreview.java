@@ -20,13 +20,13 @@ import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.pattern.Texture;
+import com.JavaPathtracer.renderer.Renderer.RenderJob;
 
 public class InteractivePreview {
 
 	protected static final double MOVEMENT_SCALE = 1;
 	
-	private Renderer renderer;
-	private Texture output;
+	private RenderJob job;
 	private PreviewFrame frame;
 	private Camera camera;
 	private int scale;
@@ -34,31 +34,45 @@ public class InteractivePreview {
 	
 	// controls
 	private int prevX, prevY;
-	private boolean forward, backward, left, right, up, down, control;
+	private boolean forward, backward, left, right, up, down;
 	private double azimuth, inclination, fov;
+	private long lastFrameTime;
 	
-	public InteractivePreview(Renderer renderer, Texture output, int scale) {
-		this.renderer = renderer;
-		this.output = output;
-		this.camera = renderer.getScene().getCamera();
+	public InteractivePreview(RenderJob job, Texture output, int scale) {
+		this.job = job;
+		this.camera = job.renderer.scene.getCamera();
 		this.azimuth = Math.PI / 2;
 		this.inclination = Math.PI / 2;
-		fov = 30;
+		this.fov = 30;
 		this.scale = scale;
 		this.frameCount = 0;
 	}
 	
 	public void run() throws InterruptedException {
+		
 		this.frame = new PreviewFrame();
 		while(true) {
+
+			// update scene and camera
 			updateCamera();
-			renderer.getScene().update(frameCount);
-			RenderJob job = renderer.render(output);
+			job.renderer.scene.update(frameCount);
+			
+			// start new job
+			job = job.renderer.render(job.output);
 			job.await();
 			frame.repaint();
-			Thread.sleep(30 - System.currentTimeMillis() % 30);
+			
+			// if there's some time left in the frame, rest
+			long timeElapsed = System.currentTimeMillis() - lastFrameTime;
+			if(timeElapsed > 33) {
+				Thread.sleep(30 - timeElapsed);
+			}
+			
 			frameCount++;
+			lastFrameTime = System.currentTimeMillis();
+			
 		}
+		
 	}
 	
 	private void updateCamera() {
