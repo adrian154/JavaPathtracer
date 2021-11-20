@@ -1,6 +1,5 @@
 assets/
 bin/
-anim/
 *.settings/
 *.classpath
 *.project
@@ -8,4 +7,4 @@ anim/
 *.iml
 .idea/*
 animation/*
-src/com/JavaPathtracer/testscenes/*
+src/com/JavaPathtracer/testscenes_old/*

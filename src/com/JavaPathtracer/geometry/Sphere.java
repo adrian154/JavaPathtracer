@@ -35,7 +35,7 @@ public class Sphere implements Shape {
 		if (t < Pathtracer.EPSILON) {
 			t = (-b + discrim) / 2;
 			if (t < Pathtracer.EPSILON) {
-				return null;
+				return Hit.MISS;
 			}
 		}
 

@@ -30,11 +30,11 @@ public class Square extends Plane {
 	public Hit raytrace(Ray ray) {
 
 		Hit hit = super.raytrace(ray);
-		if (hit != null && Math.abs(hit.point.x - point.x) < size && Math.abs(hit.point.z - point.z) < size) {
+		if (hit.hit && Math.abs(hit.point.x - point.x) < size && Math.abs(hit.point.z - point.z) < size) {
 			return hit;
 		}
 
-		return null;
+		return Hit.MISS;
 
 	}
 	

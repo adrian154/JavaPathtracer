@@ -4,12 +4,14 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+import javax.imageio.ImageIO;
+
 import com.JavaPathtracer.renderer.InteractivePreview;
 import com.JavaPathtracer.renderer.LivePreview;
 import com.JavaPathtracer.renderer.Renderer;
 import com.JavaPathtracer.renderer.Renderer.RenderJob;
 import com.JavaPathtracer.scene.Scene;
-import com.JavaPathtracer.testscenes.Scene6;
+import com.JavaPathtracer.testscenes.GeometryTest;
 import com.JavaPathtracer.tonemapping.LinearTonemapper;
 
 public class Main {
@@ -23,58 +25,58 @@ public class Main {
 		return new Renderer(scene, raytracer, 16, 256, new LinearTonemapper());
 	}
 	
-	private static void render(boolean preview, String outputName) throws InterruptedException, IOException {
-		RenderJob job = renderer.render(output);
-		if(preview) {
-			LivePreview previewObj = new LivePreview(job, 1);
-			previewObj.start();
-		}
-		job.await();
-		output.saveToFile(new File(outputName));
-	}
-	
-	private static void animate() throws InterruptedException, IOException {
-		for(int i = 0; i < 360; i++) {
-			scene.update(i);
-			RenderJob job = renderer.render(output);
-			job.await();
-			output.saveToFile(new File("animation/frame" + i + ".png"));
-			System.out.println("Finished frame " + i);
-		}
-	}
-	
-	private static void interactive() throws InterruptedException {
-		InteractivePreview preview = new InteractivePreview(renderer, output, 4);
-		preview.run();
-	}
-	
 	public static void main(String[] args) throws IOException, InterruptedException {
 		
 		// read args
-		String mode = "render-preview";
+		String mode = "preview";
 		if(args.length > 0) mode = args[0];
 				
 		// set up output objects
-		BufferedImage output = new BufferedImage(720, 720, BufferedImage.TYPE_INT_RGB);
+		BufferedImage output = new BufferedImage(256, 256, BufferedImage.TYPE_INT_RGB);
 		
 		// set up renderer objects
 		Raytracer raytracer = createRaytracer();
-		Scene scene = new Scene6();
+		Scene scene = new GeometryTest();
 		Renderer renderer = createRenderer(scene, raytracer);
 
-		// render
-		RenderJob job = renderer.render(output);
-		if(mode.equals("preview")) {
-			LivePreview preview = new LivePreview(job, 1);
-		} else if(mode.equals("animate")) {
-			for(int i = 0; i < 360; i++) {
+		if(mode.equals("animate")) {
+			
+			int numFrames = 360;
+			if(args.length > 1) numFrames = Integer.parseInt(args[1]);
+			for(int i = 0; i < numFrames; i++) {
+				
+				// render
 				scene.update(i);
-				// TODO: finish this
+				RenderJob job = renderer.render(output);
+				job.await();
+				
+				// save
+				File file = new File("animation/frame" + i + ".png");
+				ImageIO.write(output, "png", file);
+				System.out.printf("Finished frame %d of %d\n", i, numFrames);
+				
 			}
-		} else if(mode.equals("interactive")) {
-			interactive();
+			
 		} else {
-			throw new IllegalArgumentException("Unknown mode.");
+			
+			// render
+			RenderJob job = renderer.render(output);
+	
+			// create various windows
+			if(mode.equals("preview")) {
+				LivePreview preview = new LivePreview(job, 1);
+				preview.start();
+			} else if(mode.equals("interactive")) {
+				InteractivePreview preview = new InteractivePreview(job, 4);
+				preview.run();
+			} else {
+				throw new RuntimeException("Unknown mode: " + mode);
+			}
+			
+			// save image
+			File file = new File("output.png");
+			ImageIO.write(output, "png", file);
+			
 		}
 		
 	}

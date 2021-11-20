@@ -32,7 +32,7 @@ public class Scene {
 		
 	}
 
-	public Camera createCamera() {
+	protected Camera createCamera() {
 		return new PerspectiveCamera();
 	}
 	

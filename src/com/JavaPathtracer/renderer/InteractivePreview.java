@@ -10,10 +10,7 @@ import javax.swing.event.MouseInputAdapter;
 
 import com.JavaPathtracer.cameras.Camera;
 import com.JavaPathtracer.cameras.PerspectiveCamera;
-import com.JavaPathtracer.geometry.Hit;
-import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Vector;
-import com.JavaPathtracer.pattern.Texture;
 import com.JavaPathtracer.renderer.Renderer.RenderJob;
 
 public class InteractivePreview {
@@ -32,7 +29,7 @@ public class InteractivePreview {
 	private double azimuth, inclination, fov;
 	private long lastFrameTime;
 	
-	public InteractivePreview(RenderJob job, Texture output, int scale) {
+	public InteractivePreview(RenderJob job, int scale) {
 		this.job = job;
 		this.camera = job.renderer.scene.getCamera();
 		this.azimuth = Math.PI / 2;

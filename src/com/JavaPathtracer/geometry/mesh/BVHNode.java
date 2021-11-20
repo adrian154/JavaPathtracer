@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.JavaPathtracer.geometry.BoundingBox;
+import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.ObjectHit;
 import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.scene.WorldObject;
@@ -144,15 +145,15 @@ public class BVHNode extends BoundingBox implements WorldObject {
 
 		// check if the ray intersects the bounding box
 		if (!super.intersects(ray))
-			return null;
+			return ObjectHit.MISS;
 
 		// leaf node
 		if (triangleIndexes == null) {
 			
 			ObjectHit left = this.left.traceRay(ray);
 			ObjectHit right = this.right.traceRay(ray);
-			if(left == null) return right;
-			if(right == null) return left;
+			if(!left.hit) return right;
+			if(!right.hit) return left;
 			
 			return left.distance < right.distance ? left : right;
 			

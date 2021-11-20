@@ -95,7 +95,7 @@ public abstract class BRDFMaterial extends BaseMaterial {
 			
 			ObjectHit lightHit = scene.traceRay(ray, light);
 			
-			if(lightHit != null) {
+			if(lightHit.hit) {
 
 				// area sampling means our BRDF is just (angle sampled) / (area of unit hemisphere)
 				double solidAngle = discSolidAngle(bounding.radius, bounding.center.minus(hit.point).length());

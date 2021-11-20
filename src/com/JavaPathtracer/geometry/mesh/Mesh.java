@@ -105,13 +105,13 @@ public class Mesh {
 	
 	public ObjectHit intersect(Ray ray, WorldObject object, int[] prims) {
 		
-		Hit nearest = null;
+		Hit nearest = Hit.MISS;
 		int nearestTri = 0;
 		
 		for (int i: prims) {
 
 			Hit cur = intersectTri(ray, i);
-			if (cur != null && (nearest == null || cur.distance < nearest.distance)) {
+			if (cur.hit && cur.distance < nearest.distance) {
 				nearest = cur;
 				nearestTri = i;
 			}

@@ -43,15 +43,17 @@ public class Cylinder implements Shape {
 		
 		// life is only hard if you make it hard
 
+		// calculate intersection with a cylinder aligned along (0, 1, 0), and then transform the results back
 		Vector d = mat.transform(ray.direction);
 		Vector o = mat.transform(ray.origin.minus(point));
 		
+		// i have no idea how I derived any of these
 		double a = d.x * d.x + d.z * d.z;
 		double b = 2 * (o.x * d.x + o.z * d.z);
 		double c = o.x * o.x + o.z * o.z - radius * radius;
 		
 		double discrim = b * b - 4 * a * c;
-		if(discrim < 0) return null;
+		if(discrim < 0) return Hit.MISS;
 
 		// t1 will always be closer
 		discrim = Math.sqrt(discrim);
@@ -59,14 +61,14 @@ public class Cylinder implements Shape {
 		double t2 = (-b + discrim) / (2 * a);
 
 		// both behind
-		if(t1 < Pathtracer.EPSILON && t2 < Pathtracer.EPSILON) return null;
+		if(t1 < Pathtracer.EPSILON && t2 < Pathtracer.EPSILON) return Hit.MISS;
 		
 		Vector hitLocal;
 		double t;
 		Vector hit1 = o.plus(d.times(t1));
 		Vector hit2 = o.plus(d.times(t2));
 		
-		if(t1 < Pathtracer.EPSILON && t2 < Pathtracer.EPSILON) return null;
+		if(t1 < Pathtracer.EPSILON && t2 < Pathtracer.EPSILON) return Hit.MISS;
 		
 		if(t1 < Pathtracer.EPSILON) {
 			hitLocal = hit2; t = t2;
@@ -83,7 +85,7 @@ public class Cylinder implements Shape {
 		}
 		
 		// transform back normal
-		if(hitLocal == null || hitLocal.y < 0 || hitLocal.y > length) return null;
+		if(hitLocal == null || hitLocal.y < 0 || hitLocal.y > length) return Hit.MISS;
 		Vector normalLocal = new Vector(hitLocal.x, 0, hitLocal.z).normalize();
 		
 		Vector point = hitLocal.fromCoordinateSpace(bvx, bvy, bvz);
