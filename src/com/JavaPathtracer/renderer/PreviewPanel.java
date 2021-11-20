@@ -20,6 +20,7 @@ public class PreviewPanel extends JPanel {
 
 	public PreviewPanel(RenderJob job, int scale) {
 		this.scale = scale;
+		this.job = job;
 		this.setPreferredSize(new Dimension(job.output.getWidth() * scale, job.output.getHeight() * scale));
 	}
 	

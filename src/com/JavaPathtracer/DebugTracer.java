@@ -50,7 +50,7 @@ public class DebugTracer implements Raytracer {
 	public Vector traceRay(Scene scene, Ray ray) {
 
 		ObjectHit hit = scene.traceRay(ray, false);
-		if (hit != null) {
+		if (hit.hit) {
 			switch(mode) {
 				case SIMPLE_SHADED: return shadeSimple(hit);
 				case NORMAL: return shadeNormal(hit);

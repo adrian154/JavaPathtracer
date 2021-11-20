@@ -183,11 +183,11 @@ public class Vector implements Sampleable {
 	}
 	
 	private int clamp(double value) {
-		return (int)Math.min(Math.max(value, 255), 0);
+		return (int)Math.max(Math.min(value, 255), 0);
 	}
 	
 	public int toRGB() {
-		return (int)clamp(x) << 16 | (int)clamp(y) << 8 | (int)clamp(z);
+		return (int)clamp(x * 255) << 16 | (int)clamp(y * 255) << 8 | (int)clamp(z * 255);
 	}
 	
 	// for use with RGB colors

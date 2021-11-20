@@ -12,17 +12,17 @@ import com.JavaPathtracer.renderer.Renderer;
 import com.JavaPathtracer.renderer.Renderer.RenderJob;
 import com.JavaPathtracer.scene.Scene;
 import com.JavaPathtracer.testscenes.GeometryTest;
-import com.JavaPathtracer.tonemapping.LinearTonemapper;
+import com.JavaPathtracer.tonemapping.FilmicTonemapper;
 
 public class Main {
 		
 	private static Raytracer createRaytracer() {
-		return new Pathtracer(5);
-		//return new DebugTracer(Mode.SIMPLE_SHADED);
+		return new Pathtracer(8);
+		//return new DebugTracer(Mode.NORMAL);
 	}
 	
 	private static Renderer createRenderer(Scene scene, Raytracer raytracer) {
-		return new Renderer(scene, raytracer, 16, 256, new LinearTonemapper());
+		return new Renderer(scene, raytracer, 16, 256, new FilmicTonemapper());
 	}
 	
 	public static void main(String[] args) throws IOException, InterruptedException {
@@ -64,7 +64,7 @@ public class Main {
 	
 			// create various windows
 			if(mode.equals("preview")) {
-				LivePreview preview = new LivePreview(job, 1);
+				LivePreview preview = new LivePreview(job, 2);
 				preview.start();
 			} else if(mode.equals("interactive")) {
 				InteractivePreview preview = new InteractivePreview(job, 4);
@@ -74,6 +74,7 @@ public class Main {
 			}
 			
 			// save image
+			job.await();
 			File file = new File("output.png");
 			ImageIO.write(output, "png", file);
 			

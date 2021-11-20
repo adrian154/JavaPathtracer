@@ -38,7 +38,7 @@ public abstract class BRDFMaterial extends BaseMaterial {
 	// default: uniform random sampling
 	// the PDF should integrate to 1 over a hemisphere
 	protected double samplerPDF(Hit hit) {
-		return 1 / (2 * Math.PI);
+		return 1 / Math.PI;
 	}
 	
 	// in lieu of proper MIS

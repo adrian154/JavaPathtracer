@@ -56,15 +56,15 @@ public class Scene {
 		return this.lights;
 	}
 	
-	public void add(WorldObject object) {
+	public void add(WorldObject object, boolean isLight) {
 		objects.add(object);
+		if(isLight) {
+			this.lights.add(object);
+		}
 	}
 	
 	public void add(SimpleObject object) {
-		this.add(object);
-		if(object.getMaterial().shouldImportanceSample()) {
-			this.lights.add(object);
-		}
+		this.add(object, object.material.shouldImportanceSample());
 	}
 
 	public void add(Shape shape, Material material) {
