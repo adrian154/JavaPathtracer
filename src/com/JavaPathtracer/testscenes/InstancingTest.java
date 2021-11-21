@@ -17,7 +17,7 @@ import com.JavaPathtracer.pattern.Texture;
 import com.JavaPathtracer.scene.Scene;
 import com.JavaPathtracer.scene.SimpleSky;
 
-public class GeometryTest extends Scene {
+public class InstancingTest extends Scene {
 	
 	public Camera getCamera() {
 		Camera camera = new PerspectiveCamera();
@@ -26,7 +26,7 @@ public class GeometryTest extends Scene {
 		return camera;
 	}
 	
-	public GeometryTest() throws IOException {
+	public InstancingTest() throws IOException {
 		
 		this.setSky(new SimpleSky(Vector.ONE.times(10)));
 		

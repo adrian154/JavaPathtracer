@@ -122,7 +122,7 @@ public class MeshGeometry {
 				Vector tex0 = textureCoordinates[texCoordIndices[nearestTri * 3]];
 				Vector tex1 = textureCoordinates[texCoordIndices[nearestTri * 3 + 1]];
 				Vector tex2 = textureCoordinates[texCoordIndices[nearestTri * 3 + 2]];
-				nearest.textureCoord = tex1.plus((tex1.minus(tex0).times(nearest.textureCoord.x)).plus(tex2.minus(tex0).times(nearest.textureCoord.y)));
+				nearest.textureCoord = tex0.plus((tex1.minus(tex0).times(nearest.textureCoord.x)).plus(tex2.minus(tex0).times(nearest.textureCoord.y)));
 			}
 			
 			return nearest;

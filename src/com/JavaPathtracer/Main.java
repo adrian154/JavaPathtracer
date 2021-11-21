@@ -12,14 +12,14 @@ import com.JavaPathtracer.renderer.LivePreview;
 import com.JavaPathtracer.renderer.Renderer;
 import com.JavaPathtracer.renderer.Renderer.RenderJob;
 import com.JavaPathtracer.scene.Scene;
-import com.JavaPathtracer.testscenes.GeometryTest;
+import com.JavaPathtracer.testscenes.InstancingTest;
 import com.JavaPathtracer.tonemapping.LinearTonemapper;
 
 public class Main {
 		
 	private static Raytracer createRaytracer() {
 		//return new Pathtracer(8);
-		return new DebugTracer(Mode.SIMPLE_SHADED);
+		return new DebugTracer(Mode.ALBEDO);
 	}
 	
 	private static Renderer createRenderer(Scene scene, Raytracer raytracer) {
@@ -37,7 +37,7 @@ public class Main {
 		
 		// set up renderer objects
 		Raytracer raytracer = createRaytracer();
-		Scene scene = new GeometryTest();
+		Scene scene = new InstancingTest();
 		Renderer renderer = createRenderer(scene, raytracer);
 
 		if(mode.equals("animate")) {

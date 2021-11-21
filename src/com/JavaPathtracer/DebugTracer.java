@@ -8,6 +8,7 @@ import com.JavaPathtracer.scene.Scene;
 public class DebugTracer implements Raytracer {
 
 	public enum Mode {
+		ALBEDO,
 		SIMPLE_SHADED,
 		NORMAL,
 		DEPTH,
@@ -21,6 +22,10 @@ public class DebugTracer implements Raytracer {
 	}
 	
 	// --- shaders
+	private Vector shadeAlbedo(ObjectHit hit) {
+		return hit.hit ? hit.material.getDebugColor(hit.textureCoord) : Vector.ZERO;
+	}
+	
 	private Vector shadeSimple(ObjectHit hit) {
 		
 		if(hit.hit) {
@@ -37,7 +42,7 @@ public class DebugTracer implements Raytracer {
 	}
 	
 	private Vector shadeDepth(ObjectHit hit) {
-		return new Vector(hit.distance + 0.1);
+		return new Vector(1 / (hit.distance + 0.1));
 	}
 	
 	private Vector shadeUV(ObjectHit hit) {
@@ -50,6 +55,7 @@ public class DebugTracer implements Raytracer {
 		ObjectHit hit = scene.traceRay(ray, false);
 		if (hit.hit) {
 			switch(mode) {
+				case ALBEDO: return shadeAlbedo(hit);
 				case SIMPLE_SHADED: return shadeSimple(hit);
 				case NORMAL: return shadeNormal(hit);
 				case DEPTH: return shadeDepth(hit);

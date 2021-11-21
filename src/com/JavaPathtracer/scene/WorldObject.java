@@ -27,7 +27,8 @@ public abstract class WorldObject {
 		if(hit.hit && transform != null) {
 			hit.point = transform.transformPoint(hit.point);
 			hit.normal = transform.transformNormal(hit.normal);
-			//hit.tangent = transform.transformVector(hit.tangent);
+			// FIXME: Currently commented out since no shapes
+			//hit.tangent = transform.transformVector(hit.tangent) ;
 			hit.distance = hit.point.minus(originalRay.origin).length();
 			hit.ray = originalRay;
 		}
