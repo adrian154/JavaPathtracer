@@ -8,9 +8,9 @@ import com.JavaPathtracer.geometry.BoundingBox;
 import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.ObjectHit;
 import com.JavaPathtracer.geometry.Ray;
-import com.JavaPathtracer.scene.WorldObject;
+import com.JavaPathtracer.geometry.Shape;
 
-public class BVHNode extends BoundingBox implements WorldObject {
+public class BVHNode extends BoundingBox implements Shape {
 
 	// construction constants
 	public static final int NUM_BINS = 10; // more bins = potentially better splits but greater construction time
@@ -18,7 +18,7 @@ public class BVHNode extends BoundingBox implements WorldObject {
 	public static final double COST_INTERSECT = 12;
 	public static final int MAX_DEPTH = 12;
 	
-	public Mesh mesh;
+	public MeshGeometry mesh;
 	
 	// children
 	public BVHNode left;
@@ -30,24 +30,28 @@ public class BVHNode extends BoundingBox implements WorldObject {
 	// list of children, used during BVH construction (should be null afterwards)
 	private List<TriangleBoundingBox> primitives;
 
-	public static BVHNode create(Mesh mesh) {
-
+	public BVHNode(MeshGeometry mesh) {
 		
-		List<TriangleBoundingBox> tris = new ArrayList<TriangleBoundingBox>();
+		super(null, null);
+		this.mesh = mesh;
+		
+		// create list of primitives
+		this.primitives = new ArrayList<TriangleBoundingBox>();
 		for(int i = 0; i < mesh.faces.length / 3; i++) {
-			tris.add(TriangleBoundingBox.create(mesh, i));
+			this.primitives.add(TriangleBoundingBox.create(mesh, i));
 		}
 		
-		BVHNode root = new BVHNode(mesh, tris);
-		root.split(0);
-		return root;
-
+		BoundingBox box = new BoundingBox(primitives);
+		this.min = box.min;
+		this.max = box.max;
+		this.split(0);
+		
 	}
-
-	public BVHNode(Mesh mesh, List<TriangleBoundingBox> primitives) {
+	
+	public BVHNode(MeshGeometry mesh, List<TriangleBoundingBox> primitives) {
 		super(primitives);
-		this.mesh = mesh;
 		this.primitives = primitives;
+		this.mesh = mesh;
 	}
 	
 	private void makeLeafNode() {
@@ -129,24 +133,24 @@ public class BVHNode extends BoundingBox implements WorldObject {
 	}
 
 	@Override
-	public ObjectHit traceRay(Ray ray) {
+	public Hit raytrace(Ray ray) {
 		
 		// check if the ray intersects the bounding box
 		if (!super.intersects(ray))
-			return ObjectHit.MISS;
+			return Hit.MISS;
 
 		// leaf node
 		if (triangleIndexes == null) {
 
-			ObjectHit left = this.left.traceRay(ray);
-			ObjectHit right = this.right.traceRay(ray);
+			Hit left = this.left.raytrace(ray);
+			Hit right = this.right.raytrace(ray);
 			if(!left.hit) return right;
 			if(!right.hit) return left;
 			
 			return left.distance < right.distance ? left : right;
 			
 		} else {
-			return mesh.intersect(ray, this, this.triangleIndexes);
+			return mesh.intersect(ray, this.triangleIndexes);
 		}
 
 	}

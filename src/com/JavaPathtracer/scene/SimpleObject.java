@@ -5,16 +5,22 @@ import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.ObjectHit;
 import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Shape;
+import com.JavaPathtracer.geometry.Transform;
 import com.JavaPathtracer.material.Material;
 
-public class SimpleObject implements WorldObject {
+public class SimpleObject extends WorldObject {
 
 	public final Shape shape;
 	public Material material;
 
-	public SimpleObject(Shape shape, Material material) {
+	public SimpleObject(Shape shape, Material material, Transform transform) {
+		super(transform);
 		this.shape = shape;
 		this.material = material;
+	}
+	
+	public SimpleObject(Shape shape, Material material) {
+		this(shape, material, null);
 	}
 
 	public Shape getShape() {
@@ -29,9 +35,8 @@ public class SimpleObject implements WorldObject {
 		return shape.getBoundingBox();
 	}
 	
-	// do geometry+material raytrace
 	@Override
-	public ObjectHit traceRay(Ray ray) {
+	public ObjectHit raytraceObject(Ray ray) {
 		Hit hit = shape.raytrace(ray);
 		return new ObjectHit(hit, this, material);
 	}

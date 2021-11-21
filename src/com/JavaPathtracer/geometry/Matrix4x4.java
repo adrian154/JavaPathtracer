@@ -21,67 +21,6 @@ public class Matrix4x4 {
 		this.factors = factors;
 	}
 
-	public Matrix4x4 Translate(double x, double y, double z) {
-		Matrix4x4 transform = new Matrix4x4();
-		transform.factors[3] = x;
-		transform.factors[7] = y;
-		transform.factors[11] = z;
-		return this.multiply(transform);
-	}
-
-	public Matrix4x4 Translate(Vector translate) {
-		return this.Translate(translate.x, translate.y, translate.z);
-	}
-
-	public Matrix4x4 Scale(double x, double y, double z) {
-		Matrix4x4 transform = new Matrix4x4();
-		transform.factors[0] = x;
-		transform.factors[5] = y;
-		transform.factors[10] = z;
-		return this.multiply(transform);
-	}
-
-	public Matrix4x4 Scale(Vector scale) {
-		return this.Scale(scale.x, scale.y, scale.z);
-	}
-
-	public Matrix4x4 Scale(double scale) {
-		return this.Scale(scale, scale, scale);
-	}
-
-	public Matrix4x4 RotateX(double angle) {
-		Matrix4x4 transform = new Matrix4x4();
-		double cos = Math.cos(angle);
-		double sin = Math.sin(angle);
-		transform.factors[5] = cos;
-		transform.factors[6] = -sin;
-		transform.factors[7] = sin;
-		transform.factors[8] = cos;
-		return this.multiply(transform);
-	}
-
-	public Matrix4x4 RotateY(double angle) {
-		Matrix4x4 transform = new Matrix4x4();
-		double cos = Math.cos(angle);
-		double sin = Math.sin(angle);
-		transform.factors[0] = cos;
-		transform.factors[2] = sin;
-		transform.factors[8] = -sin;
-		transform.factors[10] = cos;
-		return this.multiply(transform);
-	}
-
-	public Matrix4x4 RotateZ(double angle) {
-		Matrix4x4 transform = new Matrix4x4();
-		double cos = Math.cos(angle);
-		double sin = Math.sin(angle);
-		transform.factors[0] = cos;
-		transform.factors[1] = -sin;
-		transform.factors[4] = sin;
-		transform.factors[5] = cos;
-		return this.multiply(transform);
-	}
-
 	// w = 1
 	public Vector transformPoint(Vector vector) {
 		return new Vector(
@@ -121,7 +60,7 @@ public class Matrix4x4 {
 		});
 	}
 	
-	// co-opted from old Mesa code
+	// co-opted from Mesa3D code (https://gitlab.freedesktop.org/eric/mesa/-/commit/3069f3484186df09b671c44efdb221f50e5a6a88)
 	public Matrix4x4 inverse() {
 	
 		double[] inverse = new double[16];
@@ -198,6 +137,15 @@ public class Matrix4x4 {
 		for(int i = 0; i < 16; i++) inverse[i] /= determinant;
 		return new Matrix4x4(inverse);
 		
+	}
+	
+	public Matrix4x4 transpose() {
+		return new Matrix4x4(new double[] {
+			factors[0], factors[4], factors[8],  factors[12],
+			factors[1], factors[5], factors[9],  factors[13],
+			factors[2], factors[6], factors[10], factors[14],
+			factors[3], factors[7], factors[11], factors[15]
+		});
 	}
 
 	public double get(int r, int c) {

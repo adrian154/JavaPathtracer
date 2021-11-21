@@ -6,38 +6,35 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import com.JavaPathtracer.geometry.Vector;
-import com.JavaPathtracer.material.Material;
 
 public class OBJLoader {
 	
-	public static Mesh load(String path, Map<String, Material> materials) throws IOException {
-		return OBJLoader.load(new File(path), materials);
+	public static MeshGeometry load(String path) throws IOException {
+		return OBJLoader.load(new File(path));
 	}
 
 	// If the model references a material that is not supplied in the `materials` argument, "default" is used
-	public static Mesh load(File file, Map<String, Material> materials) throws IOException {
+	public static MeshGeometry load(File file) throws IOException {
 		
 		BufferedReader reader = new BufferedReader(new FileReader(file));
 		int lineNum = 0;
 
 		List<Integer> faces = new ArrayList<Integer>();
 		
-		// arrays indexed by vertex
+		// per vertex arrays
 		List<Vector> vertexes = new ArrayList<>();
 		List<Vector> vertexNormals = new ArrayList<>();
 		List<Vector> textureCoordinates = new ArrayList<>();
 		List<Integer> normalIndices = new ArrayList<>();
 		List<Integer> texCoordIndices = new ArrayList<>();
 		
-		// arrays indexed by face
-		List<Material> materialsList = new ArrayList<>();
+		// per face arrays
+		List<String> materialIDs = new ArrayList<>();
 		
 		// iterate over lines of the model
-		String line;
-		Material currentMaterial = materials.get("default");
+		String line, currentMaterial = "";
 		
 		while ((line = reader.readLine()) != null) {
 
@@ -58,14 +55,7 @@ public class OBJLoader {
 					throw new RuntimeException("Incomplete `usemtl` directive.");
 				}
 				
-				if((currentMaterial = materials.get(parts[1])) == null) {
-					if((currentMaterial = materials.get("default")) == null) {
-						reader.close();
-						throw new RuntimeException("No material supplied for " + parts[1]);
-					} else {
-						System.out.println("warning: using default material for " + parts[1]);
-					}
-				}
+				currentMaterial = parts[1].intern();
 				
 			} else if (parts[0].equals("v")) {
 
@@ -119,7 +109,7 @@ public class OBJLoader {
 					normalIndices.add(faceVertNormals[i]);
 					normalIndices.add(faceVertNormals[i + 1]);
 					
-					materialsList.add(currentMaterial);
+					materialIDs.add(currentMaterial);
 					
 				}
 
@@ -139,14 +129,14 @@ public class OBJLoader {
 		reader.close();
 		
 		// Convert arraylists to arrays
-		return new Mesh(
+		return new MeshGeometry(
 			vertexes,
 			vertexNormals,
 			textureCoordinates,
 			faces,
 			normalIndices,
 			texCoordIndices,
-			materialsList
+			materialIDs
 		);
 		
 	}

@@ -7,8 +7,8 @@ import com.JavaPathtracer.Pathtracer;
 // Axis-aligned bounding box
 public class BoundingBox implements Shape {
 
-	public final Vector min;
-	public final Vector max;
+	public Vector min;
+	public Vector max;
 
 	public BoundingBox(Vector min, Vector max) {
 		this.min = min;

@@ -16,7 +16,7 @@ public class TriangleBoundingBox extends BoundingBox {
 		this.face = face;
 	}
 
-	public static TriangleBoundingBox create(Mesh mesh, int face) {
+	public static TriangleBoundingBox create(MeshGeometry mesh, int face) {
 		
 		Vector v0 = mesh.vertexes[mesh.faces[face * 3]];
 		Vector v1 = mesh.vertexes[mesh.faces[face * 3 + 1]];
