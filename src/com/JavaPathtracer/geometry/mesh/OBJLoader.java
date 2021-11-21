@@ -39,7 +39,7 @@ public class OBJLoader {
 		String line;
 		Material currentMaterial = materials.get("default");
 		
-		while ((line = reader.readLine().trim()) != null) {
+		while ((line = reader.readLine()) != null) {
 
 			lineNum++;
 			

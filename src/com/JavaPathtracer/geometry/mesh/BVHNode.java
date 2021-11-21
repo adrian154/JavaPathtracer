@@ -30,31 +30,19 @@ public class BVHNode extends BoundingBox implements WorldObject {
 	// list of children, used during BVH construction (should be null afterwards)
 	private List<TriangleBoundingBox> primitives;
 
-	/* public BVHNode(Mesh mesh) {
+	public static BVHNode create(Mesh mesh) {
 
-		// Appease the compiler...
-		super(null, null);
-
-		this.mesh = mesh;
-		this.children = new ArrayList<TriangleBoundingBox>();
-
-		for (int face = 0; face < mesh.faces.length / 3; face++) {
-
-			Vector v0 = mesh.vertexes[mesh.faces[face * 3]];
-			Vector v1 = mesh.vertexes[mesh.faces[face * 3 + 1]];
-			Vector v2 = mesh.vertexes[mesh.faces[face * 3 + 2]];
-			children.add(getBoxOfTri(face, v0, v1, v2));
-
+		
+		List<TriangleBoundingBox> tris = new ArrayList<TriangleBoundingBox>();
+		for(int i = 0; i < mesh.faces.length / 3; i++) {
+			tris.add(TriangleBoundingBox.create(mesh, i));
 		}
+		
+		BVHNode root = new BVHNode(mesh, tris);
+		root.split(0);
+		return root;
 
-		BoundingBox self = getBoundingBoxOfBoxes(this.children);
-		this.min = self.min;
-		this.max = self.max;
-
-		// Ready to build, finally!
-		split(0);
-
-	} */
+	}
 
 	public BVHNode(Mesh mesh, List<TriangleBoundingBox> primitives) {
 		super(primitives);
@@ -142,14 +130,14 @@ public class BVHNode extends BoundingBox implements WorldObject {
 
 	@Override
 	public ObjectHit traceRay(Ray ray) {
-
+		
 		// check if the ray intersects the bounding box
 		if (!super.intersects(ray))
 			return ObjectHit.MISS;
 
 		// leaf node
 		if (triangleIndexes == null) {
-			
+
 			ObjectHit left = this.left.traceRay(ray);
 			ObjectHit right = this.right.traceRay(ray);
 			if(!left.hit) return right;

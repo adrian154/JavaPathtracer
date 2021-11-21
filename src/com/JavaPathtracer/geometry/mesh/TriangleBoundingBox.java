@@ -15,8 +15,7 @@ public class TriangleBoundingBox extends BoundingBox {
 		super(min, max);
 		this.face = face;
 	}
-	
-	// use a static method because Java doesn't support *any* computation before super()
+
 	public static TriangleBoundingBox create(Mesh mesh, int face) {
 		
 		Vector v0 = mesh.vertexes[mesh.faces[face * 3]];

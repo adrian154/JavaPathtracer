@@ -33,7 +33,7 @@ public class Matrix3x3 {
 	}
 	
 	public Matrix3x3 inverse() {
-		double invdet = 1 / this.determinant();
+		double invdet = 1 / this.determinant(); // throws exception if no inverse
 		return new Matrix3x3(new double[] {
 			 invdet * (factors[4] * factors[8] - factors[5] * factors[7]), -invdet * (factors[1] * factors[8] - factors[2] * factors[7]),  invdet * (factors[1] * factors[5] - factors[2] * factors[4]),
 			-invdet * (factors[3] * factors[8] - factors[5] * factors[6]),  invdet * (factors[0] * factors[8] - factors[2] * factors[6]), -invdet * (factors[0] * factors[5] - factors[2] * factors[3]),

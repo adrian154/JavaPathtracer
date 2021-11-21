@@ -26,8 +26,9 @@ public abstract class BRDFMaterial extends BaseMaterial {
 	protected abstract double BRDF(Hit hit, Vector outgoing);
 	
 	// TODO: use cosine weighted or low-discrepancy sampling
-	protected Vector sample(Hit hit) {
+	protected Vector sample(Hit hit) {	
 		Vector random = Vector.uniformInHemisphere();
+		//Vector random = Vector.fromSpherical(Math.random() * 2 * Math.PI, Math.random() * Math.PI / 2);
 		Vector bvx = hit.normal.getOrthagonal();
 		Vector bvy = hit.normal;
 		Vector bvz = bvy.cross(bvx);
@@ -37,8 +38,9 @@ public abstract class BRDFMaterial extends BaseMaterial {
 	// PDF of sample() (which might not draw from the BRDF)
 	// default: uniform random sampling
 	// the PDF should integrate to 1 over a hemisphere
-	protected double samplerPDF(Hit hit) {
+	protected double samplerPDF(Hit hit, Vector direction) {
 		return 1 / Math.PI;
+		//return direction.dot(hit.normal) / Math.PI;
 	}
 	
 	// in lieu of proper MIS
@@ -114,7 +116,7 @@ public abstract class BRDFMaterial extends BaseMaterial {
 	
 	private Vector sampleBRDF(Hit hit, Scene scene, Pathtracer pathtracer, int bounces, double ior, boolean excludeLights) {
 		Ray ray = new Ray(hit.point, this.sample(hit));
-		double samplePDF = samplerPDF(hit);
+		double samplePDF = samplerPDF(hit, ray.direction);
 		double brdf = BRDF(hit, ray.direction);
 		return pathtracer.pathtraceRay(scene, ray, bounces + 1, ior, excludeLights).times(brdf / samplePDF * ray.direction.dot(hit.normal));
 	}

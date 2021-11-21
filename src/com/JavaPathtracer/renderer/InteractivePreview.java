@@ -55,8 +55,8 @@ public class InteractivePreview {
 			
 			// if there's some time left in the frame, rest
 			long timeElapsed = System.currentTimeMillis() - lastFrameTime;
-			if(timeElapsed > 33) {
-				Thread.sleep(30 - timeElapsed);
+			if(timeElapsed < 33) {
+				Thread.sleep(33 - timeElapsed);
 			}
 			
 			frameCount++;
@@ -68,7 +68,6 @@ public class InteractivePreview {
 	
 	private void updateCamera() {
 		
-		//camera.setAngles(azimuth, inclination);
 		camera.setAngles(azimuth, inclination);
 		Vector fb = new Vector(Math.cos(azimuth), 0, Math.sin(azimuth));
 		Vector lr = new Vector(Math.sin(azimuth), 0, -Math.cos(azimuth));

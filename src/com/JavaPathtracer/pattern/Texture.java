@@ -22,6 +22,10 @@ public class Texture implements Sampleable {
 		this.path = imageFile.getPath();
 	}
 
+	public Texture(String path) throws IOException {
+		this(new File(path)); 
+	}
+	
 	public Texture(BufferedImage image) {
 		this.texture = image;
 	}
@@ -35,8 +39,8 @@ public class Texture implements Sampleable {
 
 		// TODO: Configurable interpolation
 		// TODO: texture wrap modes
-		int x = (int) Math.floor(textureCoords.x % 1 * texture.getWidth());
-		int y = (int) Math.floor((1 - textureCoords.y) % 1 * texture.getHeight());
+		int x = (int) Math.floor((textureCoords.x + 1) % 1 * texture.getWidth());
+		int y = (int) Math.floor((1 - (textureCoords.y + 1) % 1) * texture.getHeight());
 
 		int rgb = texture.getRGB(x, y);
 		int r = (rgb >> 16) & 0xFF;

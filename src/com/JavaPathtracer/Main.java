@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import com.JavaPathtracer.DebugTracer.Mode;
 import com.JavaPathtracer.renderer.InteractivePreview;
 import com.JavaPathtracer.renderer.LivePreview;
 import com.JavaPathtracer.renderer.Renderer;
@@ -17,22 +18,22 @@ import com.JavaPathtracer.tonemapping.FilmicTonemapper;
 public class Main {
 		
 	private static Raytracer createRaytracer() {
-		return new Pathtracer(8);
-		//return new DebugTracer(Mode.NORMAL);
+		//return new Pathtracer(8);
+		return new DebugTracer(Mode.NORMAL);
 	}
 	
 	private static Renderer createRenderer(Scene scene, Raytracer raytracer) {
-		return new Renderer(scene, raytracer, 16, 256, new FilmicTonemapper());
+		return new Renderer(scene, raytracer, 16, 1, new FilmicTonemapper());
 	}
 	
 	public static void main(String[] args) throws IOException, InterruptedException {
 		
 		// read args
-		String mode = "preview";
+		String mode = "interactive";
 		if(args.length > 0) mode = args[0];
 				
 		// set up output objects
-		BufferedImage output = new BufferedImage(256, 256, BufferedImage.TYPE_INT_RGB);
+		BufferedImage output = new BufferedImage(128, 128, BufferedImage.TYPE_INT_RGB);
 		
 		// set up renderer objects
 		Raytracer raytracer = createRaytracer();
