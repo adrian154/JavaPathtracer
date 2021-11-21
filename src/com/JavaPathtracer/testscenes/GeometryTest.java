@@ -21,8 +21,8 @@ public class GeometryTest extends Scene {
 	
 	public Camera getCamera() {
 		Camera camera = new PerspectiveCamera();
-		camera.moveTo(new Vector(0, 1, 5));
-		camera.lookAt(new Vector(0, 0, -1));
+		camera.moveTo(new Vector(8, 8, 16));
+		camera.lookAt(new Vector(0, -1, -3).normalize());
 		return camera;
 	}
 	
@@ -40,9 +40,12 @@ public class GeometryTest extends Scene {
 		BVHNode africanHead = new BVHNode(OBJLoader.load("assets/AfricanHead.obj"));
 		Map<String, Material> materials = Map.of("", new DiffuseMaterial(new Texture("assets/AfricanHead.png")));
 		
-		this.add(new Mesh(africanHead, materials));
-		this.add(new Mesh(africanHead, new Transform().translate(0, 3, 0), materials));
-		
+		for(int x = 0; x < 8; x++) {
+			for(int z = 0; z < 8; z++) {
+				this.add(new Mesh(africanHead, new Transform().translate(x * 2, 5, z * 2).complete(), materials));
+			}
+		}
+
 	}
 	
 }

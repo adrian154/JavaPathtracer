@@ -5,11 +5,9 @@ public class Transform {
 	private Matrix4x4 matrix;
 	private Matrix4x4 inverse;
 	private Matrix4x4 inverseTransposed;
-	private boolean matrixChanged;
 	
 	public Transform() {
 		this.matrix = new Matrix4x4();
-		this.matrixChanged = true;
 	}
 	
 	public Transform translate(double x, double y, double z) {
@@ -18,7 +16,6 @@ public class Transform {
 		transform.factors[7]  = y;
 		transform.factors[11] = z;
 		matrix = matrix.multiply(transform);
-		matrixChanged = true;
 		return this;
 	}
 	
@@ -32,7 +29,6 @@ public class Transform {
 		transform.factors[5]  = y;
 		transform.factors[10] = z;
 		matrix = matrix.multiply(transform);
-		matrixChanged = true;
 		return this;
 	}
 	
@@ -49,7 +45,6 @@ public class Transform {
 		transform.factors[7] = sin;
 		transform.factors[8] = cos;
 		matrix = matrix.multiply(transform);
-		matrixChanged = true;
 		return this;
 	}
 	
@@ -62,7 +57,6 @@ public class Transform {
 		transform.factors[8] = -sin;
 		transform.factors[10] = cos;
 		matrix = matrix.multiply(transform);
-		matrixChanged = true;
 		return this;
 	}
 	
@@ -75,40 +69,32 @@ public class Transform {
 		transform.factors[4] = sin;
 		transform.factors[5] = cos;
 		matrix = matrix.multiply(transform);
-		matrixChanged = true;
 		return this;
 	}
 	
-	private void maybeRecomputeInverse() {
-		if(matrixChanged) {
-			matrixChanged = false;
-			inverse = matrix.inverse();
-			inverseTransposed = inverse.transpose();
-		}
+	public Transform complete() {
+		inverse = matrix.inverse();
+		inverseTransposed = inverse.transpose();	
+		return this;
 	}
 	
 	public Vector transformPoint(Vector vector) {
-		maybeRecomputeInverse();
 		return matrix.transformPoint(vector);
 	}
 	
 	public Vector transformVector(Vector vector) {
-		maybeRecomputeInverse();
 		return matrix.transformVector(vector);
 	}
 	
 	public Vector inversePoint(Vector vector) {
-		maybeRecomputeInverse();
 		return inverse.transformPoint(vector);
 	}
 	
 	public Vector inverseVector(Vector vector) {
-		maybeRecomputeInverse();
 		return inverse.transformVector(vector);
 	}
 	
 	public Vector transformNormal(Vector vector) {
-		maybeRecomputeInverse();
 		return inverseTransposed.transformVector(vector);
 	}
 	

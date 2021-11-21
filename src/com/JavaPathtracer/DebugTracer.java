@@ -8,12 +8,10 @@ import com.JavaPathtracer.scene.Scene;
 public class DebugTracer implements Raytracer {
 
 	public enum Mode {
-		ALBEDO,
 		SIMPLE_SHADED,
 		NORMAL,
 		DEPTH,
-		UV,
-		TEST
+		UV
 	}
 	
 	private Mode mode;
