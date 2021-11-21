@@ -13,18 +13,16 @@ import com.JavaPathtracer.scene.WorldObject;
 public class Mesh extends WorldObject {
 
 	private BVHNode bvh;
-	private MeshGeometry mesh;
 	private Map<String, Material> materials;
 	
-	public Mesh(MeshGeometry mesh, Transform transform, Map<String, Material> materials) {
+	public Mesh(BVHNode bvh, Transform transform, Map<String, Material> materials) {
 		super(transform);
-		this.mesh = mesh;
-		this.bvh = new BVHNode(mesh);
+		this.bvh = bvh;
 		this.materials = materials;
 	}
 	
-	public Mesh(MeshGeometry mesh, Map<String, Material> materials) {
-		this(mesh, null, materials);
+	public Mesh(BVHNode bvh, Map<String, Material> materials) {
+		this(bvh, null, materials);
 	}
 	
 	@Override
@@ -34,8 +32,7 @@ public class Mesh extends WorldObject {
 		
 		if(hit.hit) {
 			MeshHit meshHit = (MeshHit)hit;
-			String materialID = mesh.materialIDs[meshHit.face];
-			return new ObjectHit(hit, this, materials.containsKey(materialID) ? materials.get(materialID) : materials.get("default"));
+			return new ObjectHit(hit, this, materials.containsKey(meshHit.materialID) ? materials.get(meshHit.materialID) : materials.get(""));
 		}
 		
 		return ObjectHit.MISS;

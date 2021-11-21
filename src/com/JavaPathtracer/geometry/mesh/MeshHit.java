@@ -6,11 +6,11 @@ import com.JavaPathtracer.geometry.Vector;
 
 public class MeshHit extends Hit {
 
-	public final int face;
+	public final String materialID;
 	
-	public MeshHit(Ray ray, Vector point, Vector normal, Vector tangent, double distance, Vector textureCoordinate, int face) {
+	public MeshHit(Ray ray, Vector point, Vector normal, Vector tangent, double distance, Vector textureCoordinate, String material) {
 		super(ray, point, normal, tangent, distance, textureCoordinate);
-		this.face = face;
+		this.materialID = material;
 	}
 	
 }

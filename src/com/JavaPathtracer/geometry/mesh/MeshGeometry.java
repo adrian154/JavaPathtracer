@@ -92,7 +92,7 @@ public class MeshGeometry {
 		
 			// TODO: actually calculate tangent vector instead of just using a null vector
 			normal = normal.normalize().facing(ray.direction);
-			return new MeshHit(ray, ray.getPoint(t), normal, null, t, new Vector(u, v, 0.0), face);
+			return new MeshHit(ray, ray.getPoint(t), normal, null, t, new Vector(u, v, 0.0), materialIDs[face]);
 			
 		} else {
 			return Hit.MISS;

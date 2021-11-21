@@ -56,6 +56,11 @@ public class Scene {
 		return this.lights;
 	}
 	
+	// TODO: automatically detect if meshes are lights
+	public void add(WorldObject object) {
+		add(object, false);
+	}
+	
 	public void add(WorldObject object, boolean isLight) {
 		objects.add(object);
 		if(isLight) {

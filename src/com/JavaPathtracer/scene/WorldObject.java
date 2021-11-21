@@ -24,16 +24,16 @@ public abstract class WorldObject {
 		
 		ObjectHit hit = this.raytraceObject(ray);
 		
-		if(transform != null) {
+		if(hit.hit && transform != null) {
 			hit.point = transform.transformPoint(hit.point);
 			hit.normal = transform.transformNormal(hit.normal);
-			hit.tangent = transform.transformVector(hit.tangent);
+			//hit.tangent = transform.transformVector(hit.tangent);
 			hit.distance = hit.point.minus(ray.origin).length();
 			hit.ray = originalRay;
 		}
 		
 		return hit;
-		
+		 
 	}
 	
 	public abstract ObjectHit raytraceObject(Ray ray);
