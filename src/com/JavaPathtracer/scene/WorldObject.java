@@ -28,7 +28,7 @@ public abstract class WorldObject {
 			hit.point = transform.transformPoint(hit.point);
 			hit.normal = transform.transformNormal(hit.normal);
 			//hit.tangent = transform.transformVector(hit.tangent);
-			hit.distance = hit.point.minus(ray.origin).length();
+			hit.distance = hit.point.minus(originalRay.origin).length();
 			hit.ray = originalRay;
 		}
 		
