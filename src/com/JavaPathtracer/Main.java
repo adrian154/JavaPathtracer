@@ -7,6 +7,8 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import com.JavaPathtracer.DebugTracer.Mode;
+import com.JavaPathtracer.geometry.Matrix4x4;
+import com.JavaPathtracer.geometry.Transform;
 import com.JavaPathtracer.renderer.InteractivePreview;
 import com.JavaPathtracer.renderer.LivePreview;
 import com.JavaPathtracer.renderer.Renderer;

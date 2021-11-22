@@ -10,6 +10,10 @@ public class Transform {
 		this.matrix = new Matrix4x4();
 	}
 	
+	public Matrix4x4 getMatrix() {
+		return matrix;
+	}
+	
 	public Transform translate(double x, double y, double z) {
 		Matrix4x4 transform = new Matrix4x4();
 		transform.factors[3]  = x;

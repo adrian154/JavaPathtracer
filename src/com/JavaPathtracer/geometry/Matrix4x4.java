@@ -20,8 +20,8 @@ public class Matrix4x4 {
 	// w = 1
 	public Vector transformPoint(Vector vector) {
 		return new Vector(
-			vector.x * factors[0] + vector.y * factors[1] + vector.z * factors[2] + factors[3],
-			vector.x * factors[4] + vector.y * factors[5] + vector.z * factors[6] + factors[7],
+			vector.x * factors[0] + vector.y * factors[1] + vector.z * factors[2] +  factors[3],
+			vector.x * factors[4] + vector.y * factors[5] + vector.z * factors[6] +  factors[7],
 			vector.x * factors[8] + vector.y * factors[9] + vector.z * factors[10] + factors[11]
 		);
 	}
@@ -178,7 +178,7 @@ public class Matrix4x4 {
 				                  factors[2] * inverse[8] + 
 				                  factors[3] * inverse[12]);
 		
-		for(int i = 0; i < 16; i++) inverse[i] /= determinant;
+		for(int i = 0; i < 16; i++) inverse[i] *= determinant;
 		return new Matrix4x4(inverse);
 		
 	}
@@ -191,9 +191,10 @@ public class Matrix4x4 {
 			factors[3], factors[7], factors[11], factors[15]
 		});
 	}
-
-	public double get(int r, int c) {
-		return factors[r * 4 + c];
+	
+	@Override
+	public String toString() {
+		return String.format("%f %f %f %f\n%f %f %f %f\n%f %f %f %f\n%f %f %f %f", factors[0], factors[1], factors[2], factors[3], factors[4], factors[5], factors[6], factors[7], factors[8], factors[9], factors[10], factors[11], factors[12], factors[13], factors[14], factors[15]);
 	}
 
 }
