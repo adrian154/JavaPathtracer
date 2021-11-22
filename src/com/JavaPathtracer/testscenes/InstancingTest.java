@@ -13,6 +13,7 @@ import com.JavaPathtracer.geometry.mesh.Mesh;
 import com.JavaPathtracer.geometry.mesh.OBJLoader;
 import com.JavaPathtracer.material.DiffuseMaterial;
 import com.JavaPathtracer.material.Material;
+import com.JavaPathtracer.material.MirrorMaterial;
 import com.JavaPathtracer.pattern.Texture;
 import com.JavaPathtracer.scene.Scene;
 import com.JavaPathtracer.scene.SimpleSky;
@@ -38,11 +39,12 @@ public class InstancingTest extends Scene {
 		
 		// mesh
 		BVHNode africanHead = new BVHNode(OBJLoader.load("assets/AfricanHead.obj"));
-		Map<String, Material> materials = Map.of("", new DiffuseMaterial(new Texture("assets/AfricanHead.png")));
+		Map<String, Material> materials1 = Map.of("", new MirrorMaterial(new Vector(0xfcba03)));
+		Map<String, Material> materials2 = Map.of("", new DiffuseMaterial(new Texture("assets/AfricanHead.png")));
 		
 		for(int x = 0; x < 8; x++) {
 			for(int z = 0; z < 8; z++) {
-				this.add(new Mesh(africanHead, new Transform().translate(x * 2, 5, z * 2).complete(), materials));
+				this.add(new Mesh(africanHead, new Transform().translate(x * 2, 5, z * 2).complete(), (x % 2 == 0) ^ (z % 2 == 0) ? materials1 : materials2));
 			}
 		}
 

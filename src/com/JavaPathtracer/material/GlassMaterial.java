@@ -35,10 +35,10 @@ public class GlassMaterial implements Material {
 		double eta = iorIn / IOR;
 		double k = 1.0 - eta * eta * (1.0 - NdotI * NdotI);
 		
-		// fresnel calculations
+		// Schlick's approximation for Fresnel reflection
 		// F0 = reflection at normal incidence (looking straight on)
 		// take advantage of the fact that everything is normalized -> swap cosines with dot products
-		double F0 = (eta - 1) * (eta - 1) / ((eta + 1) * (eta + 1));
+		double F0 = Math.pow((iorIn - IOR) / (iorIn + IOR), 2);
 		double a = 1 + NdotI;
 		double reflectance = F0 + (1 - F0) * a*a*a*a*a;
 		Vector reflectVector = MirrorMaterial.reflect(normal, incident);
@@ -52,7 +52,7 @@ public class GlassMaterial implements Material {
 		
 		} else {
 			
-			// good ol refraction
+			// refract the ray
 			Vector refracted = incident.times(eta).minus(normal.times(eta * NdotI + Math.sqrt(k)));
 			Ray refractRay = new Ray(hit.point, refracted);
 			Vector refract = pathtracer.pathtraceRay(scene, refractRay, bounces + 1, IOR);

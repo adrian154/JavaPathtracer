@@ -6,13 +6,13 @@ public class Checkerboard implements Sampleable {
 
 	private Vector color1, color2;
 
+	public Checkerboard() {
+		this(new Vector(0xcfcfcf), new Vector(0x575757));
+	}
+	
 	public Checkerboard(Vector color1, Vector color2) {
 		this.color1 = color1;
 		this.color2 = color2;
-	}
-
-	public Checkerboard() {
-		this(new Vector(1.0), new Vector(0.0));
 	}
 
 	@Override

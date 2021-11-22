@@ -12,17 +12,13 @@ public class HDRMap implements Sampleable {
 	private HDRImageRGB image;
 	private String path;
 
-	public HDRMap(File file) {
-
+	public HDRMap(String path) throws IOException {
+		this(new File(path));
+	}
+	
+	public HDRMap(File file) throws IOException {
 		this.path = file.getPath();
-		
-		try {
-			image = (HDRImageRGB) HDREncoder.readHDR(file, true);
-		} catch (IOException exception) {
-			System.out.println("Failed to load HDR map from \"" + file.getName() + "\": " + exception.getMessage());
-			exception.printStackTrace();
-		}
-
+		image = (HDRImageRGB) HDREncoder.readHDR(file, true);
 	}
 
 	@Override
