@@ -28,7 +28,6 @@ public class BVHNode extends BoundingBox implements Shape {
 
 	// list of children, used during BVH construction (should be null afterwards)
 	private List<TriangleBoundingBox> primitives;
-	private int depth;//removeme
 	
 	public BVHNode(MeshGeometry mesh) {
 		
@@ -63,10 +62,9 @@ public class BVHNode extends BoundingBox implements Shape {
 	public int numPrimitives() {
 		return this.primitives.size();
 	}
-	
+
 	public void split(int depth) {
 		
-		this.depth=depth;//removeme
 		if (depth >= MAX_DEPTH) {
 			this.makeLeafNode();
 			return;
@@ -88,10 +86,11 @@ public class BVHNode extends BoundingBox implements Shape {
 				bins.add(new ArrayList<>());
 			}
 
-			// place primitives into bins based on centroid 
+			// place primitives into bins based on centroid
+			double binWidth = (this.max.get(axis) - this.min.get(axis)) / NUM_BINS;
 			for(TriangleBoundingBox box: this.primitives) {
 				double centroid = box.centroid().get(axis);
-				int bin = (int)Math.floor((centroid - this.min.get(axis)) / NUM_BINS);
+				int bin = (int)Math.floor((centroid - this.min.get(axis)) / binWidth);
 				bins.get(bin).add(box);
 			}
 			
@@ -100,11 +99,11 @@ public class BVHNode extends BoundingBox implements Shape {
 
 				BVHNode left = new BVHNode(mesh, bins.subList(0, split).stream().flatMap(List::stream).collect(Collectors.toList()));
 				BVHNode right = new BVHNode(mesh, bins.subList(split, NUM_BINS).stream().flatMap(List::stream).collect(Collectors.toList()));
-				
+		
 				double splitCost = COST_TRAVERSE +
 					(left.surfaceArea() / this.surfaceArea() * left.numPrimitives() * COST_INTERSECT) +
 					(right.surfaceArea() / this.surfaceArea() * right.numPrimitives() * COST_INTERSECT);
-
+				
 				if (splitCost < bestSplitCost) {
 					bestSplitCost = splitCost;
 					bestSplitLeft = left;
@@ -116,7 +115,7 @@ public class BVHNode extends BoundingBox implements Shape {
 		}
 
 		if (bestSplitCost < noSplitCost) {
-
+			
 			// only keep the best children, destroy all others
 			this.left = bestSplitLeft;
 			this.right = bestSplitRight;
@@ -141,7 +140,7 @@ public class BVHNode extends BoundingBox implements Shape {
 			return Hit.MISS;
 		
 		// leaf node
-		if (triangleIndexes == null && depth<1) {
+		if (triangleIndexes == null) {
 
 			Hit left = this.left.raytrace(ray);
 			Hit right = this.right.raytrace(ray);
@@ -151,8 +150,8 @@ public class BVHNode extends BoundingBox implements Shape {
 			return left.distance < right.distance ? left : right;
 			
 		} else {
-			return super.raytrace(ray);
-			//return mesh.intersect(ray, this.triangleIndexes);
+			//return super.raytrace(ray);
+			return mesh.intersect(ray, this.triangleIndexes);
 		}
 
 	}

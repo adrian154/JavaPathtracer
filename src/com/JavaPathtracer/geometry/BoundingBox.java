@@ -36,7 +36,7 @@ public class BoundingBox implements Shape {
 		return new Vector(
 			Math.max(A.x, B.x),
 			Math.max(A.y, B.y),
-			Math.min(A.z, B.z)
+			Math.max(A.z, B.z)
 		);
 	}
 	
@@ -160,8 +160,6 @@ public class BoundingBox implements Shape {
 			t = z;
 			normal = t5 < t6 ? Vector.NEGATIVE_Z : Vector.Z;
 		}
-		
-		if(t<0)System.out.println("ruh roh");
 		
 		// dummy tangent and texture coordinate
 		return new Hit(ray, ray.getPoint(t), normal, null, t, Vector.ZERO);

@@ -20,7 +20,7 @@ public class Renderer {
 	public final IToneMapper toneMapper;
 	public final int tiles, threads, samples;
 	
-	public Renderer(Scene scene, Raytracer raytracer, IToneMapper mapper, int tiles, int threads, int samples) {
+	public Renderer(Scene scene, Raytracer raytracer, int tiles, int threads, int samples, IToneMapper mapper) {
 		this.scene = scene;
 		this.raytracer = raytracer;
 		this.toneMapper = mapper;
@@ -30,11 +30,11 @@ public class Renderer {
 	}
 	
 	public Renderer(Scene scene,  Raytracer raytracer, int tiles, int samples, IToneMapper tonemapper) {
-		this(scene, raytracer, tonemapper, tiles, Runtime.getRuntime().availableProcessors(), samples);
+		this(scene, raytracer, tiles, Runtime.getRuntime().availableProcessors(), samples, tonemapper);
 	}
 	
 	public Renderer(Scene scene, Raytracer raytracer, int tiles, int samples) {
-		this(scene, raytracer, new LinearTonemapper(), tiles, Runtime.getRuntime().availableProcessors(), samples);
+		this(scene, raytracer, tiles, Runtime.getRuntime().availableProcessors(), samples, new LinearTonemapper());
 	}
 	
 	public RenderJob render(BufferedImage output) throws InterruptedException {

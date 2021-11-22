@@ -8,11 +8,7 @@ public class Matrix4x4 {
 	// when constructed with no arguments, create an identity matrix
 	public Matrix4x4() {
 		factors = new double[16];
-		for (int r = 0; r < 4; r++) {
-			for (int c = 0; c < 4; c++) {
-				factors[r * 4 + c] = r == c ? 1 : 0;
-			}
-		}
+		factors[0] = factors[5] = factors[10] = factors[15] = 1;
 	}
 
 	public Matrix4x4(double[] factors) {
@@ -65,69 +61,117 @@ public class Matrix4x4 {
 	
 		double[] inverse = new double[16];
 
-		inverse[0] = factors[5] * factors[10] * factors[15] - factors[5] * factors[11] * factors[14]
-				- factors[9] * factors[6] * factors[15] + factors[9] * factors[7] * factors[14]
-				+ factors[13] * factors[6] * factors[11] - factors[13] * factors[7] * factors[10];
+		inverse[0] =   factors[5]  * factors[10] * factors[15] -
+				       factors[5]  * factors[11] * factors[14] -
+				       factors[9]  * factors[6]  * factors[15] +
+				       factors[9]  * factors[7]  * factors[14] +
+				       factors[13] * factors[6]  * factors[11] -
+				       factors[13] * factors[7]  * factors[10];
 
-		inverse[4] = -factors[4] * factors[10] * factors[15] + factors[4] * factors[11] * factors[14]
-				+ factors[8] * factors[6] * factors[15] - factors[8] * factors[7] * factors[14]
-				- factors[12] * factors[6] * factors[11] + factors[12] * factors[7] * factors[10];
+		inverse[4] =  -factors[4]  * factors[10] * factors[15] +
+				       factors[4]  * factors[11] * factors[14] +
+				       factors[8]  * factors[6]  * factors[15] -
+				       factors[8]  * factors[7]  * factors[14] - 
+				       factors[12] * factors[6]  * factors[11] +
+				       factors[12] * factors[7]  * factors[10];
 
-		inverse[8] = factors[4] * factors[9] * factors[15] - factors[4] * factors[11] * factors[13]
-				- factors[8] * factors[5] * factors[15] + factors[8] * factors[7] * factors[13]
-				+ factors[12] * factors[5] * factors[11] - factors[12] * factors[7] * factors[9];
+		inverse[8] =   factors[4]  * factors[9]  * factors[15] -
+				       factors[4]  * factors[11] * factors[13] -
+				       factors[8]  * factors[5]  * factors[15] +
+				       factors[8]  * factors[7]  * factors[13] +
+				       factors[12] * factors[5]  * factors[11] -
+				       factors[12] * factors[7]  * factors[9];
 
-		inverse[12] = -factors[4] * factors[9] * factors[14] + factors[4] * factors[10] * factors[13]
-				+ factors[8] * factors[5] * factors[14] - factors[8] * factors[6] * factors[13]
-				- factors[12] * factors[5] * factors[10] + factors[12] * factors[6] * factors[9];
+		inverse[12] = -factors[4]  * factors[9]  * factors[14] +
+				       factors[4]  * factors[10] * factors[13] +
+				       factors[8]  * factors[5]  * factors[14] -
+				       factors[8]  * factors[6]  * factors[13] -
+				       factors[12] * factors[5]  * factors[10] +
+				       factors[12] * factors[6]  * factors[9];
 
-		inverse[1] = -factors[1] * factors[10] * factors[15] + factors[1] * factors[11] * factors[14]
-				+ factors[9] * factors[2] * factors[15] - factors[9] * factors[3] * factors[14]
-				- factors[13] * factors[2] * factors[11] + factors[13] * factors[3] * factors[10];
+		inverse[1] =  -factors[1]  * factors[10] * factors[15] +
+				       factors[1]  * factors[11] * factors[14] +
+				       factors[9]  * factors[2]  * factors[15] -
+				       factors[9]  * factors[3]  * factors[14] -
+				       factors[13] * factors[2]  * factors[11] +
+				       factors[13] * factors[3]  * factors[10];
 
-		inverse[5] = factors[0] * factors[10] * factors[15] - factors[0] * factors[11] * factors[14]
-				- factors[8] * factors[2] * factors[15] + factors[8] * factors[3] * factors[14]
-				+ factors[12] * factors[2] * factors[11] - factors[12] * factors[3] * factors[10];
+		inverse[5] =   factors[0]  * factors[10] * factors[15] -
+				       factors[0]  * factors[11] * factors[14] -
+				       factors[8]  * factors[2]  * factors[15] +
+				       factors[8]  * factors[3]  * factors[14] +
+				       factors[12] * factors[2]  * factors[11] -
+				       factors[12] * factors[3]  * factors[10];
 
-		inverse[9] = -factors[0] * factors[9] * factors[15] + factors[0] * factors[11] * factors[13]
-				+ factors[8] * factors[1] * factors[15] - factors[8] * factors[3] * factors[13]
-				- factors[12] * factors[1] * factors[11] + factors[12] * factors[3] * factors[9];
+		inverse[9] =  -factors[0]  * factors[9]  * factors[15] +
+				       factors[0]  * factors[11] * factors[13] +
+				       factors[8]  * factors[1]  * factors[15] -
+				       factors[8]  * factors[3]  * factors[13] -
+				       factors[12] * factors[1]  * factors[11] +
+				       factors[12] * factors[3]  * factors[9];
 
-		inverse[13] = factors[0] * factors[9] * factors[14] - factors[0] * factors[10] * factors[13]
-				- factors[8] * factors[1] * factors[14] + factors[8] * factors[2] * factors[13]
-				+ factors[12] * factors[1] * factors[10] - factors[12] * factors[2] * factors[9];
+		inverse[13] =  factors[0]  * factors[9]  * factors[14] -
+				       factors[0]  * factors[10] * factors[13] -
+				       factors[8]  * factors[1]  * factors[14] +
+				       factors[8]  * factors[2]  * factors[13] +
+				       factors[12] * factors[1]  * factors[10] -
+				       factors[12] * factors[2]  * factors[9];
 
-		inverse[2] = factors[1] * factors[6] * factors[15] - factors[1] * factors[7] * factors[14]
-				- factors[5] * factors[2] * factors[15] + factors[5] * factors[3] * factors[14]
-				+ factors[13] * factors[2] * factors[7] - factors[13] * factors[3] * factors[6];
+		inverse[2] =   factors[1]  * factors[6]  * factors[15] -
+					   factors[1]  * factors[7]  * factors[14] -
+					   factors[5]  * factors[2]  * factors[15] +
+					   factors[5]  * factors[3]  * factors[14] +
+					   factors[13] * factors[2]  * factors[7]  - 
+					   factors[13] * factors[3]  * factors[6];
 
-		inverse[6] = -factors[0] * factors[6] * factors[15] + factors[0] * factors[7] * factors[14]
-				+ factors[4] * factors[2] * factors[15] - factors[4] * factors[3] * factors[14]
-				- factors[12] * factors[2] * factors[7] + factors[12] * factors[3] * factors[6];
+		inverse[6] =  -factors[0]  * factors[6]  * factors[15] +
+				       factors[0]  * factors[7]  * factors[14] +
+				       factors[4]  * factors[2]  * factors[15] -
+				       factors[4]  * factors[3]  * factors[14] -
+				       factors[12] * factors[2]  * factors[7]  +
+				       factors[12] * factors[3]  * factors[6];
 
-		inverse[10] = factors[0] * factors[5] * factors[15] - factors[0] * factors[7] * factors[13]
-				- factors[4] * factors[1] * factors[15] + factors[4] * factors[3] * factors[13]
-				+ factors[12] * factors[1] * factors[7] - factors[12] * factors[3] * factors[5];
+		inverse[10] =  factors[0]  * factors[5]  * factors[15] -
+				       factors[0]  * factors[7]  * factors[13] -
+				       factors[4]  * factors[1]  * factors[15] +
+				       factors[4]  * factors[3]  * factors[13] +
+				       factors[12] * factors[1]  * factors[7]  -
+				       factors[12] * factors[3]  * factors[5];
 
-		inverse[14] = -factors[0] * factors[5] * factors[14] + factors[0] * factors[6] * factors[13]
-				+ factors[4] * factors[1] * factors[14] - factors[4] * factors[2] * factors[13]
-				- factors[12] * factors[1] * factors[6] + factors[12] * factors[2] * factors[5];
+		inverse[14] = -factors[0]  * factors[5]  * factors[14] +
+				       factors[0]  * factors[6]  * factors[13] +
+				       factors[4]  * factors[1]  * factors[14] -
+				       factors[4]  * factors[2]  * factors[13] -
+				       factors[12] * factors[1]  * factors[6]  +
+				       factors[12] * factors[2]  * factors[5];
 
-		inverse[3] = -factors[1] * factors[6] * factors[11] + factors[1] * factors[7] * factors[10]
-				+ factors[5] * factors[2] * factors[11] - factors[5] * factors[3] * factors[10]
-				- factors[9] * factors[2] * factors[7] + factors[9] * factors[3] * factors[6];
+		inverse[3] =  -factors[1]  * factors[6]  * factors[11] +
+					   factors[1]  * factors[7]  * factors[10] +
+					   factors[5]  * factors[2]  * factors[11] -
+					   factors[5]  * factors[3]  * factors[10] -
+					   factors[9]  * factors[2]  * factors[7]  +
+					   factors[9]  * factors[3]  * factors[6];
 
-		inverse[7] = factors[0] * factors[6] * factors[11] - factors[0] * factors[7] * factors[10]
-				- factors[4] * factors[2] * factors[11] + factors[4] * factors[3] * factors[10]
-				+ factors[8] * factors[2] * factors[7] - factors[8] * factors[3] * factors[6];
+		inverse[7] =   factors[0]  * factors[6]  * factors[11] -
+					   factors[0]  * factors[7]  * factors[10] -
+					   factors[4]  *  factors[2] * factors[11] +
+					   factors[4]  * factors[3]  * factors[10] +
+					   factors[8]  * factors[2]  * factors[7]  -
+					   factors[8]  * factors[3]  * factors[6];
 
-		inverse[11] = -factors[0] * factors[5] * factors[11] + factors[0] * factors[7] * factors[9]
-				+ factors[4] * factors[1] * factors[11] - factors[4] * factors[3] * factors[9]
-				- factors[8] * factors[1] * factors[7] + factors[8] * factors[3] * factors[5];
+		inverse[11] = -factors[0]  * factors[5]  * factors[11] +
+					   factors[0]  * factors[7]  * factors[9]  +
+					   factors[4]  * factors[1]  * factors[11] -
+					   factors[4]  * factors[3]  * factors[9]  -
+					   factors[8]  * factors[1]  * factors[7]  +
+					   factors[8]  * factors[3]  * factors[5];
 
-		inverse[15] = factors[0] * factors[5] * factors[10] - factors[0] * factors[6] * factors[9]
-				- factors[4] * factors[1] * factors[10] + factors[4] * factors[2] * factors[9]
-				+ factors[8] * factors[1] * factors[6] - factors[8] * factors[2] * factors[5];
+		inverse[15] =  factors[0]  * factors[5]  * factors[10] -
+					   factors[0]  * factors[6]  * factors[9]  -
+					   factors[4]  * factors[1]  * factors[10] +
+					   factors[4]  * factors[2]  * factors[9]  +
+					   factors[8]  * factors[1]  * factors[6]  -
+					   factors[8]  * factors[2]  * factors[5];
 
 		double determinant = 1 / (factors[0] * inverse[0] +
  				                  factors[1] * inverse[4] + 

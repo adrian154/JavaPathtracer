@@ -31,8 +31,9 @@ public class Mesh extends WorldObject {
 		Hit hit = bvh.raytrace(ray);
 		
 		if(hit.hit) {
-			MeshHit meshHit = (MeshHit)hit;
-			return new ObjectHit(hit, this, materials.containsKey(meshHit.materialID) ? materials.get(meshHit.materialID) : materials.get(""));
+			//MeshHit meshHit = (MeshHit)hit;
+			//return new ObjectHit(hit, this, materials.containsKey(meshHit.materialID) ? materials.get(meshHit.materialID) : materials.get(""));
+			return new ObjectHit(hit, this, materials.get(""));
 		}
 		
 		return ObjectHit.MISS;

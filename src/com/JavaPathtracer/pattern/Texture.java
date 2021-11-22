@@ -39,8 +39,8 @@ public class Texture implements Sampleable {
 
 		// TODO: Configurable interpolation
 		// TODO: texture wrap modes
-		int x = (int) Math.floor((textureCoords.x + 1) % 1 * texture.getWidth());
-		int y = (int) Math.floor((1 - (textureCoords.y + 1) % 1) * texture.getHeight());
+		int x = (int) Math.floor((textureCoords.x + 1) % 1 * (texture.getWidth() - 1));
+		int y = (int) Math.floor((1 - (textureCoords.y + 1) % 1) * (texture.getHeight() - 1));
 
 		int rgb = texture.getRGB(x, y);
 		int r = (rgb >> 16) & 0xFF;
@@ -48,7 +48,7 @@ public class Texture implements Sampleable {
 		int b = rgb & 0xFF;
 
 		return new Vector(Math.pow(2.1, r / 255.0) - 1, Math.pow(2.1, g / 255.0) - 1, Math.pow(2.1, b / 255.0) - 1);
-
+		
 	}
 
 	public int getWidth() {

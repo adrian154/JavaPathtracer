@@ -12,19 +12,19 @@ import com.JavaPathtracer.renderer.LivePreview;
 import com.JavaPathtracer.renderer.Renderer;
 import com.JavaPathtracer.renderer.Renderer.RenderJob;
 import com.JavaPathtracer.scene.Scene;
-import com.JavaPathtracer.testscenes.GeometryTest;
+import com.JavaPathtracer.scenes.Spot;
 import com.JavaPathtracer.tonemapping.LinearTonemapper;
 
 public class Main {
 		
 	private static Raytracer createRaytracer() {
 		//return new Pathtracer(8);
-		return new DebugTracer(Mode.DEPTH);
+		return new DebugTracer(Mode.SIMPLE_SHADED);
 	}
 	
 	private static Renderer createRenderer(Scene scene, Raytracer raytracer) {
 		//return new Renderer(scene, raytracer, 16, 256, new ACESTonemapper());
-		return new Renderer(scene, raytracer, 16, 1, new LinearTonemapper());
+		return new Renderer(scene, raytracer, 16, 1, 1, new LinearTonemapper());
 	}
 	
 	public static void main(String[] args) throws IOException, InterruptedException {
@@ -38,7 +38,7 @@ public class Main {
 		
 		// set up renderer objects
 		Raytracer raytracer = createRaytracer();
-		Scene scene = new GeometryTest();
+		Scene scene = new Spot();
 		Renderer renderer = createRenderer(scene, raytracer);
 
 		if(mode.equals("animate")) {
