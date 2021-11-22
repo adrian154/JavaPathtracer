@@ -15,7 +15,7 @@ import com.JavaPathtracer.renderer.Renderer.RenderJob;
 
 public class InteractivePreview {
 
-	protected static final double MOVEMENT_SCALE = 1;
+	protected static final double MOVEMENT_SCALE = 0.1;
 	
 	private RenderJob job;
 	private PreviewFrame frame;

@@ -16,9 +16,14 @@ public class Vector implements Sampleable {
 
 	public static final Vector ZERO = new Vector(0.0, 0.0, 0.0);
 	public static final Vector ONE = new Vector(1.0, 1.0, 1.0);
+	
 	public static final Vector X = new Vector(1.0, 0.0, 0.0);
 	public static final Vector Y = new Vector(0.0, 1.0, 0.0);
 	public static final Vector Z = new Vector(0.0, 0.0, 1.0);
+	
+	public static final Vector NEGATIVE_X = new Vector(-1.0, 0.0, 0.0);
+	public static final Vector NEGATIVE_Y = new Vector(0.0, -1.0, 0.0);
+	public static final Vector NEGATIVE_Z = new Vector(0.0, 0.0, -1.0);
 	
 	// rgb components since we also store colors as vectors
 	public static final Vector R = X;

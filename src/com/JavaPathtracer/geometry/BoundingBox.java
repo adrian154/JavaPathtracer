@@ -90,31 +90,82 @@ public class BoundingBox implements Shape {
 		double invX = 1 / ray.direction.x;
 		double invY = 1 / ray.direction.y;
 		double invZ = 1 / ray.direction.z;
+		
+		// x-planes
+		double t1 = (min.x - ray.origin.x) * invX;
+		double t2 = (max.x - ray.origin.x) * invX;
+		
+		// y-planes
+		double t3 = (min.y - ray.origin.y) * invY;
+		double t4 = (max.y - ray.origin.y) * invY;
+		
+		// z-planes
+		double t5 = (min.z - ray.origin.z) * invZ;
+		double t6 = (max.z - ray.origin.z) * invZ;
+		
+		// eliminate points which can't intersect the bounding box
+		double tmin = Math.max(Math.max(Math.min(t1, t2), Math.min(t3, t4)), Math.min(t5, t6));
+		double tmax = Math.min(Math.min(Math.max(t1, t2), Math.max(t3, t4)), Math.max(t5, t6));
+
+		// no intersection if the point is behind the origin or the two intersection points are not properly ordered
+		if (tmax < Pathtracer.EPSILON) {
+			return false;
+		}
+		
+		if(tmin > tmax) {
+			return false;
+		}
+
+		return true;
+	
+	}
+	
+	@Override
+	public Hit raytrace(Ray ray) {
+		
+		//throw new UnsupportedOperationException();
+		
+		double invX = 1 / ray.direction.x;
+		double invY = 1 / ray.direction.y;
+		double invZ = 1 / ray.direction.z;
+		
+		// x-planes
 		double t1 = (min.x - ray.origin.x) * invX;
 		double t2 = (max.x - ray.origin.x) * invX;
 		double t3 = (min.y - ray.origin.y) * invY;
 		double t4 = (max.y - ray.origin.y) * invY;
 		double t5 = (min.z - ray.origin.z) * invZ;
 		double t6 = (max.z - ray.origin.z) * invZ;
-		double tmin = Math.max(Math.max(Math.min(t1, t2), Math.min(t3, t4)), Math.min(t5, t6));
+		
 		double tmax = Math.min(Math.min(Math.max(t1, t2), Math.max(t3, t4)), Math.max(t5, t6));
-
-		// Negative: AABB is behind the ray.
-		if (tmax < Pathtracer.EPSILON) {
-			return false;
+		
+		// the actual intersect point at `tmin` units along the ray
+		// which face is intersected will depend on which value of t1..t6 is tmin.
+		double x = Math.min(t1, t2), y = Math.min(t3, t4), z = Math.min(t5, t6);
+		
+		if(tmax < Pathtracer.EPSILON || x > tmax || y > tmax || z > tmax) {
+			return Hit.MISS;
 		}
+		
+		double t;
+		Vector normal;
 
-		// Minimum distance greater than maximum: No intersection.
-		if (tmin > tmax) {
-			return false;
+		if(x > y && x > z) {
+			t = x;
+			normal = t1 < t2 ? Vector.NEGATIVE_X : Vector.X;
+		} else if(y > z) {
+			t = y;
+			normal = t3 < t4 ? Vector.NEGATIVE_Y : Vector.Y;
+		} else {
+			t = z;
+			normal = t5 < t6 ? Vector.NEGATIVE_Z : Vector.Z;
 		}
-
-		return true;
-	}
-	
-	@Override
-	public Hit raytrace(Ray ray) {
-		throw new UnsupportedOperationException();
+		
+		if(t<0)System.out.println("ruh roh");
+		
+		// dummy tangent and texture coordinate
+		return new Hit(ray, ray.getPoint(t), normal, null, t, Vector.ZERO);
+		
 	}
 	
 	@Override

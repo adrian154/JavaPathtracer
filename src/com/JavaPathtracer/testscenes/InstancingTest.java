@@ -38,7 +38,7 @@ public class InstancingTest extends Scene {
 		//this.add(new Sphere(new Vector(0, 1.0, 5), 1.0), new DiffuseMaterial(new Vector(0x00ffff)));
 		
 		// mesh
-		BVHNode africanHead = new BVHNode(OBJLoader.load("assets/AfricanHead.obj"));
+		BVHNode africanHead = new BVHNode(OBJLoader.parse("assets/AfricanHead.obj"));
 		Map<String, Material> materials1 = Map.of("", new MirrorMaterial(new Vector(0xfcba03)));
 		Map<String, Material> materials2 = Map.of("", new DiffuseMaterial(new Texture("assets/AfricanHead.png")));
 		

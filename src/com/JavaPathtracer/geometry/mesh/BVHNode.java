@@ -12,9 +12,9 @@ import com.JavaPathtracer.geometry.Shape;
 public class BVHNode extends BoundingBox implements Shape {
 
 	// construction constants
-	public static final int NUM_BINS = 10; // more bins = potentially better splits but greater construction time
+	public static final int NUM_BINS = 12; // more bins = potentially better splits but greater construction time
 	public static final double COST_TRAVERSE = 1;
-	public static final double COST_INTERSECT = 12;
+	public static final double COST_INTERSECT = 8;
 	public static final int MAX_DEPTH = 12;
 	
 	public MeshGeometry mesh;
@@ -28,7 +28,8 @@ public class BVHNode extends BoundingBox implements Shape {
 
 	// list of children, used during BVH construction (should be null afterwards)
 	private List<TriangleBoundingBox> primitives;
-
+	private int depth;//removeme
+	
 	public BVHNode(MeshGeometry mesh) {
 		
 		super(null, null);
@@ -65,6 +66,7 @@ public class BVHNode extends BoundingBox implements Shape {
 	
 	public void split(int depth) {
 		
+		this.depth=depth;//removeme
 		if (depth >= MAX_DEPTH) {
 			this.makeLeafNode();
 			return;
@@ -135,11 +137,11 @@ public class BVHNode extends BoundingBox implements Shape {
 	public Hit raytrace(Ray ray) {
 		
 		// check if the ray intersects the bounding box
-		if (!super.intersects(ray))
+		if (!this.intersects(ray))
 			return Hit.MISS;
-
+		
 		// leaf node
-		if (triangleIndexes == null) {
+		if (triangleIndexes == null && depth<1) {
 
 			Hit left = this.left.raytrace(ray);
 			Hit right = this.right.raytrace(ray);
@@ -149,7 +151,8 @@ public class BVHNode extends BoundingBox implements Shape {
 			return left.distance < right.distance ? left : right;
 			
 		} else {
-			return mesh.intersect(ray, this.triangleIndexes);
+			return super.raytrace(ray);
+			//return mesh.intersect(ray, this.triangleIndexes);
 		}
 
 	}

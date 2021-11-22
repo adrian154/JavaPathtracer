@@ -48,7 +48,7 @@ public class Transform {
 		return this;
 	}
 	
-	public Transform RotateY(double angle) {
+	public Transform rotateY(double angle) {
 		Matrix4x4 transform = new Matrix4x4();
 		double cos = Math.cos(angle);
 		double sin = Math.sin(angle);
@@ -60,7 +60,7 @@ public class Transform {
 		return this;
 	}
 	
-	public Transform RotateZ(double angle) {
+	public Transform rotateZ(double angle) {
 		Matrix4x4 transform = new Matrix4x4();
 		double cos = Math.cos(angle);
 		double sin = Math.sin(angle);

@@ -8,3 +8,4 @@ bin/
 .idea/*
 animation/*
 src/com/JavaPathtracer/testscenes_old/*
+src/com/JavaPathtracer/scenes/*

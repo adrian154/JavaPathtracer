@@ -6,17 +6,24 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import com.JavaPathtracer.geometry.Transform;
 import com.JavaPathtracer.geometry.Vector;
+import com.JavaPathtracer.material.Material;
 
 public class OBJLoader {
 	
-	public static MeshGeometry load(String path) throws IOException {
-		return OBJLoader.load(new File(path));
+	public static Mesh load(String path, Map<String, Material> materials, Transform transform) throws IOException {
+		return new Mesh(new BVHNode(OBJLoader.parse(path)), transform, materials);
+	}
+	
+	public static MeshGeometry parse(String path) throws IOException {
+		return OBJLoader.parse(new File(path));
 	}
 
 	// If the model references a material that is not supplied in the `materials` argument, "default" is used
-	public static MeshGeometry load(File file) throws IOException {
+	public static MeshGeometry parse(File file) throws IOException {
 		
 		BufferedReader reader = new BufferedReader(new FileReader(file));
 		int lineNum = 0;
