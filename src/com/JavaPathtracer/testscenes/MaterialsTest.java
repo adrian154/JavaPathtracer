@@ -16,7 +16,7 @@ import com.JavaPathtracer.pattern.HDRMap;
 import com.JavaPathtracer.scene.Scene;
 import com.JavaPathtracer.scene.TexturedSky;
 
-public class MaterialTest extends Scene {
+public class MaterialsTest extends Scene {
 	
 	public Camera getCamera() {
 		Camera camera = new PerspectiveCamera();
@@ -25,7 +25,7 @@ public class MaterialTest extends Scene {
 		return camera;
 	}
 	
-	public MaterialTest() throws IOException {
+	public MaterialsTest() throws IOException {
 		
 		this.setSky(new TexturedSky(new HDRMap("assets/hallway.hdr")));
 		
