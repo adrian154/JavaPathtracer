@@ -25,8 +25,9 @@ public class Circle extends Plane {
 
 	}
 
-	public Sphere getBoundingSphere() {
-		return new Sphere(this.point, this.radius);
+	@Override
+	public BoundingBox getBoundingBox() {
+		return new BoundingBox(this.point.plus(-radius), this.point.plus(radius));
 	}
 
 }
