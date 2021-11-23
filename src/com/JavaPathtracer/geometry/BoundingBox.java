@@ -43,15 +43,13 @@ public class BoundingBox implements Shape {
 	// static method because Java doesn't support *any* code before a constructor call
 	private static BoundingBox bound(List<? extends Shape> shapes) {
 		
-		Vector min = new Vector();
+		Vector min = new Vector(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
 		Vector max = new Vector();
 		
 		for(Shape shape: shapes) {
-			
 			BoundingBox box = shape.getBoundingBox();
 			min = BoundingBox.min(box.min, min);
 			max = BoundingBox.max(box.max, max);
-			
 		}
 		
 		return new BoundingBox(min, max);

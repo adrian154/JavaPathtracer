@@ -63,9 +63,10 @@ public class Vector implements Sampleable {
 
 	// allows iteration over components
 	public double get(int component) {
-		return component == 0 ? x :
-			   component == 1 ? y :
-			                    z;
+		if(component == 0) return x;
+		if(component == 1) return y;
+		if(component == 2) return z;
+		throw new ArrayIndexOutOfBoundsException();
 	}
 	
 	public Vector reverse() {

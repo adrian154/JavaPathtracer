@@ -7,6 +7,8 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import com.JavaPathtracer.DebugTracer.Mode;
+import com.JavaPathtracer.geometry.BoundingBox;
+import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.renderer.InteractivePreview;
 import com.JavaPathtracer.renderer.LivePreview;
 import com.JavaPathtracer.renderer.Renderer;
