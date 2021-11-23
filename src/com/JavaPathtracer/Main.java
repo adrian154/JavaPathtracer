@@ -6,24 +6,25 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import com.JavaPathtracer.DebugTracer.Mode;
 import com.JavaPathtracer.renderer.InteractivePreview;
 import com.JavaPathtracer.renderer.LivePreview;
 import com.JavaPathtracer.renderer.Renderer;
 import com.JavaPathtracer.renderer.Renderer.RenderJob;
 import com.JavaPathtracer.scene.Scene;
-import com.JavaPathtracer.scenes.Spot;
-import com.JavaPathtracer.tonemapping.ACESTonemapper;
+import com.JavaPathtracer.scenes.GirlScene;
+import com.JavaPathtracer.tonemapping.LinearTonemapper;
 
 public class Main {
 		
 	private static Raytracer createRaytracer() {
-		return new Pathtracer(8);
-		//return new DebugTracer(Mode.SIMPLE_SHADED);
+		//return new Pathtracer(8);
+		return new DebugTracer(Mode.SIMPLE_SHADED);
 	}
 	
 	private static Renderer createRenderer(Scene scene, Raytracer raytracer) {
-		return new Renderer(scene, raytracer, 16, 256, new ACESTonemapper());
-		//return new Renderer(scene, raytracer, 16, 1, 1, new LinearTonemapper());
+		//return new Renderer(scene, raytracer, 16, 256, new FilmicTonemapper());
+		return new Renderer(scene, raytracer, 16, 64, new LinearTonemapper());
 	}
 	
 	public static void main(String[] args) throws IOException, InterruptedException {
@@ -33,11 +34,11 @@ public class Main {
 		if(args.length > 0) mode = args[0];
 				
 		// set up output objects
-		BufferedImage output = new BufferedImage(128, 128, BufferedImage.TYPE_INT_RGB);
+		BufferedImage output = new BufferedImage(512, 512, BufferedImage.TYPE_INT_RGB);
 		
 		// set up renderer objects
 		Raytracer raytracer = createRaytracer();
-		Scene scene = new Spot();
+		Scene scene = new GirlScene();
 		Renderer renderer = createRenderer(scene, raytracer);
 
 		if(mode.equals("animate")) {

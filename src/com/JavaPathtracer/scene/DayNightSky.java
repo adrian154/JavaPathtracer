@@ -2,7 +2,7 @@ package com.JavaPathtracer.scene;
 
 import com.JavaPathtracer.geometry.Vector;
 
-public class DayNightSky implements Sky {
+public class DayNightSky implements Environment {
 
 	protected Vector color1, color2;
 	

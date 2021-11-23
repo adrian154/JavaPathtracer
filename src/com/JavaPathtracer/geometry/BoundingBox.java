@@ -108,14 +108,10 @@ public class BoundingBox implements Shape {
 		double tmax = Math.min(Math.min(Math.max(t1, t2), Math.max(t3, t4)), Math.max(t5, t6));
 
 		// no intersection if the point is behind the origin or the two intersection points are not properly ordered
-		if (tmax < Pathtracer.EPSILON) {
+		if (tmax < Pathtracer.EPSILON || tmin > tmax) {
 			return false;
 		}
-		
-		if(tmin > tmax) {
-			return false;
-		}
-
+	
 		return true;
 	
 	}

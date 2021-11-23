@@ -27,12 +27,13 @@ public class Pathtracer implements Raytracer {
 		
 		ObjectHit hit = scene.traceRay(ray, excludeLights);
 		if (hit.hit) {
-
-			Material mat = hit.material;
 			if(scene.getLights().contains(hit.object) && excludeLights) return Vector.ZERO;
-			
-			return mat.shade(hit, bounces, scene, this, ior);
-		
+			try {
+			return hit.material.shade(hit, bounces, scene, this, ior);
+			} catch(Throwable t) {
+				System.out.println(hit.object);
+				throw t;
+			}
 		} else {
 			return scene.getSky().getEmission(ray.direction);
 		}

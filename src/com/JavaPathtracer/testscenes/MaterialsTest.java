@@ -13,6 +13,7 @@ import com.JavaPathtracer.material.GlassMaterial;
 import com.JavaPathtracer.material.MirrorMaterial;
 import com.JavaPathtracer.pattern.Checkerboard;
 import com.JavaPathtracer.pattern.HDRMap;
+import com.JavaPathtracer.scene.Environment;
 import com.JavaPathtracer.scene.Scene;
 import com.JavaPathtracer.scene.TexturedSky;
 
@@ -25,10 +26,13 @@ public class MaterialsTest extends Scene {
 		return camera;
 	}
 	
+	@Override
+	public Environment createEnvironment() throws IOException {
+		return new TexturedSky(new HDRMap("assets/hallway.hdr"));
+	}
+	
 	public MaterialsTest() throws IOException {
-		
-		this.setSky(new TexturedSky(new HDRMap("assets/hallway.hdr")));
-		
+
 		// floor
 		this.add(new Plane(new Vector(0, 1, 0), new Vector(0, 0, 0), 2), new DiffuseMaterial(new Checkerboard()));
 		

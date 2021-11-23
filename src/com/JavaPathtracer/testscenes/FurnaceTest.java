@@ -1,11 +1,14 @@
 package com.JavaPathtracer.testscenes;
 
+import java.io.IOException;
+
 import com.JavaPathtracer.cameras.Camera;
 import com.JavaPathtracer.cameras.PerspectiveCamera;
 import com.JavaPathtracer.geometry.Sphere;
 import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.material.DiffuseMaterial;
 import com.JavaPathtracer.material.Material;
+import com.JavaPathtracer.scene.Environment;
 import com.JavaPathtracer.scene.Scene;
 import com.JavaPathtracer.scene.SimpleSky;
 
@@ -17,17 +20,20 @@ public class FurnaceTest extends Scene {
 		return new DiffuseMaterial(Vector.ONE);
 	}
 	
+	@Override
 	public Camera createCamera() {
 		Camera camera = new PerspectiveCamera();
 		camera.moveTo(new Vector(0, 0, -5));
 		return camera;
 	}
 	
-	public FurnaceTest() {
-		
-		this.setSky(new SimpleSky(Vector.ONE));
+	@Override
+	public Environment createEnvironment() {
+		return new SimpleSky(Vector.ONE);
+	}
+	
+	public FurnaceTest() throws IOException {
 		this.add(new Sphere(Vector.ZERO, 1), this.createMaterial());
-		
 	}
 	
 }

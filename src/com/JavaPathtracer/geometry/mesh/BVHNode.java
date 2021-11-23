@@ -12,10 +12,10 @@ import com.JavaPathtracer.geometry.Shape;
 public class BVHNode extends BoundingBox implements Shape {
 
 	// construction constants
-	public static final int NUM_BINS = 12; // more bins = potentially better splits but greater construction time
+	public static final int NUM_BINS = 16; // more bins = potentially better splits but greater construction time
 	public static final double COST_TRAVERSE = 1;
-	public static final double COST_INTERSECT = 8;
-	public static final int MAX_DEPTH = 12;
+	public static final double COST_INTERSECT = 8; // PBRT's estimate seems fair
+	public static final int MAX_DEPTH = 8;
 	
 	public MeshGeometry mesh;
 	
@@ -26,8 +26,9 @@ public class BVHNode extends BoundingBox implements Shape {
 	// list of primitives (for leaf nodes)
 	private int[] triangleIndexes;
 
-	// list of children, used during BVH construction (should be null afterwards)
+	// some stuff used during construction
 	private List<TriangleBoundingBox> primitives;
+	private int numProcessedPrimitives;
 	
 	public BVHNode(MeshGeometry mesh) {
 		
@@ -43,7 +44,8 @@ public class BVHNode extends BoundingBox implements Shape {
 		BoundingBox box = new BoundingBox(primitives);
 		this.min = box.min;
 		this.max = box.max;
-		this.split(0);
+		this.numProcessedPrimitives = 0;
+		this.split(0, this);
 		
 	}
 	
@@ -53,8 +55,10 @@ public class BVHNode extends BoundingBox implements Shape {
 		this.mesh = mesh;
 	}
 	
-	private void makeLeafNode() {
+	private void makeLeafNode(BVHNode root) {
 		this.triangleIndexes = this.primitives.stream().mapToInt(child -> Integer.valueOf(child.face)).toArray();
+		root.numProcessedPrimitives += this.primitives.size();
+		System.out.printf("Processed %d / %d primitives (%d%%)\n", root.numProcessedPrimitives, root.primitives.size(), root.numProcessedPrimitives * 100 / root.primitives.size());
 		this.primitives = null;
 		return;
 	}
@@ -63,10 +67,11 @@ public class BVHNode extends BoundingBox implements Shape {
 		return this.primitives.size();
 	}
 
-	public void split(int depth) {
+	// root is passed to track progress
+	public void split(int depth, BVHNode root) {
 		
 		if (depth >= MAX_DEPTH) {
-			this.makeLeafNode();
+			this.makeLeafNode(root);
 			return;
 		}
 
@@ -121,13 +126,13 @@ public class BVHNode extends BoundingBox implements Shape {
 			this.right = bestSplitRight;
 
 			// recurse
-			this.left.split(depth + 1);
-			this.right.split(depth + 1);
+			this.left.split(depth + 1, root);
+			this.right.split(depth + 1, root);
 
 			primitives = null;
 			
 		} else {
-			this.makeLeafNode();
+			this.makeLeafNode(root);
 		}
 
 	}
@@ -150,8 +155,8 @@ public class BVHNode extends BoundingBox implements Shape {
 			return left.distance < right.distance ? left : right;
 			
 		} else {
-			//return super.raytrace(ray);
-			return mesh.intersect(ray, this.triangleIndexes);
+			return super.raytrace(ray);
+			//return mesh.intersect(ray, this.triangleIndexes);
 		}
 
 	}

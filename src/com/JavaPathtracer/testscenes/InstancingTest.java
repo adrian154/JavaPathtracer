@@ -16,7 +16,6 @@ import com.JavaPathtracer.material.Material;
 import com.JavaPathtracer.material.MirrorMaterial;
 import com.JavaPathtracer.pattern.Texture;
 import com.JavaPathtracer.scene.Scene;
-import com.JavaPathtracer.scene.SimpleSky;
 
 public class InstancingTest extends Scene {
 	
@@ -29,8 +28,6 @@ public class InstancingTest extends Scene {
 	
 	public InstancingTest() throws IOException {
 		
-		this.setSky(new SimpleSky(Vector.ONE.times(10)));
-		
 		// floor
 		this.add(new Plane(new Vector(0, 1, 0), new Vector(0, 0, 0)), new DiffuseMaterial(Vector.ONE));
 		
@@ -38,7 +35,7 @@ public class InstancingTest extends Scene {
 		//this.add(new Sphere(new Vector(0, 1.0, 5), 1.0), new DiffuseMaterial(new Vector(0x00ffff)));
 		
 		// mesh
-		BVHNode africanHead = new BVHNode(OBJLoader.parse("assets/AfricanHead.obj"));
+		BVHNode africanHead = new BVHNode(OBJLoader.parse("assets/AfricanHead.obj", null));
 		Map<String, Material> materials1 = Map.of("", new MirrorMaterial(new Vector(0xfcba03)));
 		Map<String, Material> materials2 = Map.of("", new DiffuseMaterial(new Texture("assets/AfricanHead.png")));
 		

@@ -14,6 +14,18 @@ public class Transform {
 		return matrix;
 	}
 	
+	// fix y-up and z-up issues
+	public Transform switchYZ() {
+		Matrix4x4 transform = new Matrix4x4(new double[] {
+			1, 0, 0, 0,
+			0, 0, 1, 0,
+			0, 1, 0, 0,
+			0, 0, 0, 1
+		});
+		matrix = matrix.multiply(transform);
+		return this;
+	}
+	
 	public Transform translate(double x, double y, double z) {
 		Matrix4x4 transform = new Matrix4x4();
 		transform.factors[3]  = x;

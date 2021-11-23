@@ -14,16 +14,17 @@ import com.JavaPathtracer.material.Material;
 
 public class OBJLoader {
 	
-	public static Mesh load(String path, Map<String, Material> materials, Transform transform) throws IOException {
-		return new Mesh(new BVHNode(OBJLoader.parse(path)), transform, materials);
+	public static Mesh load(String path, Map<String, Material> materials, Transform initialTransform, Transform transform) throws IOException {
+		return new Mesh(new BVHNode(OBJLoader.parse(path, initialTransform)), transform, materials);
 	}
 	
-	public static MeshGeometry parse(String path) throws IOException {
-		return OBJLoader.parse(new File(path));
+	public static MeshGeometry parse(String path, Transform initialTransform) throws IOException {
+		return OBJLoader.parse(new File(path), initialTransform == null ? new Transform().complete() : initialTransform);
 	}
 
-	// If the model references a material that is not supplied in the `materials` argument, "default" is used
-	public static MeshGeometry parse(File file) throws IOException {
+	// If the model references a material that is not supplied in the `materials` argument, "" is used
+	// initialTransform is applied to the geometry as it's loaded
+	public static MeshGeometry parse(File file, Transform initialTransform) throws IOException {
 		
 		BufferedReader reader = new BufferedReader(new FileReader(file));
 		int lineNum = 0;
@@ -71,7 +72,7 @@ public class OBJLoader {
 					throw new RuntimeException("Unexpected vertex with number of components unequal to 3 at line " + lineNum);
 				}
 
-				vertexes.add(new Vector(Double.parseDouble(parts[1]), Double.parseDouble(parts[2]), Double.parseDouble(parts[3])));
+				vertexes.add(initialTransform.transformPoint(new Vector(Double.parseDouble(parts[1]), Double.parseDouble(parts[2]), Double.parseDouble(parts[3]))));
 
 			} else if(parts[0].equals("vn")) {
 				
@@ -80,7 +81,7 @@ public class OBJLoader {
 					throw new RuntimeException("Unexpected vertex normal with number of components unequal to 3 at line " + lineNum);
 				}
 
-				vertexNormals.add(new Vector(Double.parseDouble(parts[1]), Double.parseDouble(parts[2]), Double.parseDouble(parts[3])));
+				vertexNormals.add(initialTransform.transformNormal(new Vector(Double.parseDouble(parts[1]), Double.parseDouble(parts[2]), Double.parseDouble(parts[3]))));
 				
 			} else if (parts[0].equals("f")) {
 

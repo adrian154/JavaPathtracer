@@ -1,5 +1,6 @@
 package com.JavaPathtracer.scene;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,39 +18,35 @@ public class Scene {
 	protected List<WorldObject> objects;
 	protected List<WorldObject> lights;
 	protected Camera camera;
-	private Sky sky;
+	private Environment environment;
 	
-	public Scene() {
+	public Scene() throws IOException {
 		
 		objects = new ArrayList<WorldObject>();
 		lights = new ArrayList<WorldObject>();
-
-		// Default = black sky
-		sky = new SimpleSky(Vector.ZERO);
 		
 		this.camera = this.createCamera();
+		this.environment = this.createEnvironment();
 		this.update(0);
 		
 	}
-
+	
+	// default setup methods
 	protected Camera createCamera() {
 		return new PerspectiveCamera();
 	}
 	
-	public void setCamera(Camera camera) {
-		this.camera = camera;
+	protected Environment createEnvironment() throws IOException {
+		return new SimpleSky(Vector.ONE);
 	}
 
+	// getters
 	public Camera getCamera() {
 		return this.camera;
 	}
 	
-	public Sky getSky() {
-		return sky;
-	}
-	
-	public void setSky(Sky sky) {
-		this.sky = sky;
+	public Environment getSky() {
+		return environment;
 	}
 	
 	public List<WorldObject> getLights() {

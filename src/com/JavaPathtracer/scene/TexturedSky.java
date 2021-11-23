@@ -3,7 +3,7 @@ package com.JavaPathtracer.scene;
 import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.pattern.Sampleable;
 
-public class TexturedSky implements Sky {
+public class TexturedSky implements Environment {
 
 	protected Sampleable emission;
 	

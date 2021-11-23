@@ -2,7 +2,7 @@ package com.JavaPathtracer.scene;
 
 import com.JavaPathtracer.geometry.Vector;
 
-public class DirectionalSky implements Sky {
+public class DirectionalSky implements Environment {
 
 	protected Vector direction;
 	protected Vector colorA;
