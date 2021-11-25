@@ -4,14 +4,14 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+import com.JavaPathtracer.DebugTracer.Mode;
 import com.JavaPathtracer.material.Texture;
 import com.JavaPathtracer.renderer.InteractivePreview;
 import com.JavaPathtracer.renderer.LivePreview;
 import com.JavaPathtracer.renderer.RenderJob;
 import com.JavaPathtracer.renderer.Renderer;
 import com.JavaPathtracer.scene.Scene;
-import com.JavaPathtracer.scenes.TestScene;
-import com.JavaPathtracer.tonemapping.ACESTonemapper;
+import com.JavaPathtracer.tonemapping.FilmicTonemapper;
 
 public class Main {
 	
@@ -21,8 +21,8 @@ public class Main {
 	private static Texture output;
 	
 	private static void createRaytracer() {
-		raytracer = new Pathtracer(5);
-		//raytracer = new DebugTracer(Mode.SIMPLE_SHADED);
+		//raytracer = new Pathtracer(8);
+		raytracer = new DebugTracer(Mode.SIMPLE_SHADED);
 	}
 	
 	private static void render(boolean preview, String outputName) throws InterruptedException, IOException {
@@ -63,8 +63,8 @@ public class Main {
 		
 		// set up renderer objects
 		createRaytracer();
-		scene = new TestScene();
-		renderer = new Renderer(scene, raytracer, 16, 256, new ACESTonemapper());
+		scene = new StatueScene();
+		renderer = new Renderer(scene, raytracer, 16, 1, new FilmicTonemapper());
 		scene.update(0);
 
 		if(mode.equals("render")) {

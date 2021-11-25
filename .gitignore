@@ -1,11 +1,15 @@
-assets/
-bin/
-anim/
-*.settings/
-*.classpath
-*.project
-/*.png
+# editor environment
+.settings/
+.idea/
+.classpath
+.project
 *.iml
-.idea/*
-animation/*
-src/com/JavaPathtracer/testscenes/*
+
+# assets, scenes, outputs
+assets/
+animation/
+src/com/JavaPathtracer/scenes/
+*.png
+
+# misc
+bin/
