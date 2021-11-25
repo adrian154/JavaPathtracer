@@ -46,6 +46,7 @@ public class BVHNode extends BoundingBox implements Shape {
 		this.max = box.max;
 		this.numProcessedPrimitives = 0;
 		this.split(0, this);
+		System.out.println(this);
 		
 	}
 	
@@ -95,7 +96,7 @@ public class BVHNode extends BoundingBox implements Shape {
 			double binWidth = (this.max.get(axis) - this.min.get(axis)) / NUM_BINS;
 			for(TriangleBoundingBox box: this.primitives) {
 				double centroid = box.centroid().get(axis);
-				int bin = (int)Math.floor((centroid - this.min.get(axis)) / binWidth);
+				int bin = (int)Math.min(Math.floor((centroid - this.min.get(axis)) / binWidth), NUM_BINS - 1);
 				bins.get(bin).add(box);
 			}
 			
@@ -155,8 +156,7 @@ public class BVHNode extends BoundingBox implements Shape {
 			return left.distance < right.distance ? left : right;
 			
 		} else {
-			return super.raytrace(ray);
-			//return mesh.intersect(ray, this.triangleIndexes);
+			return mesh.intersect(ray, this.triangleIndexes);
 		}
 
 	}

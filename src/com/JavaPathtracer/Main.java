@@ -6,27 +6,24 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import com.JavaPathtracer.DebugTracer.Mode;
-import com.JavaPathtracer.geometry.BoundingBox;
-import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.renderer.InteractivePreview;
 import com.JavaPathtracer.renderer.LivePreview;
 import com.JavaPathtracer.renderer.Renderer;
 import com.JavaPathtracer.renderer.Renderer.RenderJob;
 import com.JavaPathtracer.scene.Scene;
-import com.JavaPathtracer.scenes.GirlScene;
-import com.JavaPathtracer.tonemapping.LinearTonemapper;
+import com.JavaPathtracer.scenes.CornellBoxScene;
+import com.JavaPathtracer.tonemapping.FilmicTonemapper;
 
 public class Main {
 		
 	private static Raytracer createRaytracer() {
-		//return new Pathtracer(8);
-		return new DebugTracer(Mode.SIMPLE_SHADED);
+		return new Pathtracer(8);
+		//return new DebugTracer(Mode.SIMPLE_SHADED);
 	}
 	
 	private static Renderer createRenderer(Scene scene, Raytracer raytracer) {
-		//return new Renderer(scene, raytracer, 16, 256, new FilmicTonemapper());
-		return new Renderer(scene, raytracer, 16, 64, new LinearTonemapper());
+		//return new Renderer(scene, raytracer, 16, 1, new LinearTonemapper());
+		return new Renderer(scene, raytracer, 16, 256, new FilmicTonemapper());
 	}
 	
 	public static void main(String[] args) throws IOException, InterruptedException {
@@ -36,11 +33,11 @@ public class Main {
 		if(args.length > 0) mode = args[0];
 				
 		// set up output objects
-		BufferedImage output = new BufferedImage(512, 512, BufferedImage.TYPE_INT_RGB);
+		BufferedImage output = new BufferedImage(256, 256, BufferedImage.TYPE_INT_RGB);
 		
 		// set up renderer objects
 		Raytracer raytracer = createRaytracer();
-		Scene scene = new GirlScene();
+		Scene scene = new CornellBoxScene();
 		Renderer renderer = createRenderer(scene, raytracer);
 
 		if(mode.equals("animate")) {
@@ -64,6 +61,7 @@ public class Main {
 		} else {
 			
 			// render
+			long start = System.currentTimeMillis();
 			RenderJob job = renderer.render(output);
 	
 			// create various windows
@@ -79,6 +77,8 @@ public class Main {
 			
 			// save image
 			job.await();
+			long finish = System.currentTimeMillis();
+			System.out.println((finish-start)/1000);
 			File file = new File("output.png");
 			ImageIO.write(output, "png", file);
 			

@@ -40,7 +40,7 @@ public class Square extends Plane {
 	
 	@Override
 	public BoundingBox getBoundingBox() {
-		return new BoundingBox(point.plus(-size), point.plus(size)); // degenerate bounding box, but that's okay
+		return new BoundingBox(point.plus(-size), point.plus(size));
 	}
 
 }
