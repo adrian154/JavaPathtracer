@@ -4,35 +4,37 @@ import com.JavaPathtracer.Pathtracer;
 
 public class Cylinder implements Shape {
 
-	private Vector point;
+	private Vector point, direction;
 	private double length;
 	private double radius;
 	
-	private Vector bvx, bvy, bvz;
-	private Matrix3x3 mat;
+	private Transform transform;
 	
 	public Cylinder(Vector point, Vector direction, double radius, double length) {
 		this.point = point;
+		this.direction = direction;
 		this.radius = radius;
 		this.length = length;
-		this.setDirection(direction);
+		this.updateTransform();
 	}
 	
-	public void setPosition(Vector vector) {
-		this.setDirection(vector);
+	public void setPosition(Vector position) {
+		this.point = position;
+		this.updateTransform();
 	}
 	
 	public void setDirection(Vector direction) {
-		this.bvy = direction;
-		this.bvx = this.bvy.getOrthagonal();
-		this.bvz = bvx.cross(bvy);
-		this.mat = new Matrix3x3(new double[] {
-			bvx.x, bvy.x, bvz.x,
-			bvx.y, bvy.y, bvz.y,
-			bvx.z, bvy.z, bvz.z
-		}).inverse();
+		this.direction = direction;
+		this.updateTransform();
 	}
 	
+	private void updateTransform() {
+		Vector bvy = direction, bvx = direction.getOrthagonal(), bvz = bvx.cross(bvy);
+		this.transform = new TransformBuilder().translate(point).toCoordinateSpace(bvx, bvy, bvz).build();
+		System.out.println(this.transform);
+	}
+	
+	// TODO
 	@Override
 	public BoundingBox getBoundingBox() {
 		throw new UnsupportedOperationException();
@@ -40,65 +42,48 @@ public class Cylinder implements Shape {
 	
 	@Override
 	public Hit raytrace(Ray ray) {
-		
-		// life is only hard if you make it hard
 
-		// calculate intersection with a cylinder aligned along (0, 1, 0), and then transform the results back
-		Vector d = mat.transform(ray.direction);
-		Vector o = mat.transform(ray.origin.minus(point));
+		// TL;DR: perform intersection with a cylinder aligned along (0, 1, 0) to make transforms easier
+		Vector d = transform.inverseVector(ray.direction);
+		Vector o = transform.inversePoint(ray.origin);
 		
-		// i have no idea how I derived any of these
+		// solve for `t` such that (x, z) is `radius` units from the y-axis
 		double a = d.x * d.x + d.z * d.z;
 		double b = 2 * (o.x * d.x + o.z * d.z);
 		double c = o.x * o.x + o.z * o.z - radius * radius;
 		
 		double discrim = b * b - 4 * a * c;
-		if(discrim < 0) return Hit.MISS;
+		if(discrim < 0) return Hit.MISS; // no solutions, i.e. the ray is parallel to the cylinder
 
-		// t1 will always be closer
+		// t1 will always be closer (discrim > 0 and a > 0)
 		discrim = Math.sqrt(discrim);
 		double t1 = (-b - discrim) / (2 * a);
 		double t2 = (-b + discrim) / (2 * a);
 
-		// both behind
 		if(t1 < Pathtracer.EPSILON && t2 < Pathtracer.EPSILON) return Hit.MISS;
 		
-		Vector hitLocal;
 		double t;
-		Vector hit1 = o.plus(d.times(t1));
-		Vector hit2 = o.plus(d.times(t2));
-		
-		if(t1 < Pathtracer.EPSILON && t2 < Pathtracer.EPSILON) return Hit.MISS;
-		
 		if(t1 < Pathtracer.EPSILON) {
-			hitLocal = hit2; t = t2;
+			t = t2;
 		} else if(t2 < Pathtracer.EPSILON) {
-			hitLocal = hit1; t = t1;
+			t = t1;
 		} else {
-			if(hit1.y > length || hit1.y < 0) hit1 = null;
-			if(hit2.y > length || hit2.y < 0) hit2 = null;
-			if(hit1 == null) {
-				hitLocal = hit2; t = t2;
-			} else {
-				hitLocal = hit1; t = t1;
-			}
+			t = Math.min(t1, t2);
 		}
+
+		Vector hitLocal = o.plus(d.times(t));
 		
-		// transform back normal
-		if(hitLocal == null || hitLocal.y < 0 || hitLocal.y > length) return Hit.MISS;
+		// reject hits beyond the length of the cylinder
+		if(hitLocal.y < 0 || hitLocal.y > length) return Hit.MISS;
 		Vector normalLocal = new Vector(hitLocal.x, 0, hitLocal.z).normalize();
 		
-		Vector point = hitLocal.fromCoordinateSpace(bvx, bvy, bvz);
-		Vector normal = normalLocal.fromCoordinateSpace(bvx, bvy, bvz);
-		
-		// TODO: move normal flip to common step after isect
-		if(normal.dot(ray.direction) > 0) {
-			normal.reverse();
-		}
+		// transform back everything
+		Vector point = transform.transformPoint(hitLocal);
+		Vector normal = transform.transformNormal(normalLocal).facing(ray.direction);
 		
 		// TODO: texture mapping for cylinder
 		// TODO: tangent vector
-		return new Hit(ray, point, normal, null, t, new Vector(0.5, 0.5, 0.0));
+		return new Hit(ray, point, normal, null, t, Vector.ZERO);
 		
 	}
 	

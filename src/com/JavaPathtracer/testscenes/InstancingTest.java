@@ -6,7 +6,7 @@ import java.util.Map;
 import com.JavaPathtracer.cameras.Camera;
 import com.JavaPathtracer.cameras.PerspectiveCamera;
 import com.JavaPathtracer.geometry.Plane;
-import com.JavaPathtracer.geometry.Transform;
+import com.JavaPathtracer.geometry.TransformBuilder;
 import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.geometry.mesh.BVHNode;
 import com.JavaPathtracer.geometry.mesh.Mesh;
@@ -41,7 +41,7 @@ public class InstancingTest extends Scene {
 		
 		for(int x = 0; x < 8; x++) {
 			for(int z = 0; z < 8; z++) {
-				this.add(new Mesh(africanHead, new Transform().translate(x * 2, 5, z * 2).complete(), (x % 2 == 0) ^ (z % 2 == 0) ? materials1 : materials2));
+				this.add(new Mesh(africanHead, new TransformBuilder().translate(x * 2, 5, z * 2).build(), (x % 2 == 0) ^ (z % 2 == 0) ? materials1 : materials2));
 			}
 		}
 

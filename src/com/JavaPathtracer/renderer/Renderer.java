@@ -121,7 +121,7 @@ public class Renderer {
 					
 					// set the pixel to the pathtraced value
 					output.setRGB(x, output.getHeight() - y - 1, toneMapper.map(result.divBy(samples)).toRGB());
-					
+
 				}
 			}
 

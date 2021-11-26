@@ -19,7 +19,7 @@ public class OBJLoader {
 	}
 	
 	public static MeshGeometry parse(String path, Transform initialTransform) throws IOException {
-		return OBJLoader.parse(new File(path), initialTransform == null ? new Transform().complete() : initialTransform);
+		return OBJLoader.parse(new File(path), initialTransform == null ? new Transform() : initialTransform);
 	}
 
 	// If the model references a material that is not supplied in the `materials` argument, "" is used

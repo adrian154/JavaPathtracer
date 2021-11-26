@@ -6,30 +6,31 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import com.JavaPathtracer.DebugTracer.Mode;
 import com.JavaPathtracer.renderer.InteractivePreview;
 import com.JavaPathtracer.renderer.LivePreview;
 import com.JavaPathtracer.renderer.Renderer;
 import com.JavaPathtracer.renderer.Renderer.RenderJob;
 import com.JavaPathtracer.scene.Scene;
-import com.JavaPathtracer.scenes.StatueScene;
-import com.JavaPathtracer.tonemapping.FilmicTonemapper;
+import com.JavaPathtracer.testscenes.GeometryTest;
+import com.JavaPathtracer.tonemapping.LinearTonemapper;
 
 public class Main {
 		
 	private static Raytracer createRaytracer() {
-		return new Pathtracer(8);
-		//return new DebugTracer(Mode.SIMPLE_SHADED);
+		//return new Pathtracer(8);
+		return new DebugTracer(Mode.SHADED_NORMALS);
 	}
 	
 	private static Renderer createRenderer(Scene scene, Raytracer raytracer) {
-		//return new Renderer(scene, raytracer, 16, 1, new LinearTonemapper());
-		return new Renderer(scene, raytracer, 16, 1, new FilmicTonemapper());
+		return new Renderer(scene, raytracer, 16, 1, new LinearTonemapper());
+		//return new Renderer(scene, raytracer, 16, 32, new FilmicTonemapper());
 	}
 	
 	public static void main(String[] args) throws IOException, InterruptedException {
 		
 		// read args
-		String mode = "preview";
+		String mode = "interactive";
 		if(args.length > 0) mode = args[0];
 				
 		// set up output objects
@@ -37,7 +38,7 @@ public class Main {
 		
 		// set up renderer objects
 		Raytracer raytracer = createRaytracer();
-		Scene scene = new StatueScene();
+		Scene scene = new GeometryTest();
 		Renderer renderer = createRenderer(scene, raytracer);
 
 		if(mode.equals("animate")) {

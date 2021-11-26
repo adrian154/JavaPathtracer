@@ -216,5 +216,10 @@ public class Vector implements Sampleable {
 			this.x * bvx.z + this.y * bvy.z + this.z * bvz.z
 		);
 	}
+	
+	// ITU BT.709 luminance format
+	public double luminance() {
+		return x * 0.2126 + y * 0.7152 + z * 0.0722;
+	}
 
 }

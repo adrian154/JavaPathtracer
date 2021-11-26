@@ -10,7 +10,8 @@ public class DebugTracer implements Raytracer {
 	public enum Mode {
 		ALBEDO,
 		SIMPLE_SHADED,
-		NORMAL,
+		NORMALS,
+		SHADED_NORMALS,
 		DEPTH,
 		UV
 	}
@@ -23,22 +24,20 @@ public class DebugTracer implements Raytracer {
 	
 	// --- shaders
 	private Vector shadeAlbedo(ObjectHit hit) {
-		return hit.hit ? hit.material.getDebugColor(hit.textureCoord) : Vector.ZERO;
+		return hit.material.getDebugColor(hit.textureCoord);
 	}
 	
 	private Vector shadeSimple(ObjectHit hit) {
-		
-		if(hit.hit) {
-			double shading = Vector.ZERO.minus(hit.ray.direction).dot(hit.normal);
-			return shading < 0 ? Vector.ZERO : hit.material.getDebugColor(hit.textureCoord).times(shading);
-		}
-		
-		return Vector.ZERO;
-		
+		double shading = Vector.ZERO.minus(hit.ray.direction).dot(hit.normal);
+		return shading < 0 ? Vector.ZERO : hit.material.getDebugColor(hit.textureCoord).times(shading);		
 	}
 	
 	private Vector shadeNormal(ObjectHit hit) {
 		return hit.normal.plus(1).divBy(2);
+	}
+	
+	private Vector shadeNormalFlat(ObjectHit hit) {
+		return hit.normal.plus(1).times(hit.ray.direction.reverse().dot(hit.normal) / 2);
 	}
 	
 	private Vector shadeDepth(ObjectHit hit) {
@@ -57,7 +56,8 @@ public class DebugTracer implements Raytracer {
 			switch(mode) {
 				case ALBEDO: return shadeAlbedo(hit);
 				case SIMPLE_SHADED: return shadeSimple(hit);
-				case NORMAL: return shadeNormal(hit);
+				case NORMALS: return shadeNormal(hit);
+				case SHADED_NORMALS: return shadeNormalFlat(hit);
 				case DEPTH: return shadeDepth(hit);
 				case UV: default: return shadeUV(hit);
 			}
