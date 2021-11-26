@@ -31,7 +31,7 @@ public class GeometryTest extends Scene {
 		this.add(new Sphere(new Vector(3, 2, 0), 1.0), mtl);
 				
 		this.addCylinder(new Vector(5, 0, 0), Vector.Y, 1.5, 3);
-		this.addCylinder(new Vector(8, 0, 0), new Vector(-10, 3, 6).normalize(), 1.5, 3);
+		this.addCylinder(new Vector(0, 0, -5), new Vector(-10, 3, 6).normalize(), 1.5, 3);
 
 	}
 	

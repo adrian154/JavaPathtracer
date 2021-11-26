@@ -42,16 +42,16 @@ public class Plane implements Shape {
 	public Hit raytrace(Ray ray) {
 
 		// reject rays that are wonky (wrong side!))
-		if(oneSided && ray.direction.dot(this.normal) > 0) return Hit.MISS;
+		double dot = ray.direction.dot(this.normal);
+		if(oneSided && dot > 0) return Hit.MISS;
 		
 		/* Check if equation has solution. */
-		double denom = ray.direction.dot(this.normal);
-		if (denom == 0) {
+		if (dot == 0) {
 			return Hit.MISS;
 		}
 
 		/* Solve for the distance. */
-		double distance = this.point.minus(ray.origin).dot(this.normal) / denom;
+		double distance = this.point.minus(ray.origin).dot(this.normal) / dot;
 
 		/* Make sure hit point is not behind ray. */
 		if (distance < Pathtracer.EPSILON) {
@@ -66,7 +66,7 @@ public class Plane implements Shape {
 		u = u - Math.floor(u / this.tilingSize) * this.tilingSize;
 		v = v - Math.floor(v / this.tilingSize) * this.tilingSize;
 	
-		return new Hit(ray, point, normal, tangent, distance, new Vector(u / this.tilingSize, v / this.tilingSize, 0.0));
+		return new Hit(ray, point, normal.facing(ray.direction), tangent, distance, new Vector(u / this.tilingSize, v / this.tilingSize, 0.0));
 
 	}
 

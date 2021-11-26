@@ -59,26 +59,50 @@ public class Cylinder implements Shape {
 		double discrim = b * b - 4 * a * c;
 		if(discrim < 0) return Hit.MISS; // no solutions, i.e. the ray is parallel to the cylinder
 
-		// t1 will always be closer (discrim > 0 and a > 0)
+		// there may be up to two intersection points
 		discrim = Math.sqrt(discrim);
 		double t1 = (-b - discrim) / (2 * a);
 		double t2 = (-b + discrim) / (2 * a);
 
+		// if both are behind the camera, we're done
 		if(t1 < Pathtracer.EPSILON && t2 < Pathtracer.EPSILON) return Hit.MISS;
 		
+		Vector hitLocal;
 		double t;
+		Vector hit1 = o.plus(d.times(t1));
+		Vector hit2 = o.plus(d.times(t2));
+		
 		if(t1 < Pathtracer.EPSILON) {
-			t = t2;
-		} else if(t2 < Pathtracer.EPSILON) {
-			t = t1;
+			if(hit2.y > length || hit2.y < 0) {
+				return Hit.MISS;
+			} else {
+				hitLocal = hit2;
+				t = t2;
+			}
 		} else {
-			t = Math.min(t1, t2);
+			if(hit1.y > length || hit1.y < 0) {
+				return Hit.MISS;
+			} else {
+				hitLocal = hit1;
+				t = t1;
+			}
 		}
-
-		Vector hitLocal = o.plus(d.times(t));
+		
+		/*
+		double min = Math.min(t1, t2);
+		double max = Math.max(t1, t2);
+		
+		Vector hitLocal = o.plus(d.times(min));
+		double t = min;
+		if(hitLocal.y > length || hitLocal.y < 0) {
+			hitLocal = o.plus(d.times(max));
+			t = max;
+			if(hitLocal.y > length || hitLocal.y < 0) {
+				return Hit.MISS;
+			} 
+		}*/
 		
 		// reject hits beyond the length of the cylinder
-		if(hitLocal.y < 0 || hitLocal.y > length) return Hit.MISS;
 		Vector normalLocal = new Vector(hitLocal.x, 0, hitLocal.z).normalize();
 		
 		// transform back everything
