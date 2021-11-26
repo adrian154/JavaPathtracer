@@ -8,7 +8,7 @@ public class Cylinder implements Shape {
 	private double length;
 	private double radius;
 	
-	private Transform transform;
+	private Matrix3x3 matrix, inverse;
 	
 	public Cylinder(Vector point, Vector direction, double radius, double length) {
 		this.point = point;
@@ -30,8 +30,12 @@ public class Cylinder implements Shape {
 	
 	private void updateTransform() {
 		Vector bvy = direction, bvx = direction.getOrthagonal(), bvz = bvx.cross(bvy);
-		this.transform = new TransformBuilder().translate(point).toCoordinateSpace(bvx, bvy, bvz).build();
-		System.out.println(this.transform);
+		this.matrix = new Matrix3x3(new double[] {
+			bvx.x, bvy.x, bvz.x,
+			bvx.y, bvy.y, bvz.y,
+			bvx.z, bvy.z, bvz.z 
+		});
+		this.inverse = matrix.inverse();
 	}
 	
 	// TODO
@@ -44,8 +48,8 @@ public class Cylinder implements Shape {
 	public Hit raytrace(Ray ray) {
 
 		// TL;DR: perform intersection with a cylinder aligned along (0, 1, 0) to make transforms easier
-		Vector d = transform.inverseVector(ray.direction);
-		Vector o = transform.inversePoint(ray.origin);
+		Vector d = this.inverse.transform(ray.direction);
+		Vector o = this.inverse.transform(ray.origin.minus(point));
 		
 		// solve for `t` such that (x, z) is `radius` units from the y-axis
 		double a = d.x * d.x + d.z * d.z;
@@ -78,8 +82,8 @@ public class Cylinder implements Shape {
 		Vector normalLocal = new Vector(hitLocal.x, 0, hitLocal.z).normalize();
 		
 		// transform back everything
-		Vector point = transform.transformPoint(hitLocal);
-		Vector normal = transform.transformNormal(normalLocal).facing(ray.direction);
+		Vector point = this.matrix.transform(hitLocal).plus(this.point);
+		Vector normal = this.matrix.transform(normalLocal).facing(ray.direction);
 		
 		// TODO: texture mapping for cylinder
 		// TODO: tangent vector
