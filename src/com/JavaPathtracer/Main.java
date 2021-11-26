@@ -6,31 +6,30 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import com.JavaPathtracer.DebugTracer.Mode;
 import com.JavaPathtracer.renderer.InteractivePreview;
 import com.JavaPathtracer.renderer.LivePreview;
 import com.JavaPathtracer.renderer.Renderer;
 import com.JavaPathtracer.renderer.Renderer.RenderJob;
 import com.JavaPathtracer.scene.Scene;
-import com.JavaPathtracer.testscenes.GeometryTest;
-import com.JavaPathtracer.tonemapping.LinearTonemapper;
+import com.JavaPathtracer.scenes.CornellBoxScene;
+import com.JavaPathtracer.tonemapping.ReinhardTonemapper;
 
 public class Main {
 		
 	private static Raytracer createRaytracer() {
-		//return new Pathtracer(8);
-		return new DebugTracer(Mode.SHADED_NORMALS);
+		return new Pathtracer(8);
+		//return new DebugTracer(Mode.SIMPLE_SHADED);
 	}
 	
 	private static Renderer createRenderer(Scene scene, Raytracer raytracer) {
-		return new Renderer(scene, raytracer, 16, 1, new LinearTonemapper());
-		//return new Renderer(scene, raytracer, 16, 32, new FilmicTonemapper());
+		//return new Renderer(scene, raytracer, 16, 1, new LinearTonemapper());
+		return new Renderer(scene, raytracer, 16, 1024, new ReinhardTonemapper());
 	}
 	
 	public static void main(String[] args) throws IOException, InterruptedException {
 		
 		// read args
-		String mode = "interactive";
+		String mode = "preview";
 		if(args.length > 0) mode = args[0];
 				
 		// set up output objects
@@ -38,7 +37,7 @@ public class Main {
 		
 		// set up renderer objects
 		Raytracer raytracer = createRaytracer();
-		Scene scene = new GeometryTest();
+		Scene scene = new CornellBoxScene();
 		Renderer renderer = createRenderer(scene, raytracer);
 
 		if(mode.equals("animate")) {
@@ -67,7 +66,7 @@ public class Main {
 	
 			// create various windows
 			if(mode.equals("preview")) {
-				LivePreview preview = new LivePreview(job, 2);
+				LivePreview preview = new LivePreview(job, 1);
 				preview.start();
 			} else if(mode.equals("interactive")) {
 				InteractivePreview preview = new InteractivePreview(job, 4);

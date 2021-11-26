@@ -43,11 +43,6 @@ public abstract class BRDFMaterial extends BaseMaterial {
 		//return direction.dot(hit.normal) / Math.PI;
 	}
 	
-	// in lieu of proper MIS
-	protected boolean shouldSampleLights() {
-		return true;
-	}
-	
 	// ---- mathy code incoming
 	
 	// generate a ray towards the light sample

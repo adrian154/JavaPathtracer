@@ -20,7 +20,7 @@ public class FilmicTonemapper implements IToneMapper {
 	@Override
 	public Vector map(Vector inColor) {
 		double max = Math.max(inColor.x, Math.max(inColor.y, inColor.z));
-		return inColor.times(hable(max) / max);
+		return inColor.times(hable(max) * 3 / max);
 	}
 	
 	@Override

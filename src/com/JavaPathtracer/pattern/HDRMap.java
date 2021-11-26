@@ -18,19 +18,15 @@ public class HDRMap implements Sampleable {
 	
 	public HDRMap(File file) throws IOException {
 		this.path = file.getPath();
-		image = (HDRImageRGB) HDREncoder.readHDR(file, true);
+		image = (HDRImageRGB)HDREncoder.readHDR(file, true);
 	}
 
 	@Override
 	public Vector sample(Vector textureCoord) {
 
 		// TODO: Configurable interpolation
-		int x = (int) Math.round(textureCoord.x * image.getWidth());
-		int y = (int) Math.round(textureCoord.y * image.getHeight());
-
-		// Clamp
-		x = Math.max(Math.min(x, image.getWidth() - 1), 0);
-		y = Math.max(Math.min(image.getHeight() - y - 1, image.getHeight() - 1), 0);
+		int x = (int) Math.round((textureCoord.x + 1) % 1 * (image.getWidth() - 1));
+		int y = (int) Math.round((1 - (textureCoord.y + 1) % 1) * (image.getHeight() - 1));
 
 		float r = image.getPixelValue(x, y, 0);
 		float g = image.getPixelValue(x, y, 1);
