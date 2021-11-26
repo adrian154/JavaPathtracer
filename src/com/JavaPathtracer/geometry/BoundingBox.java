@@ -44,7 +44,7 @@ public class BoundingBox implements Shape {
 	private static BoundingBox bound(List<? extends Shape> shapes) {
 		
 		Vector min = new Vector(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
-		Vector max = new Vector();
+		Vector max = new Vector(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY);
 		
 		for(Shape shape: shapes) {
 			BoundingBox box = shape.getBoundingBox();

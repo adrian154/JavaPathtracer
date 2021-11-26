@@ -11,7 +11,7 @@ import com.JavaPathtracer.renderer.LivePreview;
 import com.JavaPathtracer.renderer.Renderer;
 import com.JavaPathtracer.renderer.Renderer.RenderJob;
 import com.JavaPathtracer.scene.Scene;
-import com.JavaPathtracer.scenes.CornellBoxScene;
+import com.JavaPathtracer.scenes.StatueScene;
 import com.JavaPathtracer.tonemapping.FilmicTonemapper;
 
 public class Main {
@@ -23,7 +23,7 @@ public class Main {
 	
 	private static Renderer createRenderer(Scene scene, Raytracer raytracer) {
 		//return new Renderer(scene, raytracer, 16, 1, new LinearTonemapper());
-		return new Renderer(scene, raytracer, 16, 256, new FilmicTonemapper());
+		return new Renderer(scene, raytracer, 16, 1, new FilmicTonemapper());
 	}
 	
 	public static void main(String[] args) throws IOException, InterruptedException {
@@ -37,7 +37,7 @@ public class Main {
 		
 		// set up renderer objects
 		Raytracer raytracer = createRaytracer();
-		Scene scene = new CornellBoxScene();
+		Scene scene = new StatueScene();
 		Renderer renderer = createRenderer(scene, raytracer);
 
 		if(mode.equals("animate")) {
@@ -78,7 +78,7 @@ public class Main {
 			// save image
 			job.await();
 			long finish = System.currentTimeMillis();
-			System.out.println((finish-start)/1000);
+			System.out.println(finish-start);
 			File file = new File("output.png");
 			ImageIO.write(output, "png", file);
 			

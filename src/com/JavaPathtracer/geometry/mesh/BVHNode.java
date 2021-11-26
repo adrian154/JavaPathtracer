@@ -14,8 +14,8 @@ public class BVHNode extends BoundingBox implements Shape {
 	// construction constants
 	public static final int NUM_BINS = 16; // more bins = potentially better splits but greater construction time
 	public static final double COST_TRAVERSE = 1;
-	public static final double COST_INTERSECT = 8; // PBRT's estimate seems fair
-	public static final int MAX_DEPTH = 8;
+	public static final double COST_INTERSECT = 12; // PBRT's estimate seems fair
+	public static final int MAX_DEPTH = 12;
 	
 	public MeshGeometry mesh;
 	
@@ -145,7 +145,7 @@ public class BVHNode extends BoundingBox implements Shape {
 		if (!this.intersects(ray))
 			return Hit.MISS;
 		
-		// leaf node
+		// not a leaf node
 		if (triangleIndexes == null) {
 
 			Hit left = this.left.raytrace(ray);
