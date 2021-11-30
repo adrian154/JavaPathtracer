@@ -27,7 +27,7 @@ public class Mesh extends WorldObject {
 	}
 	
 	@Override
-	public ObjectHit raytraceObject(Ray ray) {
+	public ObjectHit raytraceLocal(Ray ray) {
 		
 		Hit hit = bvh.raytrace(ray);
 		
