@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.JavaPathtracer.Stopwatch;
 import com.JavaPathtracer.geometry.Transform;
 import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.material.Material;
@@ -25,6 +26,8 @@ public class OBJLoader {
 	// If the model references a material that is not supplied in the `materials` argument, "" is used
 	// initialTransform is applied to the geometry as it's loaded
 	public static MeshGeometry parse(File file, Transform initialTransform) throws IOException {
+		
+		Stopwatch.start("parsing mesh " + file.getName());
 		
 		BufferedReader reader = new BufferedReader(new FileReader(file));
 		int lineNum = 0;
@@ -135,6 +138,8 @@ public class OBJLoader {
 		}
 		
 		reader.close();
+		
+		Stopwatch.finish();
 		
 		// Convert arraylists to arrays
 		return new MeshGeometry(

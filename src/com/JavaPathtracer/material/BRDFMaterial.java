@@ -69,13 +69,8 @@ public abstract class BRDFMaterial extends BaseMaterial {
 		Vector worldPos = bounding.center.plus(randomOnDisc.fromCoordinateSpace(bvx, bvy, bvz));
 
 		// generate new ray pointing at our point
-		return new Ray(hit.point, worldPos.minus(hit.point).normalize());
+		return new Ray(hit.point, object.pickRandomPoint().minus(hit.point).normalize());
 		
-	}
-
-	// solid angle = 2pi(1 - cos(alpha)) where alpha = angle between disc center, edge as seen by hitpoint
-	private static double discSolidAngle(double radius, double distance) {
-		return 2 * Math.PI * (1 - distance / Math.sqrt(distance * distance + radius * radius));
 	}
 	
 	private Vector sampleLights(Hit hit, Scene scene, Pathtracer pathtracer, int bounces, double ior) {
@@ -87,17 +82,14 @@ public abstract class BRDFMaterial extends BaseMaterial {
 		for(WorldObject light: lights) {
 
 			// get importance-generated ray
-			Sphere bounding = light.getBoundingBox().toSphere();
 			Ray ray = generateLightSample(hit, light);
 			
 			ObjectHit lightHit = scene.traceRay(ray, light);
 			
 			if(lightHit.hit) {
-
-				// area sampling means our BRDF is just (angle sampled) / (area of unit hemisphere)
-				double solidAngle = discSolidAngle(bounding.radius, bounding.center.minus(hit.point).length());
-				Vector irradiance = lightHit.material.shade(lightHit, bounces + 1, scene, pathtracer, ior).times(solidAngle / (2 * Math.PI));
 				
+				// inverse square falloff
+				Vector irradiance = lightHit.material.shade(lightHit, bounces + 1, scene, pathtracer, ior).times(1 / (lightHit.distance * lightHit.distance));
 				double cosFactor = ray.direction.dot(hit.normal);
 				sum = sum.plus(irradiance.times(cosFactor).times(BRDF(hit, ray.direction)));
 			

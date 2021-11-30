@@ -34,8 +34,14 @@ public class Plane implements Shape {
 		this.tangent = tangent;
 	}
 
+	@Override
+	public Vector pickRandomPoint() {
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
 	public BoundingBox getBoundingBox() {
-		throw new UnsupportedOperationException("You must be insane.");
+		throw new UnsupportedOperationException();
 	}
 	
 	@Override

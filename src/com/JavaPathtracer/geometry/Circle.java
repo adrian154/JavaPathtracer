@@ -1,5 +1,7 @@
 package com.JavaPathtracer.geometry;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 public class Circle extends Plane {
 
 	public double radius;
@@ -26,8 +28,11 @@ public class Circle extends Plane {
 	}
 
 	@Override
-	public BoundingBox getBoundingBox() {
-		return new BoundingBox(this.point.plus(-radius), this.point.plus(radius));
+	public Vector pickRandomPoint() {
+		double angle = ThreadLocalRandom.current().nextDouble() * 2 * Math.PI;
+		double length = ThreadLocalRandom.current().nextDouble() * radius;
+		Vector offset = new Vector(Math.cos(angle) * length, 0, Math.sin(angle) * length);
+		return this.point.plus(offset.fromCoordinateSpace(this.tangent, this.normal, this.tangent.cross(this.normal)));
 	}
 
 }

@@ -3,6 +3,7 @@ package com.JavaPathtracer.geometry.csg;
 import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Shape;
+import com.JavaPathtracer.geometry.Vector;
 
 public class Difference extends BooleanOperation {
 
@@ -42,6 +43,11 @@ public class Difference extends BooleanOperation {
 
 		}
 
+	}
+	
+	@Override
+	public Vector pickRandomPoint() {
+		throw new UnsupportedOperationException();
 	}
 
 }

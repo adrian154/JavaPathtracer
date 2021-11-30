@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.JavaPathtracer.Stopwatch;
 import com.JavaPathtracer.geometry.BoundingBox;
 import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.Ray;
@@ -33,6 +34,9 @@ public class BVHNode extends BoundingBox implements Shape {
 	public BVHNode(MeshGeometry mesh) {
 		
 		super(null, null);
+		
+		Stopwatch.start("building BVH");
+		
 		this.mesh = mesh;
 		
 		// create list of primitives
@@ -46,7 +50,8 @@ public class BVHNode extends BoundingBox implements Shape {
 		this.max = box.max;
 		this.numProcessedPrimitives = 0;
 		this.split(0, this);
-		System.out.println(this);
+		
+		Stopwatch.finish();
 		
 	}
 	

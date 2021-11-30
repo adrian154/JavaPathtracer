@@ -7,7 +7,7 @@ import com.JavaPathtracer.pattern.Sampleable;
 public class DiffuseMaterial extends BRDFMaterial {
 
 	public DiffuseMaterial(Sampleable color) {
-		super(color, false);
+		super(color, true);
 	}
 	
 	@Override

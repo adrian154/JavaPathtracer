@@ -5,5 +5,6 @@ public interface Shape {
 	
 	public Hit raytrace(Ray ray);
 	public BoundingBox getBoundingBox();
+	public Vector pickRandomPoint();
 	
 }

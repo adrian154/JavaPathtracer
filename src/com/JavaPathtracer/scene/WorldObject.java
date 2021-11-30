@@ -4,6 +4,7 @@ import com.JavaPathtracer.geometry.BoundingBox;
 import com.JavaPathtracer.geometry.ObjectHit;
 import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Transform;
+import com.JavaPathtracer.geometry.Vector;
 
 public abstract class WorldObject {
 
@@ -39,5 +40,6 @@ public abstract class WorldObject {
 	
 	public abstract ObjectHit raytraceObject(Ray ray);
 	public abstract BoundingBox getBoundingBox();
+	public abstract Vector pickRandomPoint();
 
 }

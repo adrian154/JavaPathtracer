@@ -1,5 +1,7 @@
 package com.JavaPathtracer.geometry;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 // this thing extends circle because i don't want to make a FinitePlane class
 public class Square extends Plane {
 
@@ -41,6 +43,12 @@ public class Square extends Plane {
 	@Override
 	public BoundingBox getBoundingBox() {
 		return new BoundingBox(point.plus(-size), point.plus(size));
+	}
+	
+	@Override
+	public Vector pickRandomPoint() {
+		Vector bitangent = this.tangent.cross(this.normal);
+		return this.point.plus(this.tangent.times((ThreadLocalRandom.current().nextDouble() * 2 - 1) * size)).plus(bitangent.times((ThreadLocalRandom.current().nextDouble() * 2 - 1) * size));
 	}
 
 }

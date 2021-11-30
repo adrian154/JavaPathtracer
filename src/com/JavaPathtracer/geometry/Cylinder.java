@@ -1,5 +1,7 @@
 package com.JavaPathtracer.geometry;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 import com.JavaPathtracer.Pathtracer;
 
 public class Cylinder implements Shape {
@@ -45,6 +47,17 @@ public class Cylinder implements Shape {
 	}
 	
 	@Override
+	public Vector pickRandomPoint() {
+		
+		double angle = ThreadLocalRandom.current().nextDouble() * 2 * Math.PI;
+		Vector offset = new Vector(Math.cos(angle) * this.radius, 0, Math.sin(angle) * this.radius);
+	
+		return this.point.plus(this.direction.times(ThreadLocalRandom.current().nextDouble() * this.length)) // move up the center of the cylinder
+				         .plus(this.matrix.transform(offset)); // and then rotate to a random position along the circle                                          
+	
+	}
+	
+	@Override
 	public Hit raytrace(Ray ray) {
 
 		// TL;DR: perform intersection with a cylinder aligned along (0, 1, 0) to make transforms easier
@@ -87,20 +100,6 @@ public class Cylinder implements Shape {
 				t = t1;
 			}
 		}
-		
-		/*
-		double min = Math.min(t1, t2);
-		double max = Math.max(t1, t2);
-		
-		Vector hitLocal = o.plus(d.times(min));
-		double t = min;
-		if(hitLocal.y > length || hitLocal.y < 0) {
-			hitLocal = o.plus(d.times(max));
-			t = max;
-			if(hitLocal.y > length || hitLocal.y < 0) {
-				return Hit.MISS;
-			} 
-		}*/
 		
 		// reject hits beyond the length of the cylinder
 		Vector normalLocal = new Vector(hitLocal.x, 0, hitLocal.z).normalize();

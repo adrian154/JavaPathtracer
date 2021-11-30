@@ -1,5 +1,7 @@
 package com.JavaPathtracer.geometry;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 import com.JavaPathtracer.Pathtracer;
 
 public class Sphere implements Shape {
@@ -12,6 +14,12 @@ public class Sphere implements Shape {
 		this.radius = radius;
 	}
 	
+	@Override
+	public Vector pickRandomPoint() {
+		return Vector.fromSpherical(ThreadLocalRandom.current().nextDouble() * 2 * Math.PI, Math.acos(ThreadLocalRandom.current().nextDouble())).times(radius).plus(center);
+	}
+	
+	@Override
 	public BoundingBox getBoundingBox() {
 		return new BoundingBox(center.plus(-radius), center.plus(radius));
 	}
@@ -54,10 +62,6 @@ public class Sphere implements Shape {
 		// TODO: tangent vector
 		return new Hit(ray, point, normal, null, t, new Vector(u, v, 0.0));
 	
-	}
-
-	public Sphere getBoundingSphere() {
-		return this;
 	}
 
 }

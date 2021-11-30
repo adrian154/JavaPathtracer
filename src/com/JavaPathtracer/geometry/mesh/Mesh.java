@@ -7,6 +7,7 @@ import com.JavaPathtracer.geometry.Hit;
 import com.JavaPathtracer.geometry.ObjectHit;
 import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Transform;
+import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.material.Material;
 import com.JavaPathtracer.scene.WorldObject;
 
@@ -42,6 +43,11 @@ public class Mesh extends WorldObject {
 	@Override
 	public BoundingBox getBoundingBox() {
 		return this.bvh;
+	}
+	
+	@Override
+	public Vector pickRandomPoint() {
+		throw new UnsupportedOperationException();
 	}
 	
 }

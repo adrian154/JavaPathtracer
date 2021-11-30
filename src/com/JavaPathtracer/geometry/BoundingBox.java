@@ -1,6 +1,7 @@
 package com.JavaPathtracer.geometry;
 
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import com.JavaPathtracer.Pathtracer;
 
@@ -117,8 +118,6 @@ public class BoundingBox implements Shape {
 	@Override
 	public Hit raytrace(Ray ray) {
 		
-		//throw new UnsupportedOperationException();
-		
 		double invX = 1 / ray.direction.x;
 		double invY = 1 / ray.direction.y;
 		double invZ = 1 / ray.direction.z;
@@ -160,11 +159,37 @@ public class BoundingBox implements Shape {
 		
 	}
 	
+	public Sphere toSphere() {
+		return new Sphere(this.centroid(), this.max.minus(this.min).length());
+	}
+	
 	@Override
 	public BoundingBox getBoundingBox() {
 		return this;
 	}
 
+	@Override
+	public Vector pickRandomPoint() {
+		
+		// pick a random point inside the bounding box
+		ThreadLocalRandom random = ThreadLocalRandom.current();
+		double width = this.width(), height = this.height(), depth = this.depth();
+		double x = random.nextDouble() * width, y = random.nextDouble() * height, z = random.nextDouble() * depth;
+		
+		// pick an axis and snap the point to a face along that axis
+		int axis = random.nextInt(3);
+		if(axis == 0) {
+			x = x > width / 2 ? width : 0;
+		} else if(axis == 1) {
+			y = y > height / 2 ? height : 0;
+		} else {
+			z = z > depth / 2 ? depth : 0;
+		}
+		
+		return new Vector(x, y, z).plus(this.min);
+		
+	}
+	
 	public boolean contains(BoundingBox other) {
 		return this.contains(other.min) && this.contains(other.max);
 	}
@@ -172,11 +197,6 @@ public class BoundingBox implements Shape {
 	public boolean contains(Vector point) {
 		return point.x > this.min.x && point.y > this.min.y && point.z > this.min.z &&
 			   point.x < this.max.x && point.y < this.max.y && point.z < this.max.z;
-	}
-
-	public Sphere toSphere() {
-		Vector center = this.centroid();
-		return new Sphere(center, this.max.minus(center).length());
 	}
 
 	public static final boolean overlaps(BoundingBox a, BoundingBox b) {

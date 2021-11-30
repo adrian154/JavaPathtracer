@@ -6,6 +6,7 @@ import com.JavaPathtracer.geometry.ObjectHit;
 import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Shape;
 import com.JavaPathtracer.geometry.Transform;
+import com.JavaPathtracer.geometry.Vector;
 import com.JavaPathtracer.material.Material;
 
 public class SimpleObject extends WorldObject {
@@ -39,6 +40,11 @@ public class SimpleObject extends WorldObject {
 	public ObjectHit raytraceObject(Ray ray) {
 		Hit hit = shape.raytrace(ray);
 		return new ObjectHit(hit, this, material);
+	}
+	
+	@Override
+	public Vector pickRandomPoint() {
+		return shape.pickRandomPoint();
 	}
 
 }

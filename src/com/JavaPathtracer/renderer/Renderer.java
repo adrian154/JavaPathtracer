@@ -37,7 +37,7 @@ public class Renderer {
 		this(scene, raytracer, tiles, Runtime.getRuntime().availableProcessors(), samples, new LinearTonemapper());
 	}
 	
-	public RenderJob render(BufferedImage output) throws InterruptedException {
+	public RenderJob render(BufferedImage output) {
 		
 		ExecutorService executor = Executors.newFixedThreadPool(this.threads);
 		CountDownLatch latch = new CountDownLatch(this.tiles * this.tiles);
