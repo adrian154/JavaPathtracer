@@ -37,7 +37,7 @@ public class SimpleObject extends WorldObject {
 	}
 	
 	@Override
-	public ObjectHit raytraceLocal(Ray ray) {
+	public ObjectHit raytraceObject(Ray ray) {
 		Hit hit = shape.raytrace(ray);
 		return new ObjectHit(hit, this, material);
 	}

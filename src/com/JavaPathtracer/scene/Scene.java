@@ -80,7 +80,7 @@ public class Scene {
 		
 		for(WorldObject object: objects) {
 			
-			ObjectHit hit = object.raytrace(ray);
+			ObjectHit hit = object.traceRay(ray);
 			if(hit.distance < nearest.distance && hit.distance > Pathtracer.EPSILON) {
 				nearest = hit;
 			}
@@ -95,7 +95,7 @@ public class Scene {
 	// visibility test (null for sky)
 	public ObjectHit traceRay(Ray ray, WorldObject target) {
 
-		ObjectHit desiredHit = target == null ? ObjectHit.MISS : target.raytrace(ray);
+		ObjectHit desiredHit = target == null ? ObjectHit.MISS : target.traceRay(ray);
 		if(!desiredHit.hit) {
 			return ObjectHit.MISS;
 		}
@@ -104,7 +104,7 @@ public class Scene {
 			
 			if(object == target) continue;
 			
-			ObjectHit hit = object.raytrace(ray);
+			ObjectHit hit = object.traceRay(ray);
 			if (hit.distance > Pathtracer.EPSILON && hit.distance < desiredHit.distance) {
 				return ObjectHit.MISS;
 			}

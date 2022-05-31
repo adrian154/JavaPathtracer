@@ -7,41 +7,42 @@ import java.util.stream.Collectors;
 import com.JavaPathtracer.Stopwatch;
 import com.JavaPathtracer.geometry.BoundingBox;
 import com.JavaPathtracer.geometry.Hit;
-import com.JavaPathtracer.geometry.ObjectHit;
 import com.JavaPathtracer.geometry.Ray;
 import com.JavaPathtracer.geometry.Shape;
-import com.JavaPathtracer.scene.WorldObject;
 
 public class BVHNode extends BoundingBox implements Shape {
 
 	// construction constants
 	public static final int NUM_BINS = 16; // more bins = potentially better splits but greater construction time
 	public static final double COST_TRAVERSE = 1;
-	public static final double COST_INTERSECT = 12;
+	public static final double COST_INTERSECT = 12; // PBRT's estimate seems fair
 	public static final int MAX_DEPTH = 12;
-		
-	// tree node fields
+	
+	public MeshGeometry mesh;
+	
+	// children
 	public BVHNode left;
 	public BVHNode right;
-	private List<WorldObject> objects;
+
+	// list of primitives (for leaf nodes)
+	private int[] triangleIndexes;
 
 	// some stuff used during construction
-	private List<Primitive> primitives;
-	
-	// for tracking progress
-	private BVHNode root;
+	private List<TriangleBoundingBox> primitives;
 	private int numProcessedPrimitives;
 	
-	public BVHNode(List<? extends WorldObject> objects) {
+	public BVHNode(MeshGeometry mesh) {
 		
 		super(null, null);
 		
 		Stopwatch.start("building BVH");
 		
+		this.mesh = mesh;
+		
 		// create list of primitives
-		this.primitives = new ArrayList<Primitive>();
-		for(WorldObject object: objects) {
-			this.primitives.add(new Primitive(object));
+		this.primitives = new ArrayList<TriangleBoundingBox>();
+		for(int i = 0; i < mesh.faces.length / 3; i++) {
+			this.primitives.add(TriangleBoundingBox.create(mesh, i));
 		}
 		
 		BoundingBox box = new BoundingBox(primitives);
@@ -54,26 +55,18 @@ public class BVHNode extends BoundingBox implements Shape {
 		
 	}
 	
-	// the root BVH node is passed partially so child nodes can track progress and partially to distinguish these two type constructors
-	// ...which would otherwise conflict due to type erasure
-	public BVHNode(BVHNode root, List<Primitive> primitives) {
+	public BVHNode(MeshGeometry mesh, List<TriangleBoundingBox> primitives) {
 		super(primitives);
 		this.primitives = primitives;
-		this.root = root;
+		this.mesh = mesh;
 	}
 	
-	private void makeLeafNode() {
-		
-		// pluck objects from list of primitives
-		this.objects = this.primitives.stream().map(child -> child.object).collect(Collectors.toList());
-		
-		// debug logging
+	private void makeLeafNode(BVHNode root) {
+		this.triangleIndexes = this.primitives.stream().mapToInt(child -> Integer.valueOf(child.face)).toArray();
 		root.numProcessedPrimitives += this.primitives.size();
 		System.out.printf("Processed %d / %d primitives (%d%%)\n", root.numProcessedPrimitives, root.primitives.size(), root.numProcessedPrimitives * 100 / root.primitives.size());
-		
-		// let the GC clean up the primitives - we won't need them again
 		this.primitives = null;
-		
+		return;
 	}
 
 	public int numPrimitives() {
@@ -84,7 +77,7 @@ public class BVHNode extends BoundingBox implements Shape {
 	public void split(int depth, BVHNode root) {
 		
 		if (depth >= MAX_DEPTH) {
-			this.makeLeafNode();
+			this.makeLeafNode(root);
 			return;
 		}
 
@@ -96,17 +89,17 @@ public class BVHNode extends BoundingBox implements Shape {
 		double noSplitCost = primitives.size() * COST_INTERSECT;
 
 		// TODO: use some kind of heuristic to avoid checking splits along all three axes
-		// TODO: figure out if binning primitives by the triangle centroid rather than the bounding box centroid results in better BVHs
+		// TODO: figure out if binning primitives by the TRIANGLE centroid rather than the bounding box centroid results in better BVHs
 		for (int axis = 0; axis < 3; axis++) {
 
-			List<List<Primitive>> bins = new ArrayList<>();
+			List<List<TriangleBoundingBox>> bins = new ArrayList<>();
 			for(int i = 0; i < NUM_BINS; i++) {
 				bins.add(new ArrayList<>());
 			}
 
 			// place primitives into bins based on centroid
 			double binWidth = (this.max.get(axis) - this.min.get(axis)) / NUM_BINS;
-			for(Primitive box: this.primitives) {
+			for(TriangleBoundingBox box: this.primitives) {
 				double centroid = box.centroid().get(axis);
 				int bin = (int)Math.min(Math.floor((centroid - this.min.get(axis)) / binWidth), NUM_BINS - 1);
 				bins.get(bin).add(box);
@@ -115,8 +108,8 @@ public class BVHNode extends BoundingBox implements Shape {
 			// iterate over potential splits and figure out which one's the best
 			for(int split = 1; split < NUM_BINS; split++) {
 
-				BVHNode left = new BVHNode(root, bins.subList(0, split).stream().flatMap(List::stream).collect(Collectors.toList()));
-				BVHNode right = new BVHNode(root, bins.subList(split, NUM_BINS).stream().flatMap(List::stream).collect(Collectors.toList()));
+				BVHNode left = new BVHNode(mesh, bins.subList(0, split).stream().flatMap(List::stream).collect(Collectors.toList()));
+				BVHNode right = new BVHNode(mesh, bins.subList(split, NUM_BINS).stream().flatMap(List::stream).collect(Collectors.toList()));
 		
 				double splitCost = COST_TRAVERSE +
 					(left.surfaceArea() / this.surfaceArea() * left.numPrimitives() * COST_INTERSECT) +
@@ -145,37 +138,30 @@ public class BVHNode extends BoundingBox implements Shape {
 			primitives = null;
 			
 		} else {
-			this.makeLeafNode();
+			this.makeLeafNode(root);
 		}
 
 	}
 
 	@Override
-	public ObjectHit raytrace(Ray ray) {
+	public Hit raytrace(Ray ray) {
 		
 		// check if the ray intersects the bounding box
 		if (!this.intersects(ray))
-			return ObjectHit.MISS;
+			return Hit.MISS;
 		
 		// not a leaf node
-		if (objects == null) {
+		if (triangleIndexes == null) {
 
-			ObjectHit left = this.left.raytrace(ray);
-			ObjectHit right = this.right.raytrace(ray);
+			Hit left = this.left.raytrace(ray);
+			Hit right = this.right.raytrace(ray);
 			if(!left.hit) return right;
 			if(!right.hit) return left;
 			
 			return left.distance < right.distance ? left : right;
 			
 		} else {
-			
-			// find nearest intersecting object
-			Hit nearest = Hit.MISS;
-			for(WorldObject object: objects) {
-				
-			}
 			return mesh.intersect(ray, this.triangleIndexes);
-		
 		}
 
 	}

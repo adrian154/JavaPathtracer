@@ -14,7 +14,7 @@ public abstract class WorldObject {
 		this.transform = transform;
 	}
 	
-	public ObjectHit raytrace(Ray ray) {
+	public ObjectHit traceRay(Ray ray) {
 		
 		// keep track of the original ray if it needs to be transformed
 		Ray originalRay = null;
@@ -23,7 +23,7 @@ public abstract class WorldObject {
 			ray = new Ray(transform.inversePoint(ray.origin), transform.inverseVector(ray.direction));
 		}
 		
-		ObjectHit hit = this.raytraceLocal(ray);
+		ObjectHit hit = this.raytraceObject(ray);
 		
 		if(hit.hit && transform != null) {
 			hit.point = transform.transformPoint(hit.point);
@@ -38,8 +38,8 @@ public abstract class WorldObject {
 		 
 	}
 	
-	public abstract ObjectHit raytraceLocal(Ray ray);
-	public BoundingBox getBoundingBox() { throw new UnsupportedOperationException(); }
-	public Vector pickRandomPoint() { throw new UnsupportedOperationException(); }
+	public abstract ObjectHit raytraceObject(Ray ray);
+	public abstract BoundingBox getBoundingBox();
+	public abstract Vector pickRandomPoint();
 
 }

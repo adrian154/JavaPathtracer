@@ -78,7 +78,7 @@ public class TestMain {
 		// raytracer = new DebugTracer(Mode.SIMPLE_SHADED);
 		
 		/* renderer */
-		renderer = new Renderer(scene, raytracer, 16, 32, new ReinhardTonemapper());
+		renderer = new Renderer(scene, raytracer, 16, 1, new ReinhardTonemapper());
 		// renderer = new Renderer(scene, raytracer, 16, 1, new LinearTonemapper());
 
 		Stopwatch.start("render");
